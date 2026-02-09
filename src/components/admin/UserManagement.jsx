@@ -8,7 +8,7 @@ const DEMO_USERS = [
 ];
 
 const UserManagement = () => {
-  const { user } = useAuth();
+  const { profile } = useAuth();
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
@@ -35,7 +35,7 @@ const UserManagement = () => {
   const [editingId, setEditingId] = useState(null);
   const [formData, setFormData] = useState({ email: '', password: '', first_name: '', last_name: '', role: 'worker', expires_at: '' });
 
-  const isAdmin = user?.role === 'admin';
+  const isAdmin = profile?.role === 'admin';
   if (!isAdmin) return <div style={{ ...S.border, ...S.bg, ...S.pad, color: '#666' }}>Sinulla ei ole oikeutta käyttää tätä osiota.</div>;
 
   const handleFormOpen = () => { setShowForm(true); setEditingId(null); setFormData({ email: '', password: '', first_name: '', last_name: '', role: 'worker', expires_at: '' }); };

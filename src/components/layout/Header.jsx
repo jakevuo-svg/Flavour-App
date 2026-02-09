@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import S from '../../styles/theme';
 import NotificationPanel from '../common/NotificationPanel';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 export default function Header({
   onHome, onSave, onNewEvent, onNewPerson, onNewNote, onSignOut,
@@ -8,6 +9,7 @@ export default function Header({
   onMarkRead, onMarkAllRead, onDismiss, onClearAll,
   onEventClick, onPersonClick, events = [], persons = [],
 }) {
+  const { lang, toggleLang } = useLanguage();
   const [menuOpen, setMenuOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const menuRef = useRef(null);
@@ -41,6 +43,15 @@ export default function Header({
       </div>
       <div style={{ ...S.flex, ...S.gap }}>
         {onSave && <button style={S.btnWire} onClick={onSave}>SAVE</button>}
+
+        {/* Language toggle */}
+        <button
+          style={{ ...S.btnWire, padding: '4px 10px', fontSize: 11, fontWeight: 700, letterSpacing: 1, minWidth: 36 }}
+          onClick={toggleLang}
+          title={lang === 'fi' ? 'Switch to English' : 'Vaihda suomeksi'}
+        >
+          {lang === 'fi' ? 'EN' : 'FI'}
+        </button>
 
         {/* Notification bell */}
         <div style={{ position: 'relative' }} ref={notifRef}>

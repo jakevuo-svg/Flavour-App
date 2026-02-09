@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import S from '../../styles/theme';
 import { EVENT_TYPES, STATUSES } from '../../utils/constants';
 
@@ -80,9 +80,9 @@ export default function NewEventModal({ onClose, onAdd, locations = [], prefille
     location_name: '', location_id: '', guest_count: '', language: '',
     company: '', booker: '', contact: '', clientName: '', status: '',
     goal: '', attentionNotes: '', allergens: [], ervNotes: '', schedule: '', menu: '',
-    menuLink: '', decorations: '', logistics: '',
-    orderLink: '', orderNotes: '',
-    notes: '',
+    menuLink: '', menuAttachments: [], decorations: '', logistics: '',
+    orderLink: '', orderNotes: '', orderAttachments: [],
+    materials: [], notes: '',
     food: '', foodPrice: '', drinks: '', drinksPrice: '',
     tech: '', techPrice: '', program: '', programPrice: ''
   });
@@ -117,15 +117,49 @@ export default function NewEventModal({ onClose, onAdd, locations = [], prefille
       location_name: '', location_id: '', guest_count: '', language: '',
       company: '', booker: '', contact: '', clientName: '', status: '',
       goal: '', attentionNotes: '', allergens: [], ervNotes: '', schedule: '', menu: '',
-      menuLink: '', decorations: '', logistics: '',
-      orderLink: '', orderNotes: '',
-      notes: '',
+      menuLink: '', menuAttachments: [], decorations: '', logistics: '',
+      orderLink: '', orderNotes: '', orderAttachments: [],
+      materials: [], notes: '',
       food: '', foodPrice: '', drinks: '', drinksPrice: '',
       tech: '', techPrice: '', program: '', programPrice: ''
     });
   };
 
   const handleClose = () => { resetForm(); setActiveSection('PERUSTIEDOT'); onClose(); };
+
+  // File upload refs and handlers
+  const menuFileRef = useRef(null);
+  const orderFileRef = useRef(null);
+  const materialFileRef = useRef(null);
+
+  const handleFileUpload = (field, e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const att = {
+        id: `att-${Date.now()}`,
+        name: file.name.replace(/\.[^.]+$/, ''),
+        driveLink: null,
+        fileData: ev.target.result,
+        fileName: file.name,
+        fileType: file.type,
+        fileSize: file.size,
+        addedAt: new Date().toISOString(),
+      };
+      const arr = formData[field] || [];
+      setFormData(prev => ({ ...prev, [field]: [...arr, att] }));
+    };
+    reader.readAsDataURL(file);
+    e.target.value = '';
+  };
+
+  const removeAttachment = (field, attId) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: (prev[field] || []).filter(a => a.id !== attId)
+    }));
+  };
 
   const tabs = ['PERUSTIEDOT', 'LISÄTIEDOT', 'HINNOITTELU'];
 
@@ -272,12 +306,20 @@ export default function NewEventModal({ onClose, onAdd, locations = [], prefille
                 <textarea value={formData.schedule} onChange={e => handleInputChange('schedule', e.target.value)} style={{ ...S.input, width: '100%', minHeight: 60, boxSizing: 'border-box', fontFamily: 'inherit' }} placeholder="Aikataulu" />
               </div>
 
-              {/* Menu + Drive link */}
+              {/* Menu + Drive link + files */}
               <div style={{ border: '1px solid #333', padding: 12, background: '#1a1a1a' }}>
                 <div style={{ ...S.label, marginBottom: 6, fontWeight: 700 }}>MENU</div>
                 <textarea value={formData.menu} onChange={e => handleInputChange('menu', e.target.value)} style={{ ...S.input, width: '100%', minHeight: 60, boxSizing: 'border-box', fontFamily: 'inherit', marginBottom: 8 }} placeholder="Menu kuvaus" />
                 <div style={S.label}>Menu Drive -linkki</div>
-                <input type="url" value={formData.menuLink} onChange={e => handleInputChange('menuLink', e.target.value)} style={{ ...S.input, width: '100%', boxSizing: 'border-box' }} placeholder="https://drive.google.com/..." />
+                <input type="url" value={formData.menuLink} onChange={e => handleInputChange('menuLink', e.target.value)} style={{ ...S.input, width: '100%', boxSizing: 'border-box', marginBottom: 8 }} placeholder="https://drive.google.com/..." />
+                {(formData.menuAttachments || []).map(att => (
+                  <div key={att.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: '1px solid #444', padding: 6, marginBottom: 4, fontSize: 12 }}>
+                    <span>{att.fileName || att.name}</span>
+                    <button onClick={() => removeAttachment('menuAttachments', att.id)} style={{ ...S.btnSmall, fontSize: 10, padding: '2px 6px' }}>✕</button>
+                  </div>
+                ))}
+                <button onClick={() => menuFileRef.current?.click()} style={S.btnSmall}>+ LATAA TIEDOSTO</button>
+                <input ref={menuFileRef} type="file" style={{ display: 'none' }} onChange={(e) => handleFileUpload('menuAttachments', e)} accept="image/*,.pdf,.doc,.docx,.xls,.xlsx" />
               </div>
 
               <div>
@@ -296,7 +338,28 @@ export default function NewEventModal({ onClose, onAdd, locations = [], prefille
                 <div style={S.label}>Google Drive -linkki</div>
                 <input type="url" value={formData.orderLink} onChange={e => handleInputChange('orderLink', e.target.value)} style={{ ...S.input, width: '100%', boxSizing: 'border-box', marginBottom: 8 }} placeholder="https://drive.google.com/..." />
                 <div style={S.label}>Tilauksen lisätiedot</div>
-                <textarea value={formData.orderNotes} onChange={e => handleInputChange('orderNotes', e.target.value)} style={{ ...S.input, width: '100%', minHeight: 50, boxSizing: 'border-box', fontFamily: 'inherit' }} placeholder="Lisätiedot" />
+                <textarea value={formData.orderNotes} onChange={e => handleInputChange('orderNotes', e.target.value)} style={{ ...S.input, width: '100%', minHeight: 50, boxSizing: 'border-box', fontFamily: 'inherit', marginBottom: 8 }} placeholder="Lisätiedot" />
+                {(formData.orderAttachments || []).map(att => (
+                  <div key={att.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: '1px solid #444', padding: 6, marginBottom: 4, fontSize: 12 }}>
+                    <span>{att.fileName || att.name}</span>
+                    <button onClick={() => removeAttachment('orderAttachments', att.id)} style={{ ...S.btnSmall, fontSize: 10, padding: '2px 6px' }}>✕</button>
+                  </div>
+                ))}
+                <button onClick={() => orderFileRef.current?.click()} style={S.btnSmall}>+ LATAA TIEDOSTO</button>
+                <input ref={orderFileRef} type="file" style={{ display: 'none' }} onChange={(e) => handleFileUpload('orderAttachments', e)} accept="image/*,.pdf,.doc,.docx,.xls,.xlsx" />
+              </div>
+
+              {/* MATERIAALIT / LIITTEET */}
+              <div style={{ border: '1px solid #333', padding: 12, background: '#1a1a1a' }}>
+                <div style={{ ...S.label, marginBottom: 6, fontWeight: 700 }}>MATERIAALIT / LIITTEET</div>
+                {(formData.materials || []).map(att => (
+                  <div key={att.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: '1px solid #444', padding: 6, marginBottom: 4, fontSize: 12 }}>
+                    <span>{att.fileName || att.name}</span>
+                    <button onClick={() => removeAttachment('materials', att.id)} style={{ ...S.btnSmall, fontSize: 10, padding: '2px 6px' }}>✕</button>
+                  </div>
+                ))}
+                <button onClick={() => materialFileRef.current?.click()} style={S.btnSmall}>+ LATAA TIEDOSTO</button>
+                <input ref={materialFileRef} type="file" style={{ display: 'none' }} onChange={(e) => handleFileUpload('materials', e)} accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx" />
               </div>
 
               {/* Muistiinpanot */}
