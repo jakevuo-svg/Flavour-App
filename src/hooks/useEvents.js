@@ -188,7 +188,7 @@ export function useEvents() {
       if (isDemoMode) {
         if (isWorker) {
           const workerEvents = demoEvents.filter(e =>
-            demoEventAssignments.some(a => a.event_id === e.id && a.worker_id === profile?.id)
+            demoEventAssignments.some(a => a.event_id === e.id && a.user_id === profile?.id)
           );
           setEvents(workerEvents.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)));
         } else {
@@ -203,7 +203,7 @@ export function useEvents() {
         const { data: assignments, error: assignmentError } = await supabase
           .from('event_assignments')
           .select('event_id')
-          .eq('worker_id', profile?.id);
+          .eq('user_id', profile?.id);
 
         if (assignmentError) throw assignmentError;
 
@@ -335,7 +335,7 @@ export function useEvents() {
         const assignment = {
           id: `assignment-${Date.now()}`,
           event_id: eventId,
-          worker_id: workerId,
+          user_id: workerId,
           assigned_at: new Date().toISOString(),
         };
         demoEventAssignments.push(assignment);
@@ -344,7 +344,7 @@ export function useEvents() {
 
       const { data, error: err } = await supabase
         .from('event_assignments')
-        .insert([{ event_id: eventId, worker_id: workerId }])
+        .insert([{ event_id: eventId, user_id: workerId }])
         .select()
         .single();
 
@@ -363,7 +363,7 @@ export function useEvents() {
 
       if (isDemoMode) {
         demoEventAssignments = demoEventAssignments.filter(
-          a => !(a.event_id === eventId && a.worker_id === workerId)
+          a => !(a.event_id === eventId && a.user_id === workerId)
         );
         return;
       }
@@ -372,7 +372,7 @@ export function useEvents() {
         .from('event_assignments')
         .delete()
         .eq('event_id', eventId)
-        .eq('worker_id', workerId);
+        .eq('user_id', workerId);
 
       if (err) throw err;
     } catch (err) {
