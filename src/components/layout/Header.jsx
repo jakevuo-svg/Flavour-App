@@ -4,7 +4,7 @@ import NotificationPanel from '../common/NotificationPanel';
 import { useLanguage } from '../../contexts/LanguageContext';
 
 export default function Header({
-  onHome, onSave, onNewEvent, onNewPerson, onNewNote, onSignOut,
+  onHome, onSave, onNewEvent, onNewPerson, onNewNote, onSignOut, onChangePassword,
   notifications = [], unreadCount = 0,
   onMarkRead, onMarkAllRead, onDismiss, onClearAll,
   onEventClick, onPersonClick, events = [], persons = [],
@@ -157,6 +157,25 @@ export default function Header({
             >
               {t('newNote')}
             </div>
+            {onChangePassword && (
+              <div
+                onClick={() => handleOption(onChangePassword)}
+                style={{
+                  padding: '10px 16px',
+                  cursor: 'pointer',
+                  fontSize: 12,
+                  fontWeight: 700,
+                  letterSpacing: 1,
+                  textTransform: 'uppercase',
+                  borderTop: '1px solid #444',
+                  color: '#ddd',
+                }}
+                onMouseEnter={e => e.currentTarget.style.background = '#333'}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+              >
+                {t('changePassword')}
+              </div>
+            )}
             {onSignOut && (
               <div
                 onClick={() => handleOption(onSignOut)}

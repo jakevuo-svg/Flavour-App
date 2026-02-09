@@ -19,6 +19,7 @@ import UserManagement from './components/admin/UserManagement';
 import ActivityLog from './components/admin/ActivityLog';
 import RolePermissions from './components/admin/RolePermissions';
 import Toast from './components/common/Toast';
+import ChangePassword from './components/auth/ChangePassword';
 import S from './styles/theme';
 
 // Hooks
@@ -93,6 +94,7 @@ const AppContent = () => {
   const [showNewEvent, setShowNewEvent] = useState(false);
   const [newEventPrefilledDate, setNewEventPrefilledDate] = useState(null);
   const [toast, setToast] = useState(null);
+  const [showChangePassword, setShowChangePassword] = useState(false);
 
   // Dynamic recent activity — built from real notes
   const recentActivity = useMemo(() => {
@@ -383,6 +385,7 @@ const AppContent = () => {
           setActiveTab('NOTES');
         }}
         onSignOut={signOut}
+        onChangePassword={() => setShowChangePassword(true)}
         notifications={notifications}
         unreadCount={unreadCount}
         onMarkRead={markRead}
@@ -418,6 +421,10 @@ const AppContent = () => {
           locations={locations}
           prefilledDate={newEventPrefilledDate}
         />
+      )}
+
+      {showChangePassword && (
+        <ChangePassword onClose={() => setShowChangePassword(false)} />
       )}
 
       {toast && (

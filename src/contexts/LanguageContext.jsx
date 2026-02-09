@@ -32,6 +32,7 @@ const translations = {
     newPerson: '+ HENKILÖ',
     newNote: '+ MUISTIINPANO',
     signOut: 'KIRJAUDU ULOS',
+    changePassword: 'VAIHDA SALASANA',
     // Common
     save: 'TALLENNA',
     cancel: 'PERUUTA',
@@ -135,6 +136,7 @@ const translations = {
     newPerson: '+ PERSON',
     newNote: '+ NOTE',
     signOut: 'SIGN OUT',
+    changePassword: 'CHANGE PASSWORD',
     // Common
     save: 'SAVE',
     cancel: 'CANCEL',
