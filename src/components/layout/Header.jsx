@@ -9,7 +9,7 @@ export default function Header({
   onMarkRead, onMarkAllRead, onDismiss, onClearAll,
   onEventClick, onPersonClick, events = [], persons = [],
 }) {
-  const { lang, toggleLang } = useLanguage();
+  const { lang, toggleLang, t } = useLanguage();
   const [menuOpen, setMenuOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const menuRef = useRef(null);
@@ -39,7 +39,7 @@ export default function Header({
     <div style={{ ...S.border, ...S.bg, ...S.flexBetween, ...S.pad, position: "sticky", top: 0, zIndex: 100 }}>
       <div style={{ ...S.flex, ...S.gap }}>
         <span style={{ fontSize: 22, fontWeight: 800, letterSpacing: 3, textTransform: "uppercase", cursor: "pointer" }} onClick={onHome}>Typedwn</span>
-        <button style={S.btnWire} onClick={onHome}>HOME</button>
+        <button style={S.btnWire} onClick={onHome}>{t('HOME')}</button>
       </div>
       <div style={{ ...S.flex, ...S.gap }}>
         {onSave && <button style={S.btnWire} onClick={onSave}>SAVE</button>}
@@ -122,7 +122,7 @@ export default function Header({
               onMouseEnter={e => e.currentTarget.style.background = '#333'}
               onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
             >
-              + TAPAHTUMA
+              {t('newEvent')}
             </div>
             <div
               onClick={() => handleOption(onNewPerson)}
@@ -139,7 +139,7 @@ export default function Header({
               onMouseEnter={e => e.currentTarget.style.background = '#333'}
               onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
             >
-              + HENKILÖ
+              {t('newPerson')}
             </div>
             <div
               onClick={() => handleOption(onNewNote)}
@@ -155,7 +155,7 @@ export default function Header({
               onMouseEnter={e => e.currentTarget.style.background = '#333'}
               onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
             >
-              + MUISTIINPANO
+              {t('newNote')}
             </div>
             {onSignOut && (
               <div
@@ -173,7 +173,7 @@ export default function Header({
                 onMouseEnter={e => e.currentTarget.style.background = '#333'}
                 onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
               >
-                KIRJAUDU ULOS
+                {t('signOut')}
               </div>
             )}
           </div>

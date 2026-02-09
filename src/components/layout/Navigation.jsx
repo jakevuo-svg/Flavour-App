@@ -1,5 +1,6 @@
 import S from '../../styles/theme';
 import { useAuth } from '../auth/AuthContext';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 export default function Navigation({
   activeTab,
@@ -10,6 +11,7 @@ export default function Navigation({
   allowedTabs,
 }) {
   const { isAdmin } = useAuth();
+  const { t } = useLanguage();
 
   // Use dynamic permissions if provided, otherwise fallback to role-based defaults
   const tabs = allowedTabs || (isAdmin
@@ -20,9 +22,9 @@ export default function Navigation({
     <div style={{ ...S.border, ...S.bg, borderTop: "none" }}>
       {/* Full-width tab bar */}
       <div style={{ ...S.flex, borderBottom: "2px solid #ddd" }}>
-        {tabs.map(t => (
+        {tabs.map(tab => (
           <div
-            key={t}
+            key={tab}
             style={{
               flex: 1,
               textAlign: "center",
@@ -31,28 +33,28 @@ export default function Navigation({
               fontSize: 12,
               letterSpacing: 1,
               cursor: "pointer",
-              background: activeTab === t ? "#ddd" : "#1e1e1e",
-              color: activeTab === t ? "#111" : "#ddd",
+              background: activeTab === tab ? "#ddd" : "#1e1e1e",
+              color: activeTab === tab ? "#111" : "#ddd",
               borderRight: "1px solid #ddd",
             }}
-            onClick={() => onTabChange(t)}
+            onClick={() => onTabChange(tab)}
           >
-            {t}
+            {t('tab_' + tab)}
           </div>
         ))}
       </div>
 
       {/* Search bar */}
       <div style={{ ...S.flex, ...S.pad, ...S.gap }}>
-        <span style={{ fontWeight: 700, fontSize: 12 }}>SEARCH</span>
+        <span style={{ fontWeight: 700, fontSize: 12 }}>{t('searchLabel')}</span>
         <input
           style={{ ...S.input, flex: 1 }}
-          placeholder="Search..."
+          placeholder={t('search')}
           value={searchQuery}
           onChange={e => onSearch?.(e.target.value)}
           onKeyDown={e => e.key === "Enter" && onGo?.()}
         />
-        <button style={S.btnBlack} onClick={onGo}>GO</button>
+        <button style={S.btnBlack} onClick={onGo}>{t('go')}</button>
       </div>
     </div>
   );

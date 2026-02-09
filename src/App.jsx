@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { AuthProvider, useAuth } from './components/auth/AuthContext';
+import { useLanguage } from './contexts/LanguageContext';
 import LoginScreen from './components/auth/LoginScreen';
 import Header from './components/layout/Header';
 import Navigation from './components/layout/Navigation';
@@ -41,6 +42,7 @@ const TAB_TO_VIEW = {
 
 const AppContent = () => {
   const { user, profile, isLoggedIn, isAdmin, signOut } = useAuth();
+  const { t } = useLanguage();
 
   // Data hooks
   const { persons, addPerson, deletePerson, updatePerson } = usePersons();
@@ -145,7 +147,7 @@ const AppContent = () => {
   const handleAddPerson = (data) => {
     const p = addPerson(data);
     setShowNewPerson(false);
-    showToast('Henkilö lisätty onnistuneesti', 'success');
+    showToast(t('personAdded'), 'success');
     emitPersonCreated({ ...data, id: p?.id || 'new' });
   };
 
@@ -156,13 +158,13 @@ const AppContent = () => {
     }
     const ev = addEvent(data);
     setShowNewEvent(false);
-    showToast('Tapahtuma lisätty onnistuneesti', 'success');
+    showToast(t('eventAdded'), 'success');
     emitEventCreated({ ...data, id: ev?.id || 'new' });
   };
 
   const handleAddNote = (data) => {
     addNote(data);
-    showToast('Muistiinpano lisätty onnistuneesti', 'success');
+    showToast(t('noteAdded'), 'success');
     const contextName = data.event_id
       ? events.find(e => e.id === data.event_id)?.name
       : data.person_id
@@ -173,19 +175,19 @@ const AppContent = () => {
 
   const handleDeleteNote = (id) => {
     deleteNote(id);
-    showToast('Muistiinpano poistettu', 'success');
+    showToast(t('noteDeleted'), 'success');
   };
 
   const handleDeletePerson = (id) => {
     deletePerson(id);
     setSelectedPerson(null);
-    showToast('Henkilö poistettu', 'success');
+    showToast(t('personDeleted'), 'success');
   };
 
   const handleDeleteEvent = (id) => {
     deleteEvent(id);
     setSelectedEvent(null);
-    showToast('Tapahtuma poistettu', 'success');
+    showToast(t('eventDeleted'), 'success');
   };
 
   const handlePersonClick = (person) => {
@@ -248,7 +250,7 @@ const AppContent = () => {
           />
         ) : (
           <div style={{ ...S.card, padding: 20, textAlign: 'center', color: '#666' }}>
-            Sinulla ei ole oikeutta käyttää tätä osiota.
+            {t('noAccess')}
           </div>
         );
 
@@ -350,7 +352,7 @@ const AppContent = () => {
           </div>
         ) : (
           <div style={{ ...S.border, ...S.bg, ...S.pad, color: '#666', textAlign: 'center' }}>
-            Sinulla ei ole oikeutta käyttää tätä osiota.
+            {t('noAccess')}
           </div>
         );
 
