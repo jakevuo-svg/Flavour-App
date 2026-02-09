@@ -326,6 +326,9 @@ const AppContent = () => {
             onAddTask={addTask}
             onUpdateTask={updateTask}
             onDeleteTask={deleteTask}
+            notes={notes.filter(n => n.event_id === selectedEvent?.id)}
+            onAddNote={handleAddNote}
+            onDeleteNote={deleteNote}
           />
         ) : null;
 

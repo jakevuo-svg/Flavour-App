@@ -163,15 +163,17 @@ const AttachmentSection = ({ attachments = [], onAdd, onRemove, onUpload, fileIn
   );
 };
 
-export default function EventCard({ event, onUpdate, onDelete, onBack, locations = [], persons = [], tasks = [], onAddTask, onUpdateTask, onDeleteTask }) {
+export default function EventCard({ event, onUpdate, onDelete, onBack, locations = [], persons = [], tasks = [], onAddTask, onUpdateTask, onDeleteTask, notes = [], onAddNote, onDeleteNote }) {
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({ ...event });
   const [showAddTask, setShowAddTask] = useState(false);
-  const [newTask, setNewTask] = useState({ title: '', priority: 'MEDIUM', description: '' });
+  const [newTask, setNewTask] = useState({ title: '', priority: 'MEDIUM', description: '', assigned_to: '' });
   const [showAddMaterial, setShowAddMaterial] = useState(false);
   const [newMaterial, setNewMaterial] = useState({ name: '', type: 'other', driveLink: '' });
   const [showAddNote, setShowAddNote] = useState(false);
   const [newNoteText, setNewNoteText] = useState('');
+  const [noteMentionId, setNoteMentionId] = useState('');
+  const [showAddWorker, setShowAddWorker] = useState(false);
   const fileInputRef = useRef(null);
   const menuFileRef = useRef(null);
   const orderFileRef = useRef(null);
@@ -185,12 +187,40 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
   const materials = formData.materials || [];
   const menuAttachments = formData.menuAttachments || [];
   const orderAttachments = formData.orderAttachments || [];
-  const notesList = formData.notesList || [];
+
+  // Workers assigned to this event
+  const eventWorkers = formData.workers || [];
+  const availableWorkers = persons.filter(p => !eventWorkers.includes(p.id));
+
+  const addWorker = (personId) => {
+    if (!personId || eventWorkers.includes(personId)) return;
+    const updated = { ...formData, workers: [...eventWorkers, personId] };
+    setFormData(updated);
+    onUpdate?.(event.id, updated);
+    setShowAddWorker(false);
+  };
+
+  const removeWorker = (personId) => {
+    const updated = { ...formData, workers: eventWorkers.filter(id => id !== personId) };
+    setFormData(updated);
+    onUpdate?.(event.id, updated);
+  };
+
+  // Helper to get person name
+  const getPersonName = (personId) => {
+    const p = persons.find(p => p.id === personId);
+    return p ? `${p.first_name} ${p.last_name}` : 'Tuntematon';
+  };
+
+  const getPersonRole = (personId) => {
+    const p = persons.find(p => p.id === personId);
+    return p?.role || '';
+  };
 
   const handleAddTask = () => {
     if (!newTask.title.trim()) return;
-    onAddTask?.({ ...newTask, event_id: event.id });
-    setNewTask({ title: '', priority: 'MEDIUM', description: '' });
+    onAddTask?.({ ...newTask, event_id: event.id, assigned_to: newTask.assigned_to || null });
+    setNewTask({ title: '', priority: 'MEDIUM', description: '', assigned_to: '' });
     setShowAddTask(false);
   };
 
@@ -310,25 +340,19 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
     e.target.value = '';
   };
 
-  // Notes management
-  const addNote = () => {
+  // Notes management — uses global notes system
+  const addNoteToEvent = () => {
     if (!newNoteText.trim()) return;
-    const note = {
-      id: `note-${Date.now()}`,
-      text: newNoteText.trim(),
-      createdAt: new Date().toISOString(),
-    };
-    const updated = { ...formData, notesList: [...notesList, note] };
-    setFormData(updated);
-    onUpdate?.(event.id, updated);
+    let content = newNoteText.trim();
+    // Prepend @mention if selected
+    if (noteMentionId) {
+      const mentionName = getPersonName(noteMentionId);
+      content = `@${mentionName}: ${content}`;
+    }
+    onAddNote?.({ event_id: event.id, content, mentioned_person_id: noteMentionId || null });
     setNewNoteText('');
+    setNoteMentionId('');
     setShowAddNote(false);
-  };
-
-  const removeNote = (noteId) => {
-    const updated = { ...formData, notesList: notesList.filter(n => n.id !== noteId) };
-    setFormData(updated);
-    onUpdate?.(event.id, updated);
   };
 
   const formatFileSize = (bytes) => {
@@ -451,6 +475,50 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
                 </div>
               ))}
             </div>
+          </Section>
+
+          {/* TYÖNTEKIJÄT */}
+          <Section title="TYÖNTEKIJÄT" defaultOpen={true} count={eventWorkers.length}>
+            {eventWorkers.length === 0 && !showAddWorker && (
+              <div style={{ color: '#666', fontSize: 12, marginBottom: 8 }}>Ei lisättyjä työntekijöitä</div>
+            )}
+            {eventWorkers.map(wId => {
+              const worker = persons.find(p => p.id === wId);
+              if (!worker) return null;
+              return (
+                <div key={wId} style={{ ...S.row, alignItems: 'center', padding: '6px 0' }}>
+                  <div style={{ flex: 1 }}>
+                    <span style={{ fontSize: 13, fontWeight: 600 }}>{worker.first_name} {worker.last_name}</span>
+                    {worker.role && <span style={{ fontSize: 11, color: '#777', marginLeft: 8 }}>{worker.role}</span>}
+                    {worker.phone && <span style={{ fontSize: 11, color: '#555', marginLeft: 8 }}>{worker.phone}</span>}
+                  </div>
+                  <button onClick={() => removeWorker(wId)} style={{ ...S.btnSmall, fontSize: 10, padding: '2px 6px' }}>✕</button>
+                </div>
+              );
+            })}
+
+            {showAddWorker ? (
+              <div style={{ border: '1px solid #444', padding: 12, marginTop: 8, background: '#1a1a1a' }}>
+                <div style={{ ...S.label, marginBottom: 6 }}>LISÄÄ TYÖNTEKIJÄ</div>
+                {availableWorkers.length === 0 ? (
+                  <div style={{ color: '#666', fontSize: 12 }}>Kaikki henkilöt on jo lisätty</div>
+                ) : (
+                  <select
+                    onChange={e => { if (e.target.value) addWorker(e.target.value); }}
+                    style={{ ...S.selectFull, marginBottom: 8 }}
+                    defaultValue=""
+                  >
+                    <option value="">Valitse henkilö...</option>
+                    {availableWorkers.map(p => (
+                      <option key={p.id} value={p.id}>{p.first_name} {p.last_name}{p.role ? ` — ${p.role}` : ''}</option>
+                    ))}
+                  </select>
+                )}
+                <button onClick={() => setShowAddWorker(false)} style={S.btnWire}>PERUUTA</button>
+              </div>
+            ) : (
+              <button onClick={() => setShowAddWorker(true)} style={{ ...S.btnSmall, marginTop: 8 }}>+ LISÄÄ TYÖNTEKIJÄ</button>
+            )}
           </Section>
 
           <Section title="TAVOITE" defaultOpen={!!event?.goal}><TextBlock text={event?.goal} /></Section>
@@ -621,6 +689,20 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
                   </select>
                   <input value={newTask.description} onChange={e => setNewTask({ ...newTask, description: e.target.value })} placeholder="Kuvaus" style={{ ...S.input, flex: 2 }} />
                 </div>
+                <div style={{ marginBottom: 8 }}>
+                  <div style={{ ...S.label, marginBottom: 4 }}>VASTUUHENKILÖ</div>
+                  <select value={newTask.assigned_to} onChange={e => setNewTask({ ...newTask, assigned_to: e.target.value })} style={{ ...S.selectFull }}>
+                    <option value="">Ei vastuuhenkilöä</option>
+                    {eventWorkers.map(wId => {
+                      const w = persons.find(p => p.id === wId);
+                      return w ? <option key={wId} value={wId}>{w.first_name} {w.last_name}</option> : null;
+                    })}
+                    {/* Also show all persons if not in workers list */}
+                    {persons.filter(p => !eventWorkers.includes(p.id)).map(p => (
+                      <option key={p.id} value={p.id}>{p.first_name} {p.last_name}</option>
+                    ))}
+                  </select>
+                </div>
                 <button onClick={handleAddTask} style={S.btnBlack}>LISÄÄ</button>
               </div>
             )}
@@ -630,10 +712,15 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
                 <button onClick={() => cycleStatus(task)} style={{ ...S.btnSmall, width: 28, height: 28, padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, flexShrink: 0, marginRight: 8, background: task.status === 'DONE' ? '#333' : 'transparent' }} title={task.status}>
                   {task.status === 'DONE' ? '✓' : task.status === 'IN_PROGRESS' ? '◐' : '○'}
                 </button>
-                <span style={{ ...S.col(3), fontWeight: task.status === 'DONE' ? 400 : 600, textDecoration: task.status === 'DONE' ? 'line-through' : 'none', color: task.status === 'DONE' ? '#666' : '#ddd' }}>
-                  {task.title}
-                  {task.description && <span style={{ color: '#777', fontSize: 11, marginLeft: 8 }}>{task.description}</span>}
-                </span>
+                <div style={{ ...S.col(3), display: 'flex', flexDirection: 'column' }}>
+                  <span style={{ fontWeight: task.status === 'DONE' ? 400 : 600, textDecoration: task.status === 'DONE' ? 'line-through' : 'none', color: task.status === 'DONE' ? '#666' : '#ddd' }}>
+                    {task.title}
+                    {task.description && <span style={{ color: '#777', fontSize: 11, marginLeft: 8 }}>{task.description}</span>}
+                  </span>
+                  {task.assigned_to && (
+                    <span style={{ fontSize: 10, color: '#888', marginTop: 2 }}>→ {getPersonName(task.assigned_to)}</span>
+                  )}
+                </div>
                 <span style={{ fontSize: 10, color: '#999', marginRight: 8 }}>{task.priority}</span>
                 <span style={{ fontSize: 10, color: '#999', marginRight: 8 }}>{task.status}</span>
                 <button onClick={() => onDeleteTask?.(task.id)} style={{ ...S.btnSmall, fontSize: 10, padding: '2px 6px', flexShrink: 0 }}>✕</button>
@@ -641,8 +728,8 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
             ))}
           </Section>
 
-          {/* MUISTIINPANOT — with add note */}
-          <Section title="MUISTIINPANOT" defaultOpen={true} count={notesList.length + (event?.notes ? 1 : 0)}>
+          {/* MUISTIINPANOT — uses global notes system */}
+          <Section title="MUISTIINPANOT" defaultOpen={true} count={notes.length + (event?.notes ? 1 : 0)}>
             {/* Legacy notes text */}
             {event?.notes && (
               <div style={{ marginBottom: 12, paddingBottom: 8, borderBottom: '1px solid #333' }}>
@@ -650,22 +737,40 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
               </div>
             )}
 
-            {/* Individual notes list */}
-            {notesList.map(note => (
+            {/* Global notes for this event */}
+            {notes.map(note => (
               <div key={note.id} style={{ border: '1px solid #333', padding: 10, marginBottom: 6, background: '#1a1a1a' }}>
                 <div style={{ ...S.flexBetween, marginBottom: 4 }}>
                   <span style={{ fontSize: 10, color: '#666' }}>
-                    {new Date(note.createdAt).toLocaleDateString('fi-FI')} {new Date(note.createdAt).toLocaleTimeString('fi-FI', { hour: '2-digit', minute: '2-digit' })}
+                    {note.author && <span style={{ marginRight: 8 }}>{note.author}</span>}
+                    {new Date(note.created_at).toLocaleDateString('fi-FI')} {new Date(note.created_at).toLocaleTimeString('fi-FI', { hour: '2-digit', minute: '2-digit' })}
                   </span>
-                  <button onClick={() => removeNote(note.id)} style={{ background: 'none', border: 'none', color: '#555', cursor: 'pointer', fontSize: 11 }}>✕</button>
+                  <button onClick={() => onDeleteNote?.(note.id)} style={{ background: 'none', border: 'none', color: '#555', cursor: 'pointer', fontSize: 11 }}>✕</button>
                 </div>
-                <div style={{ fontSize: 13, color: '#bbb', whiteSpace: 'pre-wrap', lineHeight: 1.5 }}>{note.text}</div>
+                <div style={{ fontSize: 13, color: '#bbb', whiteSpace: 'pre-wrap', lineHeight: 1.5 }}>{note.content}</div>
               </div>
             ))}
 
             {/* Add note form */}
             {showAddNote ? (
               <div style={{ border: '1px solid #444', padding: 12, marginTop: 8, background: '#1a1a1a' }}>
+                <div style={{ marginBottom: 8 }}>
+                  <div style={{ ...S.label, marginBottom: 4 }}>MAINITSE HENKILÖ</div>
+                  <select
+                    value={noteMentionId}
+                    onChange={e => setNoteMentionId(e.target.value)}
+                    style={S.selectFull}
+                  >
+                    <option value="">Ei mainintaa</option>
+                    {eventWorkers.map(wId => {
+                      const w = persons.find(p => p.id === wId);
+                      return w ? <option key={wId} value={wId}>@{w.first_name} {w.last_name}</option> : null;
+                    })}
+                    {persons.filter(p => !eventWorkers.includes(p.id)).map(p => (
+                      <option key={p.id} value={p.id}>@{p.first_name} {p.last_name}</option>
+                    ))}
+                  </select>
+                </div>
                 <textarea
                   value={newNoteText}
                   onChange={e => setNewNoteText(e.target.value)}
@@ -674,8 +779,8 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
                   autoFocus
                 />
                 <div style={{ display: 'flex', gap: 8 }}>
-                  <button onClick={addNote} style={S.btnBlack}>LISÄÄ</button>
-                  <button onClick={() => { setShowAddNote(false); setNewNoteText(''); }} style={S.btnWire}>PERUUTA</button>
+                  <button onClick={addNoteToEvent} style={S.btnBlack}>LISÄÄ</button>
+                  <button onClick={() => { setShowAddNote(false); setNewNoteText(''); setNoteMentionId(''); }} style={S.btnWire}>PERUUTA</button>
                 </div>
               </div>
             ) : (
