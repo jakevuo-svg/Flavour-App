@@ -1,73 +1,59 @@
--- Seed Flavour Ventures locations (Teurastamo, Helsinki)
+-- Seed Flavour locations — based on flavours.fi
 -- Run in Supabase SQL Editor
+-- First delete old locations to replace with correct data
+DELETE FROM locations;
 
--- First check what exists
-SELECT name FROM locations;
-
--- Insert locations (skip if name already exists)
 INSERT INTO locations (name, type, capacity, address, description, contact_person, contact_email, contact_phone, equipment, tech_specs, kitchen_equipment, notes, created_at, modified_at)
 VALUES
-  ('BLACK BOX 360', 'Tapahtumatila', 200,
-   'Työpajankatu 2, 00580 Helsinki (Teurastamo)',
-   'Monikäyttöinen tapahtumatila 360° projisoinneilla. Immerse-kokemukset ja gaala-illalliset.',
-   'Kassu Noronen', 'kassu@flavour.fi', '+358 40 123 4567',
-   'Pöydät: 20 kpl pyöreä (8hlö), 10 kpl pitkä (12hlö). Tuolit: 200 kpl. Baaritiskit: 2 kpl. Naulakot: 3 kpl.',
-   '360° projektori (4x 4K laser). PA-järjestelmä (JBL PRX). Langaton mikrofoni x4. Valaistus: DMX-ohjattu.',
-   'Lämmityskeittiö. Lämpöhauteet x4. Kylmätilat. Astianpesukone (teollisuus).',
-   'Lastauslaituri takapihalla. Avaimet Kassulta. Hälytys pois klo 07 jälkeen automaattisesti.',
+  ('BLACK BOX 360', 'Tapahtumatila', 50,
+   'Tripla, Pasila, Helsinki',
+   'Suuri, visuaalisesti vaikuttava ja helposti muuntautuva tapahtumatila. Tummaa tilaa kiertävät massiiviset näytöt mahdollistavat tilan muuntamisen täysin tapahtuman teeman, brändin tai viestin mukaiseksi. Kokonaisuuteen kuuluu myös näköalaravintolan puoli.',
+   '', 'info@flavours.fi', '0400-219921',
+   'Joustavat tilaratkaisut istuviin tai seisoviin tilaisuuksiin. Tilaan yhdistyvä panoraamaravintola.',
+   '360° immersiiviset visuaaliset pinnat. Huippuluokan ääni- ja esitystekniikka.',
+   'Oma ravintola räätälöi tarjoilut toiveiden mukaan.',
+   'Pinta-ala n. 650 m². Minimi 50 henkilöä. Sopii: seminaarit, tuotelanseeraukset, yritystapahtumat, iltatilaisuudet. Keskeinen sijainti erinomaisilla kulkuyhteyksillä.',
    now(), now()),
 
-  ('KELLOHALLI', 'Tapahtumatila', 300,
-   'Työpajankatu 2, 00580 Helsinki (Teurastamo)',
-   'Historiallinen kellohalli Teurastamolla. Korkea katto, teollinen tunnelma. Illalliset, juhlat ja yritystapahtumat.',
-   'Kassu Noronen', 'kassu@flavour.fi', '+358 40 123 4567',
-   'Pitkät pöydät: 15 kpl (á 10 hlö). Pyöreät pöydät: 25 kpl (á 8 hlö). Tuolit: 300 kpl. Lava (koottava): 4m x 3m.',
-   'Projektorit: 2x. PA: QSC K12.2 x4 + sub. Langaton mikrofoni x2. Spottivalot: 8 kpl.',
-   'Täysi ammattikeittiö viereisessä tilassa. Uuni x3 (Rational). Induktio x8. Kylmähuone + pakastin.',
-   'Kellohallin lattia herkkä — ei teippiä suoraan! Käytä suojalevyjä raskaalle kalustolle.',
+  ('KELLOHALLI', 'Tapahtumatila', 30,
+   'Teurastamo, Helsinki',
+   'Joustava ja luonteikas tapahtumatila Teurastamon sydämessä. Teollinen tila mukautuu monenlaisiin tapahtumiin yritysseminaareista iltajuhliin ja istuviin illallisiin.',
+   '', 'info@flavours.fi', '0400-219921',
+   'Erittäin muunneltavat tilaratkaisut. Sisältää: Iso Sali, Klubi, Kabinetti, Terassi, Studio.',
+   'Urbaani teollinen tunnelma. Täyden palvelun tapahtumatuotanto.',
+   'Catering- ja baaripalvelut saatavilla. Tapahtumaan räätälöidyt tarjoilut.',
+   'Minimi 30 henkilöä. Sopii: seminaarit, yritystapahtumat, illalliset, juhlat, työpajat.',
    now(), now()),
 
-  ('FLAVOUR STUDIO', 'Kokkauskoulu', 50,
-   'Työpajankatu 2, 00580 Helsinki (Teurastamo)',
-   'Kokkauskoulu ja studio. Tiimikokkausta, workshopeja ja tuotekehitystä. 4 kokkauspisteettä.',
-   'Milla Kokkonen', 'milla@flavour.fi', '+358 40 234 5678',
-   'Kokkauspisteeet: 4 kpl (á 10-12 hlö). Näyttöruutu jokaisella pisteellä. Istumapaikkoja: 50.',
-   'Näytöt: 4x 55". Pääruutu: 75". Kamera: overhead. Mikrofoni: langaton headset x2.',
-   'Induktioliesi x8 (2/piste). Uuni x4 (1/piste). Leikkuulaudat, veitset, työvälineet (pistekohtaiset setit).',
-   'Esilinat pestävä jokaisen tapahtuman jälkeen. Veitset teroitettava viikoittain.',
+  ('FLAVOUR STUDIO', 'Tapahtumatila', 20,
+   'Teurastamo, Helsinki',
+   'Joustava tapahtumatila, joka on suunniteltu elämyksiin ruoan parissa, kuten kokkikouluihin, yksityisillallisiin ja luoviin tilaisuuksiin.',
+   '', 'info@flavours.fi', '0400-219921',
+   'Joustavat kalusteet ja tilaratkaisut. Istumapaikat illallisille tai työpajoihin.',
+   'Intiimi tunnelma ammattimaisilla puitteilla.',
+   'Täysin varusteltu keittiö kokkailutapahtumiin.',
+   'Pinta-ala n. 150 m². Minimi 20 henkilöä. Sopii: työpajat, illalliset, seminaarit, bränditapahtumat.',
    now(), now()),
 
-  ('CUISINE', 'Ravintola', 80,
-   'Työpajankatu 2, 00580 Helsinki (Teurastamo)',
-   'Ravintola yksityistilaisuuksille ja illallisille. Intiimi tunnelma, sopii fine dining -kokemuksille.',
-   'Tomi Keittiömestari', 'tomi@flavour.fi', '+358 40 345 6789',
-   'Pöydät: 10 kpl (á 8 hlö). Baaritiskit: 1 kpl. Lounge-alue: sohvat + nojatuolit.',
-   'Näyttö: 1x 65". PA: kompakti (taustamusiikki). Mikrofoni: 1 langaton.',
-   'Täysi ravintolakeittiö. À la carte -taso. Pastakone. Sous vide x4.',
-   'Max 80 hlö istuen, 100 hlö cocktail-tyyliin.',
+  ('CUISINE – CHEF''S TABLE', 'Illallistila', 10,
+   'Teurastamo, Helsinki',
+   'Yksityinen keittiö- ja illallistila, jossa ruoka on kokemuksen keskiössä. Vieraat voivat seurata – ja halutessaan osallistua – kun kokit valmistavat menun paikan päällä. Ilta huipentuu yhteisen pöydän ääreen.',
+   '', 'info@flavours.fi', '0400-219921',
+   'Yhteinen pöytäryhmä. Mahdollisuus osallistua ruoanlaittoon.',
+   'Rauhallinen, intiimi tunnelma.',
+   'Kokkivetoinen illalliselämys. Viiniparitukset ja suunnitellut menut.',
+   'Pinta-ala n. 50 m². Minimi 10 henkilöä. Sopii: yksityiset illalliset, tastingit, kulinaariset elämykset.',
    now(), now()),
 
-  ('PIZZALA', 'Ravintola', 60,
-   'Työpajankatu 2, 00580 Helsinki (Teurastamo)',
-   'Pizzaravintola ja tapahtumatila. Rento tunnelma, sopii afterworkeille ja epämuodollisille tapahtumille.',
-   'Mikko Pizzamestari', 'mikko@flavour.fi', '+358 40 456 7890',
-   'Pöydät: 12 kpl. Baaritiskit: 1 kpl. Terassi: 30 paikkaa (kesäkausi).',
-   'Bluetooth-kaiutin. Näyttö: 1x 50".',
-   'Pizzauuni (puu). Pizzauuni (sähkö). Kylmäpöytä.',
-   'Terassi auki touko-syyskuu. Pizzauunin esilämmitys 45 min.',
-   now(), now()),
-
-  ('FLAVOUR CATERING', 'Catering', 500,
-   'Työpajankatu 2, 00580 Helsinki (Teurastamo)',
-   'Catering-palvelut ulkoisiin tapahtumapaikkoihin. Toimitamme ruoat, juomat ja henkilökunnan.',
-   'Sanna Catering', 'sanna@flavour.fi', '+358 40 567 8901',
-   'Kuljetuskalusto: pakettiauto x2. Lämpöboksit: 20 kpl. Kylmälaukut: 15 kpl. Chafing dish: 30 kpl.',
+  ('PIZZALA', 'Työpajatila', 10,
+   'Teurastamo, Helsinki',
+   'Herkullinen napolilainen pizzatyöpajakokemus tunnelmallisessa tiilimiljöössä.',
+   '', 'info@flavours.fi', '0400-219921',
+   'Rento ja sosiaalinen ilmapiiri. Yhteisöllinen kokemus hyvän ruoan parissa.',
    '',
-   'Valmistuskeittiö Teurastamolla. Kapasiteetti: 500 annosta/päivä.',
-   'Tilaukset vähintään 5 arkipäivää etukäteen. Minimitilaus 20 hlö.',
-   now(), now())
-
-ON CONFLICT DO NOTHING;
+   'Aito puulämmitteinen pizzauuni. Ohjatut pizzatyöpajat.',
+   'Pinta-ala n. 100 m². Minimi 10 henkilöä. Sopii: tiimiytyminen, rennot yritystapahtumat, työpajat.',
+   now(), now());
 
 -- Verify
-SELECT name, type, capacity FROM locations ORDER BY name;
+SELECT name, type, capacity, address FROM locations ORDER BY name;
