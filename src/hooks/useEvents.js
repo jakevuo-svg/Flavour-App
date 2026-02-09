@@ -197,9 +197,12 @@ export function useEvents() {
         return;
       }
 
+      console.log('[useEvents] Fetching events. isDemoMode:', isDemoMode, 'isWorker:', isWorker, 'isAdmin:', isAdmin, 'profile:', profile?.id);
+
       let query = supabase.from('events').select('*');
 
       if (isWorker) {
+        console.log('[useEvents] Worker mode — filtering by assignments');
         const { data: assignments, error: assignmentError } = await supabase
           .from('event_assignments')
           .select('event_id')
@@ -209,6 +212,7 @@ export function useEvents() {
 
         const eventIds = assignments?.map(a => a.event_id) || [];
         if (eventIds.length === 0) {
+          console.log('[useEvents] No assignments found for worker');
           setEvents([]);
           return;
         }
@@ -218,7 +222,11 @@ export function useEvents() {
 
       const { data, error: err } = await query.order('created_at', { ascending: false });
 
-      if (err) throw err;
+      if (err) {
+        console.error('[useEvents] Supabase query error:', err);
+        throw err;
+      }
+      console.log('[useEvents] Got events:', data?.length || 0, data);
       setEvents(data || []);
     } catch (err) {
       console.error('Failed to fetch events:', err);

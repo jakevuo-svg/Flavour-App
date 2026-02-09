@@ -53,13 +53,19 @@ export function AuthProvider({ children }) {
   }, []);
 
   async function fetchProfile(userId) {
+    console.log('[AuthContext] Fetching profile for userId:', userId);
     const { data, error } = await supabase
       .from('users')
       .select('*')
       .eq('id', userId)
       .single();
 
+    if (error) {
+      console.error('[AuthContext] Profile fetch error:', error);
+    }
+
     if (data) {
+      console.log('[AuthContext] Profile loaded:', data.email, 'role:', data.role);
       // Check temporary user expiration
       if (data.role === 'temporary' && data.expires_at) {
         if (new Date(data.expires_at) < new Date()) {
@@ -68,6 +74,8 @@ export function AuthProvider({ children }) {
         }
       }
       setProfile(data);
+    } else {
+      console.warn('[AuthContext] No profile found for userId:', userId);
     }
     setLoading(false);
   }

@@ -1,14 +1,35 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { supabase, isDemoMode } from '../../services/supabaseClient';
 import { useAuth } from '../auth/AuthContext';
 import S from '../../styles/theme';
 
+const DEMO_USERS = [
+  { id: '1', email: 'admin@flavour.fi', first_name: 'Admin', last_name: 'User', role: 'admin', is_active: true, expires_at: null },
+];
+
 const UserManagement = () => {
   const { user } = useAuth();
-  const [users, setUsers] = useState([
-    { id: '1', email: 'admin@flavour.fi', first_name: 'Admin', last_name: 'User', role: 'admin', is_active: true, expires_at: null },
-    { id: '2', email: 'worker@flavour.fi', first_name: 'Worker', last_name: 'User', role: 'worker', is_active: true, expires_at: null },
-    { id: '3', email: 'temp@flavour.fi', first_name: 'Temporary', last_name: 'User', role: 'temporary', is_active: true, expires_at: '2026-12-31' },
-  ]);
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      if (isDemoMode) {
+        setUsers(DEMO_USERS);
+        return;
+      }
+      try {
+        const { data, error } = await supabase.from('users').select('*').order('created_at', { ascending: false });
+        if (error) {
+          console.error('[UserManagement] Error fetching users:', error);
+          return;
+        }
+        setUsers(data || []);
+      } catch (err) {
+        console.error('[UserManagement] Failed:', err);
+      }
+    };
+    fetchUsers();
+  }, []);
 
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);

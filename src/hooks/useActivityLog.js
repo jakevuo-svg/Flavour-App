@@ -29,7 +29,7 @@ export function useActivityLog() {
       }
 
       const { data, error: err } = await supabase
-        .from('activity_logs')
+        .from('activity_log')
         .select('*')
         .order('created_at', { ascending: false })
         .limit(limit);
@@ -68,7 +68,7 @@ export function useActivityLog() {
       }
 
       const { data, error: err } = await supabase
-        .from('activity_logs')
+        .from('activity_log')
         .insert([log])
         .select()
         .single();
@@ -112,7 +112,7 @@ export function useActivityLog() {
           .slice(0, limit);
       }
 
-      let query = supabase.from('activity_logs').select('*');
+      let query = supabase.from('activity_log').select('*');
 
       if (userId) {
         query = query.eq('user_id', userId);
@@ -149,7 +149,7 @@ export function useActivityLog() {
       }
 
       const { data, error: err } = await supabase
-        .from('activity_logs')
+        .from('activity_log')
         .select('*')
         .eq('entity_type', entityType)
         .eq('entity_id', entityId)
@@ -177,7 +177,7 @@ export function useActivityLog() {
       }
 
       const { data, error: err } = await supabase
-        .from('activity_logs')
+        .from('activity_log')
         .select('*')
         .eq('user_id', userId)
         .order('created_at', { ascending: false })

@@ -92,37 +92,9 @@ const AppContent = () => {
   const [newEventPrefilledDate, setNewEventPrefilledDate] = useState(null);
   const [toast, setToast] = useState(null);
 
-  // Dynamic recent activity — built from real notes + seed demo activities
+  // Dynamic recent activity — built from real notes
   const recentActivity = useMemo(() => {
-    const activities = [
-      {
-        id: 'seed-1',
-        timestamp: new Date(Date.now() - 3600000).toISOString(),
-        user_name: 'Admin User',
-        action: 'CREATED_EVENT',
-        action_description: 'Loi tapahtuman "Lapland Cooking Experience"',
-        entity_type: 'event',
-        entity_id: 'event-1',
-      },
-      {
-        id: 'seed-2',
-        timestamp: new Date(Date.now() - 7200000).toISOString(),
-        user_name: 'Worker User',
-        action: 'UPDATED_EVENT',
-        action_description: 'Päivitti tapahtumaa "Company Dinner"',
-        entity_type: 'event',
-        entity_id: 'event-2',
-      },
-      {
-        id: 'seed-3',
-        timestamp: new Date(Date.now() - 14400000).toISOString(),
-        user_name: 'Admin User',
-        action: 'UPDATED_PERSON',
-        action_description: 'Päivitti henkilön "Anna Korhonen"',
-        entity_type: 'person',
-        entity_id: 'person-2',
-      },
-    ];
+    const activities = [];
 
     // Convert actual notes to activity entries
     notes.forEach(note => {
