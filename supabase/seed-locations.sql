@@ -3,7 +3,7 @@
 -- First delete old locations to replace with correct data
 DELETE FROM locations;
 
-INSERT INTO locations (name, type, capacity, address, description, contact_person, contact_email, contact_phone, equipment, tech_specs, kitchen_equipment, notes, created_at, modified_at)
+INSERT INTO locations (name, type, capacity, address, description, "contactPerson", "contactEmail", "contactPhone", equipment, "techSpecs", "kitchenEquipment", notes, created_at, modified_at)
 VALUES
   ('BLACK BOX 360', 'Tapahtumatila', 50,
    'Tripla, Pasila, Helsinki',
