@@ -417,9 +417,9 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
         /* ===== EDIT MODE — collapsible sections ===== */
         <div>
           <Section title="PERUSTIEDOT" defaultOpen={true}>
-            <EF label="Nimi" field="name" />
-            <div style={S.formGrid}><EF label="Tyyppi" field="type" options={EVENT_TYPES} /><EF label="Status" field="status" options={STATUSES} /></div>
-            <div style={S.formGrid}><EF label="Päivämäärä" field="date" type="date" /><div style={S.formGrid}><EF label="Alkaa" field="start_time" type="time" /><EF label="Päättyy" field="end_time" type="time" /></div></div>
+            {EF({ label: "Nimi", field: "name" })}
+            <div style={S.formGrid}>{EF({ label: "Tyyppi", field: "type", options: EVENT_TYPES })}{EF({ label: "Status", field: "status", options: STATUSES })}</div>
+            <div style={S.formGrid}>{EF({ label: "Päivämäärä", field: "date", type: "date" })}<div style={S.formGrid}>{EF({ label: "Alkaa", field: "start_time", type: "time" })}{EF({ label: "Päättyy", field: "end_time", type: "time" })}</div></div>
             <div style={S.formGrid}>
               <div style={{ marginBottom: 8 }}>
                 <div style={{ ...S.label, marginBottom: 4 }}>Sijainti</div>
@@ -428,32 +428,73 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
                   {locations.map(l => <option key={l.id} value={l.name}>{l.name}</option>)}
                 </select>
               </div>
-              <EF label="Pax" field="guest_count" type="number" />
+              {EF({ label: "Pax", field: "guest_count", type: "number" })}
             </div>
-            <div style={S.formGrid}><EF label="Kieli" field="language" /><EF label="Yritys" field="company" /></div>
-            <div style={S.formGrid}><EF label="Yhteystieto" field="contact" /><EF label="Varaaja" field="booker" /></div>
+            <div style={S.formGrid}>{EF({ label: "Kieli", field: "language" })}{EF({ label: "Yritys", field: "company" })}</div>
+            <div style={S.formGrid}>{EF({ label: "Yhteystieto", field: "contact" })}{EF({ label: "Varaaja", field: "booker" })}</div>
           </Section>
-          <Section title="TAVOITE" defaultOpen={!!formData.goal}><EF label="" field="goal" textarea /></Section>
-          <Section title="HUOMIOITAVAA" defaultOpen={!!formData.attentionNotes}><EF label="" field="attentionNotes" textarea /></Section>
-          <Section title="ERV (ALLERGIAT/DIEETIT)" defaultOpen={!!formData.erv}><EF label="" field="erv" textarea /></Section>
-          <Section title="AIKATAULU" defaultOpen={!!formData.schedule}><EF label="" field="schedule" textarea /></Section>
+          <Section title="TAVOITE" defaultOpen={!!formData.goal}>{EF({ label: "", field: "goal", textarea: true })}</Section>
+          <Section title="HUOMIOITAVAA" defaultOpen={!!formData.attentionNotes}>{EF({ label: "", field: "attentionNotes", textarea: true })}</Section>
+          <Section title="ERV (ALLERGIAT/DIEETIT)" defaultOpen={!!formData.erv}>{EF({ label: "", field: "erv", textarea: true })}</Section>
+          <Section title="AIKATAULU" defaultOpen={!!formData.schedule}>{EF({ label: "", field: "schedule", textarea: true })}</Section>
           <Section title="MENU" defaultOpen={!!formData.menu}>
-            <EF label="" field="menu" textarea />
-            <EF label="Menu Drive linkki" field="menuLink" type="url" />
+            {EF({ label: "", field: "menu", textarea: true })}
+            {EF({ label: "Menu Drive linkki", field: "menuLink", type: "url" })}
           </Section>
-          <Section title="DEKORAATIOT" defaultOpen={!!formData.decorations}><EF label="" field="decorations" textarea /></Section>
-          <Section title="LOGISTIIKKA" defaultOpen={!!formData.logistics}><EF label="" field="logistics" textarea /></Section>
+          <Section title="DEKORAATIOT" defaultOpen={!!formData.decorations}>{EF({ label: "", field: "decorations", textarea: true })}</Section>
+          <Section title="LOGISTIIKKA" defaultOpen={!!formData.logistics}>{EF({ label: "", field: "logistics", textarea: true })}</Section>
           <Section title="ORDER / TILAUS" defaultOpen={!!formData.orderLink}>
-            <EF label="Google Drive linkki" field="orderLink" type="url" />
-            <EF label="Tilauksen lisätiedot" field="orderNotes" textarea />
+            {EF({ label: "Google Drive linkki", field: "orderLink", type: "url" })}
+            {EF({ label: "Tilauksen lisätiedot", field: "orderNotes", textarea: true })}
           </Section>
           <Section title="HINNOITTELU" defaultOpen={true}>
             {[['Ruoka', 'food', 'foodPrice'], ['Juomat', 'drinks', 'drinksPrice'], ['Tekniikka', 'tech', 'techPrice'], ['Ohjelma', 'program', 'programPrice']].map(([label, desc, price]) => (
-              <div key={desc} style={S.formGrid}><EF label={label} field={desc} /><EF label={`${label} hinta (€)`} field={price} type="number" /></div>
+              <div key={desc} style={S.formGrid}>{EF({ label, field: desc })}{EF({ label: `${label} hinta (€)`, field: price, type: "number" })}</div>
             ))}
           </Section>
-          <Section title="MUISTIINPANOT" defaultOpen={!!formData.notes}>
-            <EF label="" field="notes" textarea />
+          <Section title="MUISTIINPANOT" defaultOpen={!!formData.notes || notes.length > 0} count={notes.length + (formData.notes ? 1 : 0)}>
+            {EF({ label: "Yleiset muistiinpanot", field: "notes", textarea: true })}
+
+            {/* Global notes for this event — same as view mode */}
+            {notes.length > 0 && (
+              <div style={{ marginTop: 12, paddingTop: 8, borderTop: '1px solid #333' }}>
+                <div style={{ ...S.label, marginBottom: 6 }}>TAPAHTUMAMUISTIINPANOT</div>
+                {notes.map(note => (
+                  <div key={note.id} style={{ border: '1px solid #333', padding: 10, marginBottom: 6, background: '#1a1a1a' }}>
+                    <div style={{ ...S.flexBetween, marginBottom: 4 }}>
+                      <span style={{ fontSize: 10, color: '#666' }}>
+                        {note.author && <span style={{ marginRight: 8 }}>{note.author}</span>}
+                        {new Date(note.created_at).toLocaleDateString('fi-FI')} {new Date(note.created_at).toLocaleTimeString('fi-FI', { hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                      <button onClick={() => onDeleteNote?.(note.id)} style={{ background: 'none', border: 'none', color: '#555', cursor: 'pointer', fontSize: 11 }}>✕</button>
+                    </div>
+                    <div style={{ fontSize: 13, color: '#bbb', whiteSpace: 'pre-wrap', lineHeight: 1.5 }}>{note.content}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Add note form in edit mode */}
+            {showAddNote ? (
+              <div style={{ border: '1px solid #444', padding: 12, marginTop: 8, background: '#1a1a1a' }}>
+                <div style={{ marginBottom: 8 }}>
+                  <div style={{ ...S.label, marginBottom: 4 }}>MAINITSE HENKILÖ</div>
+                  <select value={noteMentionId} onChange={e => setNoteMentionId(e.target.value)} style={S.selectFull}>
+                    <option value="">Ei mainintaa</option>
+                    {persons.map(p => (
+                      <option key={p.id} value={p.id}>@{p.first_name} {p.last_name}</option>
+                    ))}
+                  </select>
+                </div>
+                <textarea value={newNoteText} onChange={e => setNewNoteText(e.target.value)} placeholder="Kirjoita muistiinpano..." style={{ ...S.input, width: '100%', minHeight: 60, boxSizing: 'border-box', fontFamily: 'inherit', marginBottom: 8 }} autoFocus />
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <button onClick={addNoteToEvent} style={S.btnBlack}>LISÄÄ</button>
+                  <button onClick={() => { setShowAddNote(false); setNewNoteText(''); setNoteMentionId(''); }} style={S.btnWire}>PERUUTA</button>
+                </div>
+              </div>
+            ) : (
+              <button onClick={() => setShowAddNote(true)} style={{ ...S.btnSmall, marginTop: 8 }}>+ LISÄÄ MUISTIINPANO</button>
+            )}
           </Section>
         </div>
       ) : (

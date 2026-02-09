@@ -3,7 +3,7 @@ import S from '../../styles/theme';
 import NotificationPanel from '../common/NotificationPanel';
 
 export default function Header({
-  onHome, onSave, onNewEvent, onNewPerson, onNewNote,
+  onHome, onSave, onNewEvent, onNewPerson, onNewNote, onSignOut,
   notifications = [], unreadCount = 0,
   onMarkRead, onMarkAllRead, onDismiss, onClearAll,
   onEventClick, onPersonClick, events = [], persons = [],
@@ -146,6 +146,25 @@ export default function Header({
             >
               + MUISTIINPANO
             </div>
+            {onSignOut && (
+              <div
+                onClick={() => handleOption(onSignOut)}
+                style={{
+                  padding: '10px 16px',
+                  cursor: 'pointer',
+                  fontSize: 12,
+                  fontWeight: 700,
+                  letterSpacing: 1,
+                  textTransform: 'uppercase',
+                  borderTop: '1px solid #444',
+                  color: '#999',
+                }}
+                onMouseEnter={e => e.currentTarget.style.background = '#333'}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+              >
+                KIRJAUDU ULOS
+              </div>
+            )}
           </div>
         )}
         </div>

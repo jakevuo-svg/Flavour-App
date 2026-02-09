@@ -80,7 +80,9 @@ export default function NewEventModal({ onClose, onAdd, locations = [], prefille
     location_name: '', location_id: '', guest_count: '', language: '',
     company: '', booker: '', contact: '', clientName: '', status: '',
     goal: '', attentionNotes: '', allergens: [], ervNotes: '', schedule: '', menu: '',
-    decorations: '', logistics: '',
+    menuLink: '', decorations: '', logistics: '',
+    orderLink: '', orderNotes: '',
+    notes: '',
     food: '', foodPrice: '', drinks: '', drinksPrice: '',
     tech: '', techPrice: '', program: '', programPrice: ''
   });
@@ -115,7 +117,9 @@ export default function NewEventModal({ onClose, onAdd, locations = [], prefille
       location_name: '', location_id: '', guest_count: '', language: '',
       company: '', booker: '', contact: '', clientName: '', status: '',
       goal: '', attentionNotes: '', allergens: [], ervNotes: '', schedule: '', menu: '',
-      decorations: '', logistics: '',
+      menuLink: '', decorations: '', logistics: '',
+      orderLink: '', orderNotes: '',
+      notes: '',
       food: '', foodPrice: '', drinks: '', drinksPrice: '',
       tech: '', techPrice: '', program: '', programPrice: ''
     });
@@ -263,12 +267,43 @@ export default function NewEventModal({ onClose, onAdd, locations = [], prefille
                 </div>
               </div>
 
-              {[['Aikataulu', 'schedule'], ['Menu', 'menu'], ['Dekoraatiot', 'decorations'], ['Logistiikka', 'logistics']].map(([label, field]) => (
-                <div key={field}>
-                  <div style={S.label}>{label}</div>
-                  <textarea value={formData[field]} onChange={e => handleInputChange(field, e.target.value)} style={{ ...S.input, width: '100%', minHeight: 60, boxSizing: 'border-box', fontFamily: 'inherit' }} placeholder={label} />
-                </div>
-              ))}
+              <div>
+                <div style={S.label}>Aikataulu</div>
+                <textarea value={formData.schedule} onChange={e => handleInputChange('schedule', e.target.value)} style={{ ...S.input, width: '100%', minHeight: 60, boxSizing: 'border-box', fontFamily: 'inherit' }} placeholder="Aikataulu" />
+              </div>
+
+              {/* Menu + Drive link */}
+              <div style={{ border: '1px solid #333', padding: 12, background: '#1a1a1a' }}>
+                <div style={{ ...S.label, marginBottom: 6, fontWeight: 700 }}>MENU</div>
+                <textarea value={formData.menu} onChange={e => handleInputChange('menu', e.target.value)} style={{ ...S.input, width: '100%', minHeight: 60, boxSizing: 'border-box', fontFamily: 'inherit', marginBottom: 8 }} placeholder="Menu kuvaus" />
+                <div style={S.label}>Menu Drive -linkki</div>
+                <input type="url" value={formData.menuLink} onChange={e => handleInputChange('menuLink', e.target.value)} style={{ ...S.input, width: '100%', boxSizing: 'border-box' }} placeholder="https://drive.google.com/..." />
+              </div>
+
+              <div>
+                <div style={S.label}>Dekoraatiot</div>
+                <textarea value={formData.decorations} onChange={e => handleInputChange('decorations', e.target.value)} style={{ ...S.input, width: '100%', minHeight: 60, boxSizing: 'border-box', fontFamily: 'inherit' }} placeholder="Dekoraatiot" />
+              </div>
+
+              <div>
+                <div style={S.label}>Logistiikka</div>
+                <textarea value={formData.logistics} onChange={e => handleInputChange('logistics', e.target.value)} style={{ ...S.input, width: '100%', minHeight: 60, boxSizing: 'border-box', fontFamily: 'inherit' }} placeholder="Logistiikka" />
+              </div>
+
+              {/* ORDER / TILAUS */}
+              <div style={{ border: '1px solid #333', padding: 12, background: '#1a1a1a' }}>
+                <div style={{ ...S.label, marginBottom: 6, fontWeight: 700 }}>ORDER / TILAUS</div>
+                <div style={S.label}>Google Drive -linkki</div>
+                <input type="url" value={formData.orderLink} onChange={e => handleInputChange('orderLink', e.target.value)} style={{ ...S.input, width: '100%', boxSizing: 'border-box', marginBottom: 8 }} placeholder="https://drive.google.com/..." />
+                <div style={S.label}>Tilauksen lisätiedot</div>
+                <textarea value={formData.orderNotes} onChange={e => handleInputChange('orderNotes', e.target.value)} style={{ ...S.input, width: '100%', minHeight: 50, boxSizing: 'border-box', fontFamily: 'inherit' }} placeholder="Lisätiedot" />
+              </div>
+
+              {/* Muistiinpanot */}
+              <div>
+                <div style={S.label}>Muistiinpanot</div>
+                <textarea value={formData.notes} onChange={e => handleInputChange('notes', e.target.value)} style={{ ...S.input, width: '100%', minHeight: 60, boxSizing: 'border-box', fontFamily: 'inherit' }} placeholder="Yleiset muistiinpanot tapahtumalle" />
+              </div>
             </div>
           )}
 

@@ -40,7 +40,7 @@ const TAB_TO_VIEW = {
 };
 
 const AppContent = () => {
-  const { user, isLoggedIn, isAdmin, signOut } = useAuth();
+  const { user, profile, isLoggedIn, isAdmin, signOut } = useAuth();
 
   // Data hooks
   const { persons, addPerson, deletePerson, updatePerson } = usePersons();
@@ -77,7 +77,7 @@ const AppContent = () => {
   }, []); // Only on mount
 
   // Compute allowed tabs for current user's role
-  const userRole = user?.role || 'worker';
+  const userRole = profile?.role || 'worker';
   const allowedTabs = getTabsForRole(userRole);
   const can = (feature) => hasPermission(userRole, feature);
 
@@ -380,6 +380,7 @@ const AppContent = () => {
           setView('notes');
           setActiveTab('NOTES');
         }}
+        onSignOut={signOut}
         notifications={notifications}
         unreadCount={unreadCount}
         onMarkRead={markRead}
