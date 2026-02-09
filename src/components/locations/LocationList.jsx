@@ -85,7 +85,7 @@ const EditableDriveLink = ({ url, label, onSave }) => {
 };
 
 const LocationList = ({ locations = [], events = [], onEventClick, onUpdateLocation, onAddFile, onRemoveFile, onGetFiles }) => {
-  const { user } = useAuth();
+  const { profile } = useAuth();
   const [expandedId, setExpandedId] = useState(null);
   const [editing, setEditing] = useState(false);
   const [editData, setEditData] = useState({});
@@ -93,7 +93,7 @@ const LocationList = ({ locations = [], events = [], onEventClick, onUpdateLocat
   const [showAddFile, setShowAddFile] = useState(false);
   const [newFile, setNewFile] = useState({ name: '', type: 'other', driveLink: '' });
   const fileInputRef = useRef(null);
-  const isAdmin = user?.role === 'admin';
+  const isAdmin = profile?.role === 'admin';
 
   // Load files when expanding a location
   useEffect(() => {
