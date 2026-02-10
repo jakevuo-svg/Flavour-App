@@ -101,6 +101,10 @@ const translations = {
     expiresAt: 'Vanhentumispäivä',
     deactivate: 'DEAKTIVOI',
     activate: 'AKTIVOI',
+    deleteUser: 'POISTA',
+    confirmDeleteUser: 'Haluatko varmasti poistaa tämän käyttäjän? Tätä ei voi perua.',
+    userDeleted: 'Käyttäjä poistettu',
+    cannotDeleteSelf: 'Et voi poistaa omaa käyttäjätiliäsi',
     // Language
     langFi: 'Suomi',
     langEn: 'English',
@@ -205,6 +209,10 @@ const translations = {
     expiresAt: 'Expiration date',
     deactivate: 'DEACTIVATE',
     activate: 'ACTIVATE',
+    deleteUser: 'DELETE',
+    confirmDeleteUser: 'Are you sure you want to delete this user? This cannot be undone.',
+    userDeleted: 'User deleted',
+    cannotDeleteSelf: 'You cannot delete your own account',
     // Language
     langFi: 'Suomi',
     langEn: 'English',

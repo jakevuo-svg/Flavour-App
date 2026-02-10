@@ -197,6 +197,44 @@ const UserManagement = () => {
     }
   };
 
+  // DELETE USER COMPLETELY (auth + profile)
+  const handleDeleteUser = async (u) => {
+    // Prevent deleting self
+    if (u.id === profile?.id) {
+      setMessage({ type: 'error', text: t('cannotDeleteSelf') });
+      return;
+    }
+
+    if (!window.confirm(t('confirmDeleteUser'))) return;
+
+    setLoading(true);
+    setMessage(null);
+
+    try {
+      if (isDemoMode) {
+        setUsers(prev => prev.filter(usr => usr.id !== u.id));
+        setMessage({ type: 'success', text: t('userDeleted') });
+        setLoading(false);
+        return;
+      }
+
+      // Call the SECURITY DEFINER function that deletes from both auth.users and public.users
+      const { error } = await supabase.rpc('delete_user_completely', { target_user_id: u.id });
+
+      if (error) {
+        console.error('[UserManagement] Delete error:', error);
+        setMessage({ type: 'error', text: error.message });
+      } else {
+        setMessage({ type: 'success', text: t('userDeleted') });
+        setUsers(prev => prev.filter(usr => usr.id !== u.id));
+      }
+    } catch (err) {
+      console.error('[UserManagement] Delete failed:', err);
+      setMessage({ type: 'error', text: err.message });
+    }
+    setLoading(false);
+  };
+
   const handleEdit = (u) => {
     setEditingId(u.id);
     setCreatedPassword(null);
@@ -313,7 +351,7 @@ const UserManagement = () => {
         <span style={S.col(1)}>{t('role')}</span>
         <span style={S.col(1)}>{t('status')}</span>
         <span style={S.col(1)}>{t('expiresAt')}</span>
-        <span style={S.col(1.5)}></span>
+        <span style={S.col(2)}></span>
       </div>
       {users.map(u => (
         <div key={u.id} style={S.row}>
@@ -330,11 +368,19 @@ const UserManagement = () => {
           <span style={{ ...S.col(1), color: '#666', fontSize: 11 }}>
             {u.expires_at && u.role === 'temporary' ? new Date(u.expires_at).toLocaleDateString('fi-FI') : '-'}
           </span>
-          <span style={{ ...S.col(1.5), display: 'flex', gap: 6 }}>
+          <span style={{ ...S.col(2), display: 'flex', gap: 6, flexWrap: 'wrap' }}>
             <button onClick={() => handleEdit(u)} style={S.btnSmall}>{t('edit')}</button>
             <button onClick={() => handleToggleActive(u.id)} style={S.btnSmall}>
               {u.is_active ? t('deactivate') : t('activate')}
             </button>
+            {u.id !== profile?.id && (
+              <button
+                onClick={() => handleDeleteUser(u)}
+                style={{ ...S.btnSmall, color: '#ff6b6b', borderColor: '#ff6b6b' }}
+              >
+                {t('deleteUser')}
+              </button>
+            )}
           </span>
         </div>
       ))}
