@@ -16,7 +16,6 @@ import LocationList from './components/locations/LocationList';
 import NotesView from './components/notes/NotesView';
 import DateView from './components/DateView';
 import UserManagement from './components/admin/UserManagement';
-import EventAssignments from './components/admin/EventAssignments';
 import ActivityLog from './components/admin/ActivityLog';
 import RolePermissions from './components/admin/RolePermissions';
 import Toast from './components/common/Toast';
@@ -345,12 +344,10 @@ const AppContent = () => {
       case 'admin':
         return isAdmin ? (
           <div>
-            <UserManagement />
-            <EventAssignments
+            <UserManagement
               events={events}
               assignWorker={assignWorker}
               removeWorkerAssignment={removeWorkerAssignment}
-              getEventAssignments={getEventAssignments}
             />
             <RolePermissions
               permissions={permissions}

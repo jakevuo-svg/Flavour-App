@@ -106,8 +106,9 @@ const translations = {
     userDeleted: 'Käyttäjä poistettu',
     cannotDeleteSelf: 'Et voi poistaa omaa käyttäjätiliäsi',
     eventAccess: 'TAPAHTUMAOIKEUDET',
-    eventAccessDesc: 'Valitse mihin tapahtumiin työntekijöillä on pääsy. Työntekijä näkee vain valitut tapahtumat.',
+    eventAccessDesc: 'Valitse mihin tapahtumiin tällä työntekijällä on pääsy. Hän näkee vain valitut tapahtumat.',
     noWorkersYet: 'Ei työntekijöitä. Luo ensin työntekijä käyttäjähallinnasta.',
+    accessRights: 'OIKEUDET',
     // Language
     langFi: 'Suomi',
     langEn: 'English',
@@ -217,8 +218,9 @@ const translations = {
     userDeleted: 'User deleted',
     cannotDeleteSelf: 'You cannot delete your own account',
     eventAccess: 'EVENT ACCESS',
-    eventAccessDesc: 'Choose which events workers can access. Workers only see selected events.',
+    eventAccessDesc: 'Choose which events this worker can access. They will only see selected events.',
     noWorkersYet: 'No workers yet. Create a worker in User Management first.',
+    accessRights: 'ACCESS',
     // Language
     langFi: 'Suomi',
     langEn: 'English',

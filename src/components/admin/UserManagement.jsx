@@ -2,18 +2,20 @@ import { useState, useEffect } from 'react';
 import { supabase, isDemoMode } from '../../services/supabaseClient';
 import { useAuth } from '../auth/AuthContext';
 import { useLanguage } from '../../contexts/LanguageContext';
+import WorkerAccessModal from './WorkerAccessModal';
 import S from '../../styles/theme';
 
 const DEMO_USERS = [
   { id: '1', email: 'admin@flavour.fi', first_name: 'Admin', last_name: 'User', role: 'admin', is_active: true, expires_at: null },
 ];
 
-const UserManagement = () => {
+const UserManagement = ({ events = [], assignWorker, removeWorkerAssignment }) => {
   const { profile } = useAuth();
   const { t } = useLanguage();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
+  const [accessWorker, setAccessWorker] = useState(null); // worker whose access modal is open
 
   const fetchUsers = async () => {
     if (isDemoMode) { setUsers(DEMO_USERS); return; }
@@ -358,7 +360,7 @@ const UserManagement = () => {
         <span style={S.col(1)}>{t('role')}</span>
         <span style={S.col(1)}>{t('status')}</span>
         <span style={S.col(1)}>{t('expiresAt')}</span>
-        <span style={S.col(2)}></span>
+        <span style={S.col(2.5)}></span>
       </div>
       {users.map(u => (
         <div key={u.id} style={S.row}>
@@ -375,8 +377,16 @@ const UserManagement = () => {
           <span style={{ ...S.col(1), color: '#666', fontSize: 11 }}>
             {u.expires_at && u.role === 'temporary' ? new Date(u.expires_at).toLocaleDateString('fi-FI') : '-'}
           </span>
-          <span style={{ ...S.col(2), display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+          <span style={{ ...S.col(2.5), display: 'flex', gap: 6, flexWrap: 'wrap' }}>
             <button onClick={() => handleEdit(u)} style={S.btnSmall}>{t('edit')}</button>
+            {u.role !== 'admin' && (
+              <button
+                onClick={() => setAccessWorker(u)}
+                style={{ ...S.btnSmall, color: '#6baaff', borderColor: '#6baaff' }}
+              >
+                {t('accessRights')}
+              </button>
+            )}
             <button onClick={() => handleToggleActive(u.id)} style={S.btnSmall}>
               {u.is_active ? t('deactivate') : t('activate')}
             </button>
@@ -391,6 +401,17 @@ const UserManagement = () => {
           </span>
         </div>
       ))}
+
+      {/* Worker access modal */}
+      {accessWorker && (
+        <WorkerAccessModal
+          worker={accessWorker}
+          events={events}
+          assignWorker={assignWorker}
+          removeWorkerAssignment={removeWorkerAssignment}
+          onClose={() => setAccessWorker(null)}
+        />
+      )}
     </div>
   );
 };
