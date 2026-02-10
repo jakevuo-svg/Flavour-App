@@ -100,7 +100,15 @@ const UserManagement = () => {
         return;
       }
 
-      // 2. Insert into public.users table
+      // 2. Auto-confirm the user's email so they can log in immediately
+      // (no need to click confirmation link in email)
+      const { error: confirmError } = await supabase.rpc('auto_confirm_user', { target_user_id: newUserId });
+      if (confirmError) {
+        console.warn('[UserManagement] Auto-confirm warning:', confirmError.message);
+        // Not fatal — user can still confirm via email link
+      }
+
+      // 3. Insert into public.users table
       const { error: insertError } = await supabase.from('users').insert([{
         id: newUserId,
         email: formData.email,
@@ -114,17 +122,16 @@ const UserManagement = () => {
 
       if (insertError) {
         console.error('[UserManagement] Insert error:', insertError);
-        // User was created in auth but profile insert failed
         setMessage({ type: 'error', text: `Auth-käyttäjä luotu, mutta profiili-virhe: ${insertError.message}` });
         setLoading(false);
         return;
       }
 
-      // 3. Success!
+      // 4. Success!
       setCreatedPassword(formData.password);
       setMessage({
         type: 'success',
-        text: `Käyttäjä ${formData.first_name} ${formData.last_name} luotu! Supabase lähettää vahvistussähköpostin.`,
+        text: `Käyttäjä ${formData.first_name} ${formData.last_name} luotu! Työntekijä voi kirjautua heti väliaikaisella salasanalla.`,
       });
 
       // Refresh user list
