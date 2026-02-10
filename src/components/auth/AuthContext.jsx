@@ -18,6 +18,7 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [emailConfirmed, setEmailConfirmed] = useState(false);
 
   useEffect(() => {
     if (isDemoMode) {
@@ -25,6 +26,24 @@ export function AuthProvider({ children }) {
       setUser(DEMO_ADMIN);
       setProfile(DEMO_ADMIN);
       setLoading(false);
+      return;
+    }
+
+    // Check if this is a signup confirmation redirect (URL hash contains type=signup)
+    // If so, sign out immediately so the user must log in with their temp password
+    const hash = window.location.hash;
+    const isSignupConfirmation = hash && hash.includes('type=signup');
+
+    if (isSignupConfirmation) {
+      // Clear the hash first
+      window.location.hash = '';
+      // Wait for Supabase to process the token, then sign out
+      supabase.auth.getSession().then(() => {
+        supabase.auth.signOut().then(() => {
+          setEmailConfirmed(true);
+          setLoading(false);
+        });
+      });
       return;
     }
 
@@ -40,6 +59,9 @@ export function AuthProvider({ children }) {
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      // Ignore auth changes if we're in the process of signing out after email confirmation
+      if (emailConfirmed) return;
+
       if (session?.user) {
         setUser(session.user);
         fetchProfile(session.user.id);
@@ -109,7 +131,7 @@ export function AuthProvider({ children }) {
     <AuthContext.Provider value={{
       user, profile, loading, isAdmin, isWorker, isTemporary,
       isLoggedIn: !!user,
-      signIn, signOut, isDemoMode
+      signIn, signOut, isDemoMode, emailConfirmed, setEmailConfirmed
     }}>
       {children}
     </AuthContext.Provider>

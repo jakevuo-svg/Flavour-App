@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useAuth } from './AuthContext';
 
 export default function LoginScreen() {
-  const { signIn, isDemoMode } = useAuth();
+  const { signIn, isDemoMode, emailConfirmed, setEmailConfirmed } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -12,6 +12,7 @@ export default function LoginScreen() {
     e.preventDefault();
     setError('');
     setLoading(true);
+    if (emailConfirmed) setEmailConfirmed(false);
 
     const { error: signInError } = await signIn(email, password);
 
@@ -145,6 +146,20 @@ export default function LoginScreen() {
       <div style={cardStyle}>
         <h1 style={titleStyle}>TYPEDWN</h1>
         <p style={subtitleStyle}>Event Service Hub</p>
+
+        {emailConfirmed && (
+          <div style={{
+            padding: '12px 16px',
+            marginBottom: '20px',
+            background: '#1a2a1a',
+            border: '1px solid #2a4a2a',
+            color: '#6bff6b',
+            fontSize: '13px',
+            textAlign: 'center',
+          }}>
+            Sähköposti vahvistettu! Kirjaudu sisään väliaikaisella salasanallasi.
+          </div>
+        )}
 
         <form onSubmit={handleLogin}>
           <div style={inputGroupStyle}>
