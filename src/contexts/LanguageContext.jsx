@@ -105,6 +105,9 @@ const translations = {
     confirmDeleteUser: 'Haluatko varmasti poistaa tämän käyttäjän? Tätä ei voi perua.',
     userDeleted: 'Käyttäjä poistettu',
     cannotDeleteSelf: 'Et voi poistaa omaa käyttäjätiliäsi',
+    eventAccess: 'TAPAHTUMAOIKEUDET',
+    eventAccessDesc: 'Valitse mihin tapahtumiin työntekijöillä on pääsy. Työntekijä näkee vain valitut tapahtumat.',
+    noWorkersYet: 'Ei työntekijöitä. Luo ensin työntekijä käyttäjähallinnasta.',
     // Language
     langFi: 'Suomi',
     langEn: 'English',
@@ -213,6 +216,9 @@ const translations = {
     confirmDeleteUser: 'Are you sure you want to delete this user? This cannot be undone.',
     userDeleted: 'User deleted',
     cannotDeleteSelf: 'You cannot delete your own account',
+    eventAccess: 'EVENT ACCESS',
+    eventAccessDesc: 'Choose which events workers can access. Workers only see selected events.',
+    noWorkersYet: 'No workers yet. Create a worker in User Management first.',
     // Language
     langFi: 'Suomi',
     langEn: 'English',

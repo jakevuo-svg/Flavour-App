@@ -16,6 +16,7 @@ import LocationList from './components/locations/LocationList';
 import NotesView from './components/notes/NotesView';
 import DateView from './components/DateView';
 import UserManagement from './components/admin/UserManagement';
+import EventAssignments from './components/admin/EventAssignments';
 import ActivityLog from './components/admin/ActivityLog';
 import RolePermissions from './components/admin/RolePermissions';
 import Toast from './components/common/Toast';
@@ -47,7 +48,7 @@ const AppContent = () => {
 
   // Data hooks
   const { persons, addPerson, deletePerson, updatePerson } = usePersons();
-  const { events, addEvent, deleteEvent, updateEvent } = useEvents();
+  const { events, addEvent, deleteEvent, updateEvent, assignWorker, removeWorkerAssignment, getEventAssignments } = useEvents();
   const { notes, addNote, deleteNote } = useNotes();
   const { locations, updateLocation, addFile: addLocationFile, removeFile: removeLocationFile, getFiles: getLocationFiles } = useLocations();
   const { tasks, addTask, updateTask, deleteTask } = useTasks();
@@ -345,6 +346,12 @@ const AppContent = () => {
         return isAdmin ? (
           <div>
             <UserManagement />
+            <EventAssignments
+              events={events}
+              assignWorker={assignWorker}
+              removeWorkerAssignment={removeWorkerAssignment}
+              getEventAssignments={getEventAssignments}
+            />
             <RolePermissions
               permissions={permissions}
               onToggle={togglePermission}
