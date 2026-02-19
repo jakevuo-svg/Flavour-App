@@ -75,6 +75,10 @@ export const getPersons = async () => {
     return [...demoPersons].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
   }
 
+  // Fetch system users to filter them out — persons should only show clients
+  const { data: systemUsers } = await supabase.from('users').select('email');
+  const systemEmails = new Set((systemUsers || []).map(u => u.email?.toLowerCase()).filter(Boolean));
+
   const { data, error } = await supabase
     .from('persons')
     .select('*')
@@ -85,7 +89,9 @@ export const getPersons = async () => {
     throw error;
   }
 
-  return data || [];
+  // Filter out system users (admins/workers) — keep only clients
+  const clients = (data || []).filter(p => !systemEmails.has(p.email?.toLowerCase()));
+  return clients;
 };
 
 export const getPerson = async (id) => {
