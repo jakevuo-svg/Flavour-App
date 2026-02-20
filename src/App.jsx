@@ -96,6 +96,7 @@ const AppContent = () => {
   const [newEventPrefilledDate, setNewEventPrefilledDate] = useState(null);
   const [toast, setToast] = useState(null);
   const [showChangePassword, setShowChangePassword] = useState(false);
+  const [workerActivities, setWorkerActivities] = useState([]);
 
   // Keep selectedEvent in sync with the events array (so edits reflect immediately)
   useEffect(() => {
@@ -198,13 +199,16 @@ const AppContent = () => {
         });
       }
     });
+    // Include worker assignment activities
+    workerActivities.forEach(wa => activities.push(wa));
+
     console.log('[Activity] Total activities before sort:', activities.length, 'task entries:', activities.filter(a => a.action?.includes('TASK')).length);
 
-    // Sort newest first, limit to 20
+    // Sort newest first, limit to 50
     return activities
       .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
       .slice(0, 50);
-  }, [notes, events, persons, tasks]);
+  }, [notes, events, persons, tasks, workerActivities]);
 
   if (!isLoggedIn) {
     return <LoginScreen />;
@@ -325,6 +329,15 @@ const AppContent = () => {
       const worker = persons.find(p => p.id === workerId);
       const workerName = worker ? `${worker.first_name} ${worker.last_name}` : 'Työntekijä';
       emitWorkerAssigned(eventName, workerName);
+      setWorkerActivities(prev => [...prev, {
+        id: `worker-add-${eventId}-${workerId}-${Date.now()}`,
+        timestamp: new Date().toISOString(),
+        user_name: '',
+        action: 'ASSIGNED_WORKER',
+        action_description: `${workerName} → ${eventName}`,
+        entity_type: 'event',
+        entity_id: eventId,
+      }]);
       return result;
     } catch (err) {
       console.error('Failed to assign worker:', err);
