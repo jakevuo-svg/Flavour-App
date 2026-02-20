@@ -1,34 +1,6 @@
-import { supabase, isDemoMode } from './supabaseClient';
-
-let demoUsers = [
-  {
-    id: 'demo-admin-1',
-    email: 'admin@demo.com',
-    first_name: 'Demo',
-    last_name: 'Admin',
-    role: 'admin',
-    is_active: true,
-    expires_at: null,
-    created_at: new Date().toISOString(),
-  },
-  {
-    id: 'demo-worker-1',
-    email: 'worker@demo.com',
-    first_name: 'Demo',
-    last_name: 'Worker',
-    role: 'worker',
-    is_active: true,
-    expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-    created_at: new Date().toISOString(),
-  },
-];
-let demoNextId = 100;
+import { supabase } from './supabaseClient';
 
 export const getUsers = async () => {
-  if (isDemoMode) {
-    return demoUsers;
-  }
-
   const { data, error } = await supabase
     .from('user_profiles')
     .select('*')
@@ -43,10 +15,6 @@ export const getUsers = async () => {
 };
 
 export const getUser = async (id) => {
-  if (isDemoMode) {
-    return demoUsers.find(u => u.id === id) || null;
-  }
-
   const { data, error } = await supabase
     .from('user_profiles')
     .select('*')
@@ -76,13 +44,6 @@ export const createUser = async (email, password, role, firstName, lastName, exp
     expires_at: expiresAt,
     created_at: new Date().toISOString(),
   };
-
-  if (isDemoMode) {
-    const id = `demo-user-${demoNextId++}`;
-    const newUser = { id, ...userData };
-    demoUsers.push(newUser);
-    return newUser;
-  }
 
   try {
     const { data: authUser, error: authError } = await supabase.auth.signUp(authData);
@@ -121,15 +82,6 @@ export const updateUser = async (id, data) => {
     modified_at: new Date().toISOString(),
   };
 
-  if (isDemoMode) {
-    const user = demoUsers.find(u => u.id === id);
-    if (user) {
-      Object.assign(user, updateData);
-      return user;
-    }
-    throw new Error('User not found');
-  }
-
   const { data: updatedUser, error } = await supabase
     .from('user_profiles')
     .update(updateData)
@@ -146,15 +98,6 @@ export const updateUser = async (id, data) => {
 };
 
 export const deactivateUser = async (id) => {
-  if (isDemoMode) {
-    const user = demoUsers.find(u => u.id === id);
-    if (user) {
-      user.is_active = false;
-      return user;
-    }
-    throw new Error('User not found');
-  }
-
   const { data: deactivatedUser, error } = await supabase
     .from('user_profiles')
     .update({ is_active: false })
@@ -171,12 +114,6 @@ export const deactivateUser = async (id) => {
 };
 
 export const getWorkers = async () => {
-  if (isDemoMode) {
-    return demoUsers.filter(
-      u => (u.role === 'worker' || u.role === 'temporary') && u.is_active
-    );
-  }
-
   const { data, error } = await supabase
     .from('user_profiles')
     .select('*')

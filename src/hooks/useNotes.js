@@ -1,57 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { supabase, isDemoMode } from '../services/supabaseClient';
+import { supabase } from '../services/supabaseClient';
 import { useAuth } from '../components/auth/AuthContext';
-
-// Demo seed data for notes
-let demoNotes = isDemoMode ? [
-  {
-    id: 'note-1',
-    event_id: 'event-1',
-    person_id: null,
-    content: 'VIP-vieraat saapuvat klo 17:30. Vastaanottotiimi paikalla klo 17:00.',
-    author: 'Demo Admin',
-    created_by: 'demo-admin-1',
-    created_at: new Date(Date.now() - 5 * 86400000).toISOString(),
-  },
-  {
-    id: 'note-2',
-    event_id: 'event-1',
-    person_id: null,
-    content: 'Menun muutos: kala-annos vaihdettu vegaaniseen vaihtoehtoon allergioiden vuoksi.',
-    author: 'Demo Admin',
-    created_by: 'demo-admin-1',
-    created_at: new Date(Date.now() - 3 * 86400000).toISOString(),
-  },
-  {
-    id: 'note-3',
-    event_id: 'event-2',
-    person_id: null,
-    content: 'Sadevaraus tehty: sisätilat Puistolan juhlasalissa saatavilla tarvittaessa.',
-    author: 'Demo Admin',
-    created_by: 'demo-admin-1',
-    created_at: new Date(Date.now() - 10 * 86400000).toISOString(),
-  },
-  {
-    id: 'note-4',
-    event_id: null,
-    person_id: 'person-1',
-    content: 'Matti toivoi ensi vuoden gaalan teemaksi "Pohjoisen valot".',
-    author: 'Demo Admin',
-    created_by: 'demo-admin-1',
-    created_at: new Date(Date.now() - 8 * 86400000).toISOString(),
-  },
-  {
-    id: 'note-5',
-    event_id: 'event-3',
-    person_id: null,
-    content: 'Workshop-materiaalit tulostettu 45 kappaletta. Kahvitarjoilu klo 10:30 ja 14:00.',
-    author: 'Demo Admin',
-    created_by: 'demo-admin-1',
-    created_at: new Date(Date.now() - 2 * 86400000).toISOString(),
-  },
-] : [];
-
-let demoNextId = 100;
 
 /**
  * Custom hook for managing notes data
@@ -66,11 +15,6 @@ export function useNotes() {
     try {
       setLoading(true);
       setError(null);
-
-      if (isDemoMode) {
-        setNotes([...demoNotes].sort((a, b) => new Date(b.created_at) - new Date(a.created_at)));
-        return;
-      }
 
       const { data, error: err } = await supabase
         .from('notes')
@@ -101,14 +45,6 @@ export function useNotes() {
         created_at: new Date().toISOString(),
       };
 
-      if (isDemoMode) {
-        const id = `note-${demoNextId++}`;
-        const newNote = { id, ...noteData };
-        demoNotes.push(newNote);
-        setNotes(prev => [newNote, ...prev]);
-        return newNote;
-      }
-
       const { data: newNote, error: err } = await supabase
         .from('notes')
         .insert([noteData])
@@ -129,12 +65,6 @@ export function useNotes() {
     try {
       setError(null);
 
-      if (isDemoMode) {
-        demoNotes = demoNotes.filter(n => n.id !== id);
-        setNotes(prev => prev.filter(n => n.id !== id));
-        return;
-      }
-
       const { error: err } = await supabase
         .from('notes')
         .delete()
@@ -152,10 +82,6 @@ export function useNotes() {
   const getNotesForEvent = useCallback(async (eventId) => {
     try {
       setError(null);
-
-      if (isDemoMode) {
-        return demoNotes.filter(n => n.event_id === eventId);
-      }
 
       const { data, error: err } = await supabase
         .from('notes')
@@ -175,10 +101,6 @@ export function useNotes() {
   const getNotesForPerson = useCallback(async (personId) => {
     try {
       setError(null);
-
-      if (isDemoMode) {
-        return demoNotes.filter(n => n.person_id === personId);
-      }
 
       const { data, error: err } = await supabase
         .from('notes')

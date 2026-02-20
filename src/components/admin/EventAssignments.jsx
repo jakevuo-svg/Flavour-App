@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase, isDemoMode } from '../../services/supabaseClient';
+import { supabase } from '../../services/supabaseClient';
 import { useLanguage } from '../../contexts/LanguageContext';
 import S from '../../styles/theme';
 
@@ -14,7 +14,6 @@ const EventAssignments = ({ events = [], assignWorker, removeWorkerAssignment, g
   // Fetch all non-admin users (workers + temporary)
   useEffect(() => {
     const fetchWorkers = async () => {
-      if (isDemoMode) return;
       try {
         const { data, error } = await supabase
           .from('users')
@@ -32,7 +31,7 @@ const EventAssignments = ({ events = [], assignWorker, removeWorkerAssignment, g
   // Fetch all assignments for all events
   useEffect(() => {
     const fetchAllAssignments = async () => {
-      if (isDemoMode || events.length === 0) return;
+      if (events.length === 0) return;
       setLoading(true);
       try {
         const { data, error } = await supabase

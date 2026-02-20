@@ -1,23 +1,6 @@
-import { supabase, isDemoMode } from './supabaseClient';
-
-let demoNotes = [];
-let demoNoteNextId = 1;
+import { supabase } from './supabaseClient';
 
 export const getNotes = async () => {
-  if (isDemoMode) {
-    return demoNotes
-      .map(note => ({
-        ...note,
-        creator: {
-          id: note.created_by,
-          email: 'demo@example.com',
-          first_name: 'Demo',
-          last_name: 'User',
-        },
-      }))
-      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-  }
-
   const { data, error } = await supabase
     .from('notes')
     .select(`
@@ -35,21 +18,6 @@ export const getNotes = async () => {
 };
 
 export const getNotesForEvent = async (eventId) => {
-  if (isDemoMode) {
-    return demoNotes
-      .filter(n => n.event_id === eventId)
-      .map(note => ({
-        ...note,
-        creator: {
-          id: note.created_by,
-          email: 'demo@example.com',
-          first_name: 'Demo',
-          last_name: 'User',
-        },
-      }))
-      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-  }
-
   const { data, error } = await supabase
     .from('notes')
     .select(`
@@ -68,21 +36,6 @@ export const getNotesForEvent = async (eventId) => {
 };
 
 export const getNotesForPerson = async (personId) => {
-  if (isDemoMode) {
-    return demoNotes
-      .filter(n => n.person_id === personId)
-      .map(note => ({
-        ...note,
-        creator: {
-          id: note.created_by,
-          email: 'demo@example.com',
-          first_name: 'Demo',
-          last_name: 'User',
-        },
-      }))
-      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-  }
-
   const { data, error } = await supabase
     .from('notes')
     .select(`
@@ -107,13 +60,6 @@ export const createNote = async (data, userId) => {
     created_at: new Date().toISOString(),
   };
 
-  if (isDemoMode) {
-    const id = `note-${demoNoteNextId++}`;
-    const newNote = { id, ...noteData };
-    demoNotes.push(newNote);
-    return newNote;
-  }
-
   const { data: newNote, error } = await supabase
     .from('notes')
     .insert([noteData])
@@ -129,11 +75,6 @@ export const createNote = async (data, userId) => {
 };
 
 export const deleteNote = async (id) => {
-  if (isDemoMode) {
-    demoNotes = demoNotes.filter(n => n.id !== id);
-    return true;
-  }
-
   const { error } = await supabase
     .from('notes')
     .delete()

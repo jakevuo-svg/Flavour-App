@@ -1,6 +1,7 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import S from '../../styles/theme';
 import { EVENT_TYPES, STATUSES } from '../../utils/constants';
+import { supabase } from '../../services/supabaseClient';
 
 const PRIORITIES = ['HIGH', 'MEDIUM', 'LOW'];
 
@@ -188,33 +189,52 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
   const menuAttachments = formData.menuAttachments || [];
   const orderAttachments = formData.orderAttachments || [];
 
-  // Workers assigned to this event
-  const eventWorkers = formData.workers || [];
-  const availableWorkers = persons.filter(p => !eventWorkers.includes(p.id));
+  // Workers assigned to this event (from event_assignments + users table)
+  const [assignedWorkers, setAssignedWorkers] = useState([]);
+  const [allSystemUsers, setAllSystemUsers] = useState([]);
 
-  const addWorker = (personId) => {
-    if (!personId || eventWorkers.includes(personId)) return;
-    const updated = { ...formData, workers: [...eventWorkers, personId] };
-    setFormData(updated);
-    onUpdate?.(event.id, updated);
+  useEffect(() => {
+    if (!event?.id) return;
+    let cancelled = false;
+    const abortController = new AbortController();
+
+    // Fetch assigned workers via SECURITY DEFINER function
+    const fetchWorkers = async () => {
+      const { data } = await supabase.rpc('get_event_workers', { p_event_id: event.id });
+      if (!cancelled) setAssignedWorkers(data || []);
+    };
+    // Fetch all system users for the add-worker dropdown (admin only)
+    const fetchAllUsers = async () => {
+      const { data } = await supabase.from('users').select('id, first_name, last_name, email, role').eq('is_active', true).order('first_name');
+      if (!cancelled) setAllSystemUsers(data || []);
+    };
+    fetchWorkers();
+    fetchAllUsers();
+
+    return () => {
+      cancelled = true;
+      abortController.abort();
+    };
+  }, [event?.id]);
+
+  const assignedIds = new Set(assignedWorkers.map(w => w.id));
+  const availableWorkers = allSystemUsers.filter(u => !assignedIds.has(u.id));
+
+  const addWorker = async (userId) => {
+    if (!userId || assignedIds.has(userId)) return;
+    const { error } = await supabase.from('event_assignments').insert({ event_id: event.id, user_id: userId });
+    if (!error) {
+      const user = allSystemUsers.find(u => u.id === userId);
+      if (user) setAssignedWorkers(prev => [...prev, user]);
+    }
     setShowAddWorker(false);
   };
 
-  const removeWorker = (personId) => {
-    const updated = { ...formData, workers: eventWorkers.filter(id => id !== personId) };
-    setFormData(updated);
-    onUpdate?.(event.id, updated);
-  };
-
-  // Helper to get person name
-  const getPersonName = (personId) => {
-    const p = persons.find(p => p.id === personId);
-    return p ? `${p.first_name} ${p.last_name}` : 'Tuntematon';
-  };
-
-  const getPersonRole = (personId) => {
-    const p = persons.find(p => p.id === personId);
-    return p?.role || '';
+  const removeWorker = async (userId) => {
+    const { error } = await supabase.from('event_assignments').delete().eq('event_id', event.id).eq('user_id', userId);
+    if (!error) {
+      setAssignedWorkers(prev => prev.filter(w => w.id !== userId));
+    }
   };
 
   const handleAddTask = () => {
@@ -346,7 +366,8 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
     let content = newNoteText.trim();
     // Prepend @mention if selected
     if (noteMentionId) {
-      const mentionName = getPersonName(noteMentionId);
+      const mentioned = assignedWorkers.find(w => w.id === noteMentionId) || persons.find(p => p.id === noteMentionId);
+      const mentionName = mentioned ? `${mentioned.first_name} ${mentioned.last_name}` : 'Tuntematon';
       content = `@${mentionName}: ${content}`;
     }
     onAddNote?.({ event_id: event.id, content, mentioned_person_id: noteMentionId || null });
@@ -519,39 +540,34 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
           </Section>
 
           {/* TYÖNTEKIJÄT */}
-          <Section title="TYÖNTEKIJÄT" defaultOpen={true} count={eventWorkers.length}>
-            {eventWorkers.length === 0 && !showAddWorker && (
+          <Section title="TYÖNTEKIJÄT" defaultOpen={true} count={assignedWorkers.length}>
+            {assignedWorkers.length === 0 && !showAddWorker && (
               <div style={{ color: '#666', fontSize: 12, marginBottom: 8 }}>Ei lisättyjä työntekijöitä</div>
             )}
-            {eventWorkers.map(wId => {
-              const worker = persons.find(p => p.id === wId);
-              if (!worker) return null;
-              return (
-                <div key={wId} style={{ ...S.row, alignItems: 'center', padding: '6px 0' }}>
-                  <div style={{ flex: 1 }}>
-                    <span style={{ fontSize: 13, fontWeight: 600 }}>{worker.first_name} {worker.last_name}</span>
-                    {worker.role && <span style={{ fontSize: 11, color: '#777', marginLeft: 8 }}>{worker.role}</span>}
-                    {worker.phone && <span style={{ fontSize: 11, color: '#555', marginLeft: 8 }}>{worker.phone}</span>}
-                  </div>
-                  <button onClick={() => removeWorker(wId)} style={{ ...S.btnSmall, fontSize: 10, padding: '2px 6px' }}>✕</button>
+            {assignedWorkers.map(worker => (
+              <div key={worker.id} style={{ ...S.row, alignItems: 'center', padding: '6px 0' }}>
+                <div style={{ flex: 1 }}>
+                  <span style={{ fontSize: 13, fontWeight: 600 }}>{worker.first_name} {worker.last_name}</span>
+                  {worker.role && <span style={{ fontSize: 11, color: '#777', marginLeft: 8 }}>{worker.role}</span>}
                 </div>
-              );
-            })}
+                <button onClick={() => removeWorker(worker.id)} style={{ ...S.btnSmall, fontSize: 10, padding: '2px 6px' }}>✕</button>
+              </div>
+            ))}
 
             {showAddWorker ? (
               <div style={{ border: '1px solid #444', padding: 12, marginTop: 8, background: '#1a1a1a' }}>
                 <div style={{ ...S.label, marginBottom: 6 }}>LISÄÄ TYÖNTEKIJÄ</div>
                 {availableWorkers.length === 0 ? (
-                  <div style={{ color: '#666', fontSize: 12 }}>Kaikki henkilöt on jo lisätty</div>
+                  <div style={{ color: '#666', fontSize: 12 }}>Kaikki työntekijät on jo lisätty</div>
                 ) : (
                   <select
                     onChange={e => { if (e.target.value) addWorker(e.target.value); }}
                     style={{ ...S.selectFull, marginBottom: 8 }}
                     defaultValue=""
                   >
-                    <option value="">Valitse henkilö...</option>
-                    {availableWorkers.map(p => (
-                      <option key={p.id} value={p.id}>{p.first_name} {p.last_name}{p.role ? ` — ${p.role}` : ''}</option>
+                    <option value="">Valitse työntekijä...</option>
+                    {availableWorkers.map(u => (
+                      <option key={u.id} value={u.id}>{u.first_name} {u.last_name}{u.role ? ` — ${u.role}` : ''}</option>
                     ))}
                   </select>
                 )}
@@ -734,13 +750,8 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
                   <div style={{ ...S.label, marginBottom: 4 }}>VASTUUHENKILÖ</div>
                   <select value={newTask.assigned_to} onChange={e => setNewTask({ ...newTask, assigned_to: e.target.value })} style={{ ...S.selectFull }}>
                     <option value="">Ei vastuuhenkilöä</option>
-                    {eventWorkers.map(wId => {
-                      const w = persons.find(p => p.id === wId);
-                      return w ? <option key={wId} value={wId}>{w.first_name} {w.last_name}</option> : null;
-                    })}
-                    {/* Also show all persons if not in workers list */}
-                    {persons.filter(p => !eventWorkers.includes(p.id)).map(p => (
-                      <option key={p.id} value={p.id}>{p.first_name} {p.last_name}</option>
+                    {assignedWorkers.map(w => (
+                      <option key={w.id} value={w.id}>{w.first_name} {w.last_name}</option>
                     ))}
                   </select>
                 </div>
@@ -759,7 +770,7 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
                     {task.description && <span style={{ color: '#777', fontSize: 11, marginLeft: 8 }}>{task.description}</span>}
                   </span>
                   {task.assigned_to && (
-                    <span style={{ fontSize: 10, color: '#888', marginTop: 2 }}>→ {getPersonName(task.assigned_to)}</span>
+                    <span style={{ fontSize: 10, color: '#888', marginTop: 2 }}>→ {(() => { const w = assignedWorkers.find(w => w.id === task.assigned_to) || persons.find(p => p.id === task.assigned_to); return w ? `${w.first_name} ${w.last_name}` : 'Tuntematon'; })()}</span>
                   )}
                 </div>
                 <span style={{ fontSize: 10, color: '#999', marginRight: 8 }}>{task.priority}</span>
@@ -803,11 +814,10 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
                     style={S.selectFull}
                   >
                     <option value="">Ei mainintaa</option>
-                    {eventWorkers.map(wId => {
-                      const w = persons.find(p => p.id === wId);
-                      return w ? <option key={wId} value={wId}>@{w.first_name} {w.last_name}</option> : null;
-                    })}
-                    {persons.filter(p => !eventWorkers.includes(p.id)).map(p => (
+                    {assignedWorkers.map(w => (
+                      <option key={w.id} value={w.id}>@{w.first_name} {w.last_name} (työntekijä)</option>
+                    ))}
+                    {persons.map(p => (
                       <option key={p.id} value={p.id}>@{p.first_name} {p.last_name}</option>
                     ))}
                   </select>

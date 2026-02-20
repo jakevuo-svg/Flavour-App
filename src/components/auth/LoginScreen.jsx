@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useAuth } from './AuthContext';
 
 export default function LoginScreen() {
-  const { signIn, isDemoMode, emailConfirmed, setEmailConfirmed } = useAuth();
+  const { signIn, emailConfirmed, setEmailConfirmed } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -130,17 +130,6 @@ export default function LoginScreen() {
     border: '1px solid #554444',
   };
 
-  const demoIndicatorStyle = {
-    marginTop: '20px',
-    padding: '8px 12px',
-    backgroundColor: '#2a2a2a',
-    border: '1px solid #555',
-    fontSize: '11px',
-    color: '#888',
-    textAlign: 'center',
-    letterSpacing: '0.5px',
-  };
-
   return (
     <div style={containerStyle}>
       <div style={cardStyle}>
@@ -202,12 +191,6 @@ export default function LoginScreen() {
 
           {error && <div style={errorStyle}>{error}</div>}
         </form>
-
-        {isDemoMode && (
-          <div style={demoIndicatorStyle}>
-            Demo-tila: Supabase ei ole konfiguroitu
-          </div>
-        )}
       </div>
     </div>
   );

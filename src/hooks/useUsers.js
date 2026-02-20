@@ -1,20 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { supabase, isDemoMode } from '../services/supabaseClient';
+import { supabase } from '../services/supabaseClient';
 import { useAuth } from '../components/auth/AuthContext';
-
-// Demo data for users
-let demoUsers = [
-  {
-    id: 'demo-admin-1',
-    email: 'admin@typedwn.fi',
-    first_name: 'Demo',
-    last_name: 'Admin',
-    role: 'admin',
-    is_active: true,
-    created_at: new Date().toISOString(),
-  },
-];
-let demoNextId = 2;
 
 /**
  * Custom hook for managing users (admin-only)
@@ -41,11 +27,6 @@ export function useUsers() {
       checkAdminAccess();
       setLoading(true);
       setError(null);
-
-      if (isDemoMode) {
-        setUsers(demoUsers.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)));
-        return;
-      }
 
       const { data, error: err } = await supabase
         .from('users')
@@ -81,14 +62,6 @@ export function useUsers() {
         is_active: true,
       };
 
-      if (isDemoMode) {
-        const id = `user-${demoNextId++}`;
-        const newUser = { id, ...userData };
-        demoUsers.push(newUser);
-        setUsers(prev => [newUser, ...prev]);
-        return newUser;
-      }
-
       const { data: newUser, error: err } = await supabase
         .from('users')
         .insert([userData])
@@ -116,16 +89,6 @@ export function useUsers() {
         modified_at: new Date().toISOString(),
       };
 
-      if (isDemoMode) {
-        const user = demoUsers.find(u => u.id === id);
-        if (user) {
-          Object.assign(user, updateData);
-          setUsers(prev => prev.map(u => u.id === id ? user : u));
-          return user;
-        }
-        throw new Error('User not found');
-      }
-
       const { data: updated, error: err } = await supabase
         .from('users')
         .update(updateData)
@@ -147,17 +110,6 @@ export function useUsers() {
     try {
       checkAdminAccess();
       setError(null);
-
-      if (isDemoMode) {
-        const user = demoUsers.find(u => u.id === id);
-        if (user) {
-          user.is_active = false;
-          user.deactivated_at = new Date().toISOString();
-          setUsers(prev => prev.map(u => u.id === id ? user : u));
-          return user;
-        }
-        throw new Error('User not found');
-      }
 
       const { data: updated, error: err } = await supabase
         .from('users')
@@ -186,17 +138,6 @@ export function useUsers() {
       checkAdminAccess();
       setError(null);
 
-      if (isDemoMode) {
-        const user = demoUsers.find(u => u.id === id);
-        if (user) {
-          user.is_active = true;
-          user.deactivated_at = null;
-          setUsers(prev => prev.map(u => u.id === id ? user : u));
-          return user;
-        }
-        throw new Error('User not found');
-      }
-
       const { data: updated, error: err } = await supabase
         .from('users')
         .update({
@@ -222,10 +163,6 @@ export function useUsers() {
   const getWorkers = useCallback(async () => {
     try {
       setError(null);
-
-      if (isDemoMode) {
-        return demoUsers.filter(u => u.role === 'worker' && u.is_active);
-      }
 
       const { data, error: err } = await supabase
         .from('users')

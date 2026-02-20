@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase, isDemoMode } from '../../services/supabaseClient';
+import { supabase } from '../../services/supabaseClient';
 import { useLanguage } from '../../contexts/LanguageContext';
 import S from '../../styles/theme';
 
@@ -12,7 +12,6 @@ const WorkerAccessModal = ({ worker, events = [], assignWorker, removeWorkerAssi
   // Fetch this worker's current assignments
   useEffect(() => {
     const fetchAssignments = async () => {
-      if (isDemoMode) { setLoading(false); return; }
       try {
         const { data, error } = await supabase
           .from('event_assignments')

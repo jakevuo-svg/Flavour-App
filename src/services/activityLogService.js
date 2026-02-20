@@ -1,7 +1,4 @@
-import { supabase, isDemoMode } from './supabaseClient';
-
-let demoActivityLog = [];
-let demoActivityNextId = 1;
+import { supabase } from './supabaseClient';
 
 export const logActivity = async (action, entityType, entityId, details = null) => {
   const logData = {
@@ -11,13 +8,6 @@ export const logActivity = async (action, entityType, entityId, details = null) 
     details,
     created_at: new Date().toISOString(),
   };
-
-  if (isDemoMode) {
-    const id = `activity-${demoActivityNextId++}`;
-    const newLog = { id, ...logData, user_id: 'demo-user' };
-    demoActivityLog.push(newLog);
-    return newLog;
-  }
 
   const { data: newLog, error } = await supabase
     .from('activity_log')
@@ -34,21 +24,6 @@ export const logActivity = async (action, entityType, entityId, details = null) 
 };
 
 export const getRecentActivity = async (limit = 50) => {
-  if (isDemoMode) {
-    return demoActivityLog
-      .map(log => ({
-        ...log,
-        user: {
-          id: log.user_id,
-          email: 'demo@example.com',
-          first_name: 'Demo',
-          last_name: 'User',
-        },
-      }))
-      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-      .slice(0, limit);
-  }
-
   const { data, error } = await supabase
     .from('activity_log')
     .select(`
@@ -67,21 +42,6 @@ export const getRecentActivity = async (limit = 50) => {
 };
 
 export const getActivityForEntity = async (entityType, entityId) => {
-  if (isDemoMode) {
-    return demoActivityLog
-      .filter(log => log.entity_type === entityType && log.entity_id === entityId)
-      .map(log => ({
-        ...log,
-        user: {
-          id: log.user_id,
-          email: 'demo@example.com',
-          first_name: 'Demo',
-          last_name: 'User',
-        },
-      }))
-      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-  }
-
   const { data, error } = await supabase
     .from('activity_log')
     .select(`

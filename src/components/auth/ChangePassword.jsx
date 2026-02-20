@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { supabase, isDemoMode } from '../../services/supabaseClient';
+import { supabase } from '../../services/supabaseClient';
 import { useLanguage } from '../../contexts/LanguageContext';
 import S from '../../styles/theme';
 
@@ -25,12 +25,6 @@ export default function ChangePassword({ onClose }) {
 
     setLoading(true);
     try {
-      if (isDemoMode) {
-        setMessage({ type: 'success', text: 'Salasana vaihdettu (demo)' });
-        setLoading(false);
-        return;
-      }
-
       const { error } = await supabase.auth.updateUser({ password: newPassword });
       if (error) {
         setMessage({ type: 'error', text: error.message });

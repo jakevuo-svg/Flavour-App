@@ -1,10 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { supabase, isDemoMode } from '../services/supabaseClient';
+import { supabase } from '../services/supabaseClient';
 import { useAuth } from '../components/auth/AuthContext';
-
-// Demo data for activity logs
-let demoActivities = [];
-let demoNextId = 1;
 
 /**
  * Custom hook for managing activity logs
@@ -21,12 +17,6 @@ export function useActivityLog() {
     try {
       setLoading(true);
       setError(null);
-
-      if (isDemoMode) {
-        const sorted = demoActivities.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-        setActivities(sorted.slice(0, limit));
-        return;
-      }
 
       const { data, error: err } = await supabase
         .from('activity_log')
@@ -59,14 +49,6 @@ export function useActivityLog() {
         created_at: new Date().toISOString(),
       };
 
-      if (isDemoMode) {
-        const id = `activity-${demoNextId++}`;
-        const newActivity = { id, ...log };
-        demoActivities.push(newActivity);
-        setActivities(prev => [newActivity, ...prev]);
-        return newActivity;
-      }
-
       const { data, error: err } = await supabase
         .from('activity_log')
         .insert([log])
@@ -93,24 +75,6 @@ export function useActivityLog() {
       } = options;
 
       setError(null);
-
-      if (isDemoMode) {
-        let filtered = [...demoActivities];
-
-        if (userId) {
-          filtered = filtered.filter(a => a.user_id === userId);
-        }
-        if (actionType) {
-          filtered = filtered.filter(a => a.action_type === actionType);
-        }
-        if (entityType) {
-          filtered = filtered.filter(a => a.entity_type === entityType);
-        }
-
-        return filtered
-          .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-          .slice(0, limit);
-      }
 
       let query = supabase.from('activity_log').select('*');
 
@@ -141,13 +105,6 @@ export function useActivityLog() {
     try {
       setError(null);
 
-      if (isDemoMode) {
-        return demoActivities
-          .filter(a => a.entity_type === entityType && a.entity_id === entityId)
-          .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-          .slice(0, limit);
-      }
-
       const { data, error: err } = await supabase
         .from('activity_log')
         .select('*')
@@ -168,13 +125,6 @@ export function useActivityLog() {
   const getActivityByUser = useCallback(async (userId, limit = 50) => {
     try {
       setError(null);
-
-      if (isDemoMode) {
-        return demoActivities
-          .filter(a => a.user_id === userId)
-          .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-          .slice(0, limit);
-      }
 
       const { data, error: err } = await supabase
         .from('activity_log')

@@ -1,21 +1,6 @@
-import { supabase, isDemoMode } from './supabaseClient';
-
-let demoEvents = [];
-let demoAssignments = [];
-let demoEventNextId = 1;
-let demoAssignmentNextId = 1;
+import { supabase } from './supabaseClient';
 
 export const getEvents = async () => {
-  if (isDemoMode) {
-    return demoEvents.map(event => ({
-      ...event,
-      location: {
-        id: event.location_id,
-        name: event.location_name,
-      },
-    }));
-  }
-
   const { data, error } = await supabase
     .from('events')
     .select(`
@@ -33,18 +18,6 @@ export const getEvents = async () => {
 };
 
 export const getEvent = async (id) => {
-  if (isDemoMode) {
-    const event = demoEvents.find(e => e.id === id);
-    if (!event) return null;
-    return {
-      ...event,
-      location: {
-        id: event.location_id,
-        name: event.location_name,
-      },
-    };
-  }
-
   const { data, error } = await supabase
     .from('events')
     .select(`
@@ -63,22 +36,6 @@ export const getEvent = async (id) => {
 };
 
 export const getEventsForWorker = async (userId) => {
-  if (isDemoMode) {
-    const assignmentEventIds = demoAssignments
-      .filter(a => a.user_id === userId)
-      .map(a => a.event_id);
-
-    return demoEvents
-      .filter(e => assignmentEventIds.includes(e.id))
-      .map(event => ({
-        ...event,
-        location: {
-          id: event.location_id,
-          name: event.location_name,
-        },
-      }));
-  }
-
   const { data, error } = await supabase
     .from('events')
     .select(`
@@ -104,13 +61,6 @@ export const createEvent = async (data) => {
     modified_at: new Date().toISOString(),
   };
 
-  if (isDemoMode) {
-    const id = `event-${demoEventNextId++}`;
-    const newEvent = { id, ...eventData };
-    demoEvents.push(newEvent);
-    return newEvent;
-  }
-
   const { data: newEvent, error } = await supabase
     .from('events')
     .insert([eventData])
@@ -131,15 +81,6 @@ export const updateEvent = async (id, data) => {
     modified_at: new Date().toISOString(),
   };
 
-  if (isDemoMode) {
-    const event = demoEvents.find(e => e.id === id);
-    if (event) {
-      Object.assign(event, updateData);
-      return event;
-    }
-    throw new Error('Event not found');
-  }
-
   const { data: updatedEvent, error } = await supabase
     .from('events')
     .update(updateData)
@@ -156,12 +97,6 @@ export const updateEvent = async (id, data) => {
 };
 
 export const deleteEvent = async (id) => {
-  if (isDemoMode) {
-    demoEvents = demoEvents.filter(e => e.id !== id);
-    demoAssignments = demoAssignments.filter(a => a.event_id !== id);
-    return true;
-  }
-
   const { error } = await supabase
     .from('events')
     .delete()
@@ -184,13 +119,6 @@ export const assignWorker = async (eventId, userId, role, assignedBy) => {
     assigned_at: new Date().toISOString(),
   };
 
-  if (isDemoMode) {
-    const id = `assignment-${demoAssignmentNextId++}`;
-    const newAssignment = { id, ...assignmentData };
-    demoAssignments.push(newAssignment);
-    return newAssignment;
-  }
-
   const { data: newAssignment, error } = await supabase
     .from('event_assignments')
     .insert([assignmentData])
@@ -206,13 +134,6 @@ export const assignWorker = async (eventId, userId, role, assignedBy) => {
 };
 
 export const removeWorkerAssignment = async (eventId, userId) => {
-  if (isDemoMode) {
-    demoAssignments = demoAssignments.filter(
-      a => !(a.event_id === eventId && a.user_id === userId)
-    );
-    return true;
-  }
-
   const { error } = await supabase
     .from('event_assignments')
     .delete()
@@ -228,18 +149,6 @@ export const removeWorkerAssignment = async (eventId, userId) => {
 };
 
 export const getEventAssignments = async (eventId) => {
-  if (isDemoMode) {
-    return demoAssignments
-      .filter(a => a.event_id === eventId)
-      .map(assignment => {
-        const user = null; // In demo mode, would need to join with user data
-        return {
-          ...assignment,
-          user,
-        };
-      });
-  }
-
   const { data, error } = await supabase
     .from('event_assignments')
     .select(`

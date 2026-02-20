@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useAuth } from '../auth/AuthContext';
 import S from '../../styles/theme';
 
@@ -16,16 +16,15 @@ const Dashboard = ({ events = [], persons = [], notes = [], recentActivity = [],
 
   const toggleGroup = (name) => setExpandedGroups(prev => ({ ...prev, [name]: !prev[name] }));
 
-  const getUpcomingEvents = () => {
+  const isWorker = user?.role === 'worker' || user?.role === 'temporary';
+
+  const upcomingEvents = useMemo(() => {
     const now = new Date();
     return events
       .filter(e => new Date(e.date) >= now)
       .sort((a, b) => new Date(a.date) - new Date(b.date))
       .slice(0, 5);
-  };
-
-  const isWorker = user?.role === 'worker' || user?.role === 'temporary';
-  const upcomingEvents = getUpcomingEvents();
+  }, [events]);
 
   // Filter recent activity
   const getActionCategory = (action) => {
@@ -41,25 +40,34 @@ const Dashboard = ({ events = [], persons = [], notes = [], recentActivity = [],
   );
 
   // Open tasks grouped by event
-  const openTasks = tasks
-    .filter(t => t.status !== 'DONE')
-    .sort((a, b) => {
-      const prio = { HIGH: 0, MEDIUM: 1, LOW: 2 };
-      const prioDiff = (prio[a.priority] || 1) - (prio[b.priority] || 1);
-      if (prioDiff !== 0) return prioDiff;
-      if (a.due_date && b.due_date) return new Date(a.due_date) - new Date(b.due_date);
-      return 0;
-    });
+  const openTasks = useMemo(() =>
+    tasks
+      .filter(t => t.status !== 'DONE')
+      .sort((a, b) => {
+        const prio = { HIGH: 0, MEDIUM: 1, LOW: 2 };
+        const prioDiff = (prio[a.priority] || 1) - (prio[b.priority] || 1);
+        if (prioDiff !== 0) return prioDiff;
+        if (a.due_date && b.due_date) return new Date(a.due_date) - new Date(b.due_date);
+        return 0;
+      }),
+    [tasks]
+  );
 
   // Group tasks by event
-  const tasksByEvent = {};
-  openTasks.forEach(task => {
-    const eventName = events.find(e => e.id === task.event_id)?.name || 'Muut';
-    if (!tasksByEvent[eventName]) tasksByEvent[eventName] = { tasks: [], event: events.find(e => e.id === task.event_id) };
-    tasksByEvent[eventName].tasks.push(task);
-  });
+  const tasksByEvent = useMemo(() => {
+    const grouped = {};
+    openTasks.forEach(task => {
+      const eventName = events.find(e => e.id === task.event_id)?.name || 'Muut';
+      if (!grouped[eventName]) grouped[eventName] = { tasks: [], event: events.find(e => e.id === task.event_id) };
+      grouped[eventName].tasks.push(task);
+    });
+    return grouped;
+  }, [openTasks, events]);
 
-  const overdueTasks = tasks.filter(t => t.status !== 'DONE' && t.due_date && new Date(t.due_date) < new Date());
+  const overdueTasks = useMemo(() =>
+    tasks.filter(t => t.status !== 'DONE' && t.due_date && new Date(t.due_date) < new Date()),
+    [tasks]
+  );
 
   return (
     <div>

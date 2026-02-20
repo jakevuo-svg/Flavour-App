@@ -1,18 +1,7 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import { supabase, isDemoMode } from '../../services/supabaseClient';
+import { supabase } from '../../services/supabaseClient';
 
 const AuthContext = createContext(null);
-
-// Demo mode user for development without Supabase
-const DEMO_ADMIN = {
-  id: 'demo-admin-1',
-  email: 'admin@typedwn.fi',
-  role: 'admin',
-  first_name: 'Demo',
-  last_name: 'Admin',
-  is_active: true,
-  expires_at: null,
-};
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
@@ -21,14 +10,6 @@ export function AuthProvider({ children }) {
   const [emailConfirmed, setEmailConfirmed] = useState(false);
 
   useEffect(() => {
-    if (isDemoMode) {
-      // Demo mode: auto-login as admin
-      setUser(DEMO_ADMIN);
-      setProfile(DEMO_ADMIN);
-      setLoading(false);
-      return;
-    }
-
     // Check if this is a signup confirmation redirect (URL hash contains type=signup)
     // If so, sign out immediately so the user must log in with their temp password
     const hash = window.location.hash;
@@ -75,7 +56,6 @@ export function AuthProvider({ children }) {
   }, []);
 
   async function fetchProfile(userId) {
-    console.log('[AuthContext] Fetching profile for userId:', userId);
     const { data, error } = await supabase
       .from('users')
       .select('*')
@@ -87,7 +67,6 @@ export function AuthProvider({ children }) {
     }
 
     if (data) {
-      console.log('[AuthContext] Profile loaded:', data.email, 'role:', data.role);
       // Check temporary user expiration
       if (data.role === 'temporary' && data.expires_at) {
         if (new Date(data.expires_at) < new Date()) {
@@ -96,28 +75,16 @@ export function AuthProvider({ children }) {
         }
       }
       setProfile(data);
-    } else {
-      console.warn('[AuthContext] No profile found for userId:', userId);
     }
     setLoading(false);
   }
 
   async function signIn(email, password) {
-    if (isDemoMode) {
-      setUser(DEMO_ADMIN);
-      setProfile(DEMO_ADMIN);
-      return { error: null };
-    }
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     return { error };
   }
 
   async function signOut() {
-    if (isDemoMode) {
-      setUser(null);
-      setProfile(null);
-      return;
-    }
     await supabase.auth.signOut();
     setUser(null);
     setProfile(null);
@@ -131,7 +98,7 @@ export function AuthProvider({ children }) {
     <AuthContext.Provider value={{
       user, profile, loading, isAdmin, isWorker, isTemporary,
       isLoggedIn: !!user,
-      signIn, signOut, isDemoMode, emailConfirmed, setEmailConfirmed
+      signIn, signOut, emailConfirmed, setEmailConfirmed
     }}>
       {children}
     </AuthContext.Provider>

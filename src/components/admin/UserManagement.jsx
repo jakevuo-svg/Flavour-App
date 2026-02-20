@@ -1,13 +1,9 @@
 import { useState, useEffect } from 'react';
-import { supabase, isDemoMode } from '../../services/supabaseClient';
+import { supabase } from '../../services/supabaseClient';
 import { useAuth } from '../auth/AuthContext';
 import { useLanguage } from '../../contexts/LanguageContext';
 import WorkerAccessModal from './WorkerAccessModal';
 import S from '../../styles/theme';
-
-const DEMO_USERS = [
-  { id: '1', email: 'admin@flavour.fi', first_name: 'Admin', last_name: 'User', role: 'admin', is_active: true, expires_at: null },
-];
 
 const UserManagement = ({ events = [], assignWorker, removeWorkerAssignment }) => {
   const { profile } = useAuth();
@@ -18,7 +14,6 @@ const UserManagement = ({ events = [], assignWorker, removeWorkerAssignment }) =
   const [accessWorker, setAccessWorker] = useState(null); // worker whose access modal is open
 
   const fetchUsers = async () => {
-    if (isDemoMode) { setUsers(DEMO_USERS); return; }
     try {
       const { data, error } = await supabase.from('users').select('*').order('created_at', { ascending: false });
       if (error) { console.error('[UserManagement] Error:', error); return; }
@@ -61,18 +56,6 @@ const UserManagement = ({ events = [], assignWorker, removeWorkerAssignment }) =
     setMessage(null);
 
     try {
-      if (isDemoMode) {
-        setUsers(prev => [...prev, {
-          id: Date.now().toString(), email: formData.email,
-          first_name: formData.first_name, last_name: formData.last_name,
-          role: formData.role, is_active: true,
-          expires_at: formData.role === 'temporary' ? formData.expires_at : null,
-        }]);
-        setCreatedPassword(formData.password);
-        setLoading(false);
-        return;
-      }
-
       // 1. Create auth user via signUp
       // With email confirmation enabled, this won't affect admin's session
       const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
@@ -152,17 +135,6 @@ const UserManagement = ({ events = [], assignWorker, removeWorkerAssignment }) =
     setLoading(true);
     setMessage(null);
     try {
-      if (isDemoMode) {
-        setUsers(users.map(u => u.id === editingId ? {
-          ...u, email: formData.email, first_name: formData.first_name,
-          last_name: formData.last_name, role: formData.role,
-          expires_at: formData.role === 'temporary' ? formData.expires_at : null,
-        } : u));
-        handleFormClose();
-        setLoading(false);
-        return;
-      }
-
       const { error } = await supabase.from('users').update({
         first_name: formData.first_name,
         last_name: formData.last_name,
@@ -188,11 +160,6 @@ const UserManagement = ({ events = [], assignWorker, removeWorkerAssignment }) =
     const user = users.find(u => u.id === id);
     if (!user) return;
     const newActive = !user.is_active;
-
-    if (isDemoMode) {
-      setUsers(users.map(u => u.id === id ? { ...u, is_active: newActive } : u));
-      return;
-    }
 
     try {
       const { error } = await supabase.from('users').update({ is_active: newActive }).eq('id', id);
@@ -220,13 +187,6 @@ const UserManagement = ({ events = [], assignWorker, removeWorkerAssignment }) =
     setMessage(null);
 
     try {
-      if (isDemoMode) {
-        setUsers(prev => prev.filter(usr => usr.id !== u.id));
-        setMessage({ type: 'success', text: t('userDeleted') });
-        setLoading(false);
-        return;
-      }
-
       // Call the SECURITY DEFINER function that deletes from both auth.users and public.users
       const { error } = await supabase.rpc('delete_user_completely', { target_user_id: u.id });
 
