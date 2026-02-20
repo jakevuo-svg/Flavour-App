@@ -421,7 +421,7 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
               <span style={{ ...S.tag(false), fontSize: 10 }}>{event?.status}</span>
               <span style={{ ...S.tag(false), fontSize: 10 }}>{event?.type}</span>
               <span style={{ color: '#999', fontSize: 12 }}>
-                {event?.date ? new Date(event.date).toLocaleDateString('fi-FI') : ''} • {event?.start_time || ''}{event?.end_time ? `-${event.end_time}` : ''}
+                {event?.date ? new Date(event.date).toLocaleDateString('fi-FI') : ''}{event?.end_date ? ` – ${new Date(event.end_date).toLocaleDateString('fi-FI')}` : ''} • {event?.start_time || ''}{event?.end_time ? `–${event.end_time}` : ''}
               </span>
               <span style={{ color: '#999', fontSize: 12 }}>Pax: {event?.guest_count || '-'}</span>
               {event?.language && <span style={{ color: '#666', fontSize: 11 }}>({event.language})</span>}
@@ -449,7 +449,8 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
           <Section title="PERUSTIEDOT" defaultOpen={true}>
             {EF({ label: "Nimi", field: "name" })}
             <div style={S.formGrid}>{EF({ label: "Tyyppi", field: "type", options: EVENT_TYPES })}{EF({ label: "Status", field: "status", options: STATUSES })}</div>
-            <div style={S.formGrid}>{EF({ label: "Päivämäärä", field: "date", type: "date" })}<div style={S.formGrid}>{EF({ label: "Alkaa", field: "start_time", type: "time" })}{EF({ label: "Päättyy", field: "end_time", type: "time" })}</div></div>
+            <div style={S.formGrid}>{EF({ label: "Alkupäivä", field: "date", type: "date" })}{EF({ label: "Loppupäivä", field: "end_date", type: "date" })}</div>
+            <div style={S.formGrid}>{EF({ label: "Alkaa", field: "start_time", type: "time" })}{EF({ label: "Päättyy", field: "end_time", type: "time" })}</div>
             <div style={S.formGrid}>
               <div style={{ marginBottom: 8 }}>
                 <div style={{ ...S.label, marginBottom: 4 }}>Sijainti</div>
@@ -534,8 +535,9 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
               {[
                 ['Nimi', event?.name], ['Tyyppi', event?.type], ['Status', event?.status],
-                ['Päivämäärä', event?.date ? new Date(event.date).toLocaleDateString('fi-FI') : '-'],
-                ['Aika', `${event?.start_time || ''}${event?.end_time ? ' - ' + event.end_time : ''}`],
+                ['Alkupäivä', event?.date ? new Date(event.date).toLocaleDateString('fi-FI') : '-'],
+                ['Loppupäivä', event?.end_date ? new Date(event.end_date).toLocaleDateString('fi-FI') : '-'],
+                ['Aika', `${event?.start_time || ''}${event?.end_time ? ' – ' + event.end_time : ''}`],
                 ['Sijainti', event?.location_name], ['Pax', event?.guest_count],
                 ['Kieli', event?.language], ['Yritys', event?.company],
                 ['Yhteystieto', event?.contact], ['Varaaja', event?.booker],
