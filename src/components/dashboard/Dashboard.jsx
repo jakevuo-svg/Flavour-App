@@ -97,10 +97,10 @@ const Dashboard = ({ events = [], persons = [], notes = [], recentActivity = [],
           </div>
         </div>
         <div style={S.pad}>
-          <div style={{ ...S.flexBetween, padding: "4px 0", borderBottom: "1px solid #444", marginBottom: 4 }}>
-            <span style={{ ...S.label, flex: 1 }}>TYYPPI</span>
-            <span style={{ ...S.label, flex: 2 }}>INFO</span>
-            <span style={{ ...S.label, flex: 1, textAlign: "right" }}>AIKA</span>
+          <div style={{ display: 'flex', padding: "4px 0", borderBottom: "1px solid #444", marginBottom: 4, gap: 4 }}>
+            <span style={{ ...S.label, flex: '0 0 70px' }}>TYYPPI</span>
+            <span style={{ ...S.label, flex: '1 1 0', minWidth: 0 }}>INFO</span>
+            <span style={{ ...S.label, flex: '0 0 40px', textAlign: "right" }}>AIKA</span>
           </div>
           {filteredActivity.length === 0 ? (
             <div style={{ padding: "8px 0", color: "#666", fontSize: 12 }}>Ei viimeaikaisia aktiviteetteja</div>
@@ -124,12 +124,12 @@ const Dashboard = ({ events = [], persons = [], notes = [], recentActivity = [],
               return (
                 <div
                   key={a.id}
-                  style={{ ...S.flexBetween, padding: "6px 0", borderBottom: "1px solid #333", fontSize: 12, cursor: isClickable ? 'pointer' : 'default' }}
+                  style={{ display: 'flex', padding: "6px 0", borderBottom: "1px solid #333", fontSize: 12, cursor: isClickable ? 'pointer' : 'default', gap: 4, alignItems: 'center' }}
                   onClick={handleClick}
                 >
-                  <span style={{ flex: 1, color: "#999", fontSize: 11, textTransform: "uppercase" }}>{a.action?.replace(/_/g, ' ') || 'UPDATE'}</span>
-                  <span style={{ flex: 2 }}>{a.action_description}</span>
-                  <span style={{ flex: 1, textAlign: "right", color: "#999", fontSize: 11 }}>
+                  <span style={{ flex: '0 0 70px', color: "#999", fontSize: 10, textTransform: "uppercase", overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.action?.replace(/_/g, ' ') || 'UPDATE'}</span>
+                  <span style={{ flex: '1 1 0', minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.action_description}</span>
+                  <span style={{ flex: '0 0 40px', textAlign: "right", color: "#999", fontSize: 11 }}>
                     {new Date(a.timestamp).toLocaleTimeString('fi-FI', { hour: '2-digit', minute: '2-digit' })}
                   </span>
                 </div>
@@ -142,22 +142,22 @@ const Dashboard = ({ events = [], persons = [], notes = [], recentActivity = [],
       {/* Stats row */}
       {!isWorker && (
         <div style={{ ...S.border, ...S.bg, borderTop: "none" }}>
-          <div style={{ ...S.flex }}>
-            <div style={{ flex: 1, textAlign: "center", padding: "12px 0", borderRight: "1px solid #444" }}>
-              <div style={S.label}>TAPAHTUMIA</div>
-              <div style={{ fontSize: 24, fontWeight: 700 }}>{events.length}</div>
+          <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+            <div style={{ flex: '1 1 80px', textAlign: "center", padding: "12px 4px", borderRight: "1px solid #444", borderBottom: "1px solid #444" }}>
+              <div style={{ ...S.label, fontSize: 9 }}>TAPAHTUMIA</div>
+              <div style={{ fontSize: 20, fontWeight: 700 }}>{events.length}</div>
             </div>
-            <div style={{ flex: 1, textAlign: "center", padding: "12px 0", borderRight: "1px solid #444" }}>
-              <div style={S.label}>HENKILÖITÄ</div>
-              <div style={{ fontSize: 24, fontWeight: 700 }}>{persons.length}</div>
+            <div style={{ flex: '1 1 80px', textAlign: "center", padding: "12px 4px", borderRight: "1px solid #444", borderBottom: "1px solid #444" }}>
+              <div style={{ ...S.label, fontSize: 9 }}>HENKILÖITÄ</div>
+              <div style={{ fontSize: 20, fontWeight: 700 }}>{persons.length}</div>
             </div>
-            <div style={{ flex: 1, textAlign: "center", padding: "12px 0", borderRight: "1px solid #444" }}>
-              <div style={S.label}>MUISTIINPANOJA</div>
-              <div style={{ fontSize: 24, fontWeight: 700 }}>{notes.length}</div>
+            <div style={{ flex: '1 1 80px', textAlign: "center", padding: "12px 4px", borderRight: "1px solid #444", borderBottom: "1px solid #444" }}>
+              <div style={{ ...S.label, fontSize: 9 }}>MUISTIINPANOJA</div>
+              <div style={{ fontSize: 20, fontWeight: 700 }}>{notes.length}</div>
             </div>
-            <div style={{ flex: 1, textAlign: "center", padding: "12px 0" }}>
-              <div style={S.label}>TULEVIA</div>
-              <div style={{ fontSize: 24, fontWeight: 700 }}>{upcomingEvents.length}</div>
+            <div style={{ flex: '1 1 80px', textAlign: "center", padding: "12px 4px", borderBottom: "1px solid #444" }}>
+              <div style={{ ...S.label, fontSize: 9 }}>TULEVIA</div>
+              <div style={{ fontSize: 20, fontWeight: 700 }}>{upcomingEvents.length}</div>
             </div>
           </div>
         </div>

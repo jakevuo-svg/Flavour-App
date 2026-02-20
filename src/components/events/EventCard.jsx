@@ -679,7 +679,7 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
         /* ===== VIEW MODE — collapsible sections ===== */
         <div>
           <Section title="PERUSTIEDOT" defaultOpen={true}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 12 }}>
               {[
                 ['Nimi', event?.name], ['Tyyppi', event?.type], ['Status', event?.status],
                 ['Alkupäivä', event?.date ? new Date(event.date).toLocaleDateString('fi-FI') : '-'],

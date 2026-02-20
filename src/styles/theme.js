@@ -52,8 +52,8 @@ const S = {
   // Layout
   cardField: { marginBottom: 10 },
   formRow: { marginBottom: 12 },
-  formGrid: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 },
-  formGrid3: { display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 },
+  formGrid: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: 12 },
+  formGrid3: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))", gap: 12 },
 
   // Table rows
   row: { display: "flex", borderBottom: "1px solid #444", padding: "6px 12px", alignItems: "center", cursor: "pointer" },
@@ -66,8 +66,8 @@ const S = {
 
   // Modal
   modal: { position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.7)", zIndex: 200, display: "flex", justifyContent: "center", alignItems: "center" },
-  modalBox: { border: "2px solid #ddd", background: "#1e1e1e", color: "#ddd", padding: 32, width: 480, maxHeight: "85vh", overflowY: "auto" },
-  modalBoxLg: { border: "2px solid #ddd", background: "#1e1e1e", color: "#ddd", padding: 32, width: 700, maxHeight: "85vh", overflowY: "auto" },
+  modalBox: { border: "2px solid #ddd", background: "#1e1e1e", color: "#ddd", padding: 32, width: "min(480px, calc(100vw - 24px))", maxHeight: "85vh", overflowY: "auto" },
+  modalBoxLg: { border: "2px solid #ddd", background: "#1e1e1e", color: "#ddd", padding: 32, width: "min(700px, calc(100vw - 24px))", maxHeight: "85vh", overflowY: "auto" },
 
   // Toast
   toast: { position: "fixed", top: 60, right: 20, background: "#ddd", color: "#111", padding: "10px 20px", zIndex: 300, fontWeight: 700, fontSize: 12 },

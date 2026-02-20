@@ -20,22 +20,24 @@ export default function Navigation({
 
   return (
     <div style={{ ...S.border, ...S.bg, borderTop: "none" }}>
-      {/* Full-width tab bar */}
-      <div style={{ ...S.flex, borderBottom: "2px solid #ddd" }}>
+      {/* Full-width tab bar — scrollable on mobile */}
+      <div style={{ display: 'flex', borderBottom: "2px solid #ddd", overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
         {tabs.map(tab => (
           <div
             key={tab}
             style={{
-              flex: 1,
+              flex: '1 0 auto',
               textAlign: "center",
-              padding: "10px 0",
+              padding: "10px 8px",
               fontWeight: 700,
-              fontSize: 12,
-              letterSpacing: 1,
+              fontSize: 11,
+              letterSpacing: 0.5,
               cursor: "pointer",
               background: activeTab === tab ? "#ddd" : "#1e1e1e",
               color: activeTab === tab ? "#111" : "#ddd",
               borderRight: "1px solid #ddd",
+              whiteSpace: 'nowrap',
+              minWidth: 0,
             }}
             onClick={() => onTabChange(tab)}
           >

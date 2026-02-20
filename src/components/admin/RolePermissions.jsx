@@ -19,56 +19,61 @@ const RolePermissions = ({ permissions, onToggle, onReset }) => {
     flexShrink: 0,
   });
 
+  // Short role labels for mobile
+  const roleShortLabels = { admin: 'Admin', worker: 'Työntek.', temporary: 'Väliaik.' };
+
   return (
-    <div style={{ ...S.border, ...S.bg, borderTop: 'none' }}>
-      <div style={{ ...S.pad, ...S.flexBetween, borderBottom: '1px solid #444' }}>
+    <div style={{ ...S.border, ...S.bg, borderTop: 'none', overflowX: 'auto' }}>
+      <div style={{ ...S.pad, ...S.flexBetween, borderBottom: '1px solid #444', flexWrap: 'wrap', gap: 6 }}>
         <div style={S.label}>KÄYTTÖOIKEUDET</div>
         <button onClick={onReset} style={S.btnSmall}>PALAUTA OLETUKSET</button>
       </div>
 
-      {/* Column headers */}
-      <div style={{ display: 'flex', padding: '8px 12px', borderBottom: '2px solid #ddd', background: '#2a2a2a' }}>
-        <div style={{ flex: 3, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1 }}>OMINAISUUS</div>
-        {ROLES.map(r => (
-          <div key={r.key} style={{ flex: 1, textAlign: 'center', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1 }}>
-            {r.label}
+      <div style={{ minWidth: 320 }}>
+        {/* Column headers */}
+        <div style={{ display: 'flex', padding: '8px 8px', borderBottom: '2px solid #ddd', background: '#2a2a2a' }}>
+          <div style={{ flex: '2 1 0', minWidth: 0, fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5 }}>OMINAISUUS</div>
+          {ROLES.map(r => (
+            <div key={r.key} style={{ flex: '0 0 60px', textAlign: 'center', fontSize: 9, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+              {roleShortLabels[r.key] || r.label}
+            </div>
+          ))}
+        </div>
+
+        {Object.entries(groups).map(([groupName, features]) => (
+          <div key={groupName}>
+            {/* Group header */}
+            <div style={{ padding: '6px 8px', background: '#1a1a1a', borderBottom: '1px solid #444', fontSize: 10, fontWeight: 700, color: '#666', letterSpacing: 1 }}>
+              {groupName}
+            </div>
+
+            {/* Feature rows */}
+            {features.map(feature => (
+              <div key={feature.key} style={{ display: 'flex', alignItems: 'center', padding: '6px 8px', borderBottom: '1px solid #333' }}>
+                <div style={{ flex: '2 1 0', minWidth: 0, fontSize: 11, color: '#ddd', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', paddingRight: 4 }}>{feature.label}</div>
+                {ROLES.map(role => {
+                  const checked = !!permissions[role.key]?.[feature.key];
+                  const locked = role.key === 'admin' && feature.key === 'tab_admin';
+                  return (
+                    <div key={role.key} style={{ flex: '0 0 60px', display: 'flex', justifyContent: 'center' }}>
+                      <div
+                        onClick={() => !locked && onToggle(role.key, feature.key)}
+                        style={checkboxStyle(checked, locked)}
+                        title={locked ? 'Lukittu — admin tarvitsee aina hallintapaneelin' : ''}
+                      >
+                        {checked ? '✓' : ''}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ))}
           </div>
         ))}
       </div>
 
-      {Object.entries(groups).map(([groupName, features]) => (
-        <div key={groupName}>
-          {/* Group header */}
-          <div style={{ padding: '6px 12px', background: '#1a1a1a', borderBottom: '1px solid #444', fontSize: 10, fontWeight: 700, color: '#666', letterSpacing: 1 }}>
-            {groupName}
-          </div>
-
-          {/* Feature rows */}
-          {features.map(feature => (
-            <div key={feature.key} style={{ display: 'flex', alignItems: 'center', padding: '6px 12px', borderBottom: '1px solid #333' }}>
-              <div style={{ flex: 3, fontSize: 12, color: '#ddd' }}>{feature.label}</div>
-              {ROLES.map(role => {
-                const checked = !!permissions[role.key]?.[feature.key];
-                const locked = role.key === 'admin' && feature.key === 'tab_admin';
-                return (
-                  <div key={role.key} style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
-                    <div
-                      onClick={() => !locked && onToggle(role.key, feature.key)}
-                      style={checkboxStyle(checked, locked)}
-                      title={locked ? 'Lukittu — admin tarvitsee aina hallintapaneelin' : ''}
-                    >
-                      {checked ? '✓' : ''}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          ))}
-        </div>
-      ))}
-
       {/* Legend */}
-      <div style={{ ...S.pad, borderTop: '1px solid #444', display: 'flex', gap: 16, fontSize: 10, color: '#666' }}>
+      <div style={{ ...S.pad, borderTop: '1px solid #444', display: 'flex', gap: 12, fontSize: 10, color: '#666', flexWrap: 'wrap' }}>
         <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
           <span style={{ width: 12, height: 12, border: '2px solid #ddd', background: '#ddd', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, color: '#111' }}>✓</span>
           Sallittu

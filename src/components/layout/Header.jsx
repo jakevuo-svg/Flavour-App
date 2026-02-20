@@ -36,12 +36,12 @@ export default function Header({
   };
 
   return (
-    <div style={{ ...S.border, ...S.bg, ...S.flexBetween, ...S.pad, position: "sticky", top: 0, zIndex: 100 }}>
-      <div style={{ ...S.flex, ...S.gap }}>
-        <span style={{ fontSize: 22, fontWeight: 800, letterSpacing: 3, textTransform: "uppercase", cursor: "pointer" }} onClick={onHome}>Typedwn</span>
-        <button style={S.btnWire} onClick={onHome}>{t('HOME')}</button>
+    <div style={{ ...S.border, ...S.bg, ...S.flexBetween, ...S.pad, position: "sticky", top: 0, zIndex: 100, flexWrap: 'wrap', gap: 6 }}>
+      <div style={{ ...S.flex, gap: 6 }}>
+        <span style={{ fontSize: 18, fontWeight: 800, letterSpacing: 2, textTransform: "uppercase", cursor: "pointer" }} onClick={onHome}>Typedwn</span>
+        <button style={{ ...S.btnWire, padding: '4px 10px', fontSize: 11 }} onClick={onHome}>{t('HOME')}</button>
       </div>
-      <div style={{ ...S.flex, ...S.gap }}>
+      <div style={{ ...S.flex, gap: 6 }}>
         {onSave && <button style={S.btnWire} onClick={onSave}>SAVE</button>}
 
         {/* Language toggle */}

@@ -54,7 +54,7 @@ const NotificationPanel = ({
     <div style={{
       position: 'absolute', top: '100%', right: 0, marginTop: 4,
       background: '#1a1a1a', border: '2px solid #ddd', zIndex: 300,
-      width: 360, maxHeight: '70vh', display: 'flex', flexDirection: 'column',
+      width: 'min(360px, calc(100vw - 24px))', maxHeight: '70vh', display: 'flex', flexDirection: 'column',
     }}>
       {/* Header */}
       <div style={{ ...S.flexBetween, padding: '10px 12px', borderBottom: '2px solid #ddd' }}>
