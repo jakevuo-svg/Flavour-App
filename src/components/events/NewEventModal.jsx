@@ -73,13 +73,13 @@ const TimeSelect = ({ value, onChange, label }) => {
 };
 
 export default function NewEventModal({ onClose, onAdd, locations = [], prefilledDate = '' }) {
-  // Sort locations by preferred order
+  // Sort locations by preferred order (uses includes for flexible matching)
   const sortedLocations = [...locations].sort((a, b) => {
-    const aIdx = LOCATION_ORDER.findIndex(name => a.name?.toLowerCase() === name.toLowerCase());
-    const bIdx = LOCATION_ORDER.findIndex(name => b.name?.toLowerCase() === name.toLowerCase());
-    const aOrder = aIdx >= 0 ? aIdx : 999;
-    const bOrder = bIdx >= 0 ? bIdx : 999;
-    return aOrder - bOrder;
+    const aName = (a.name || '').toLowerCase();
+    const bName = (b.name || '').toLowerCase();
+    const aIdx = LOCATION_ORDER.findIndex(keyword => aName.includes(keyword));
+    const bIdx = LOCATION_ORDER.findIndex(keyword => bName.includes(keyword));
+    return (aIdx >= 0 ? aIdx : 999) - (bIdx >= 0 ? bIdx : 999);
   });
 
   const [activeSection, setActiveSection] = useState('PERUSTIEDOT');

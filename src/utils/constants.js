@@ -17,9 +17,9 @@ export const LOCATIONS = [
   'FLAVOUR CATERING'
 ];
 
-// Preferred display order for location dropdowns
+// Preferred display order for location dropdowns (matched case-insensitively via includes)
 export const LOCATION_ORDER = [
-  'Blackbox360', 'Flavour Studio', 'Kellohalli', 'Cuisine', 'Pizzala', 'Flavour Catering'
+  'black box', 'flavour studio', 'kellohalli', 'cuisine', 'pizzala', 'catering'
 ];
 
 export const PROFILES = [
