@@ -215,8 +215,25 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
   const orderFileRef = useRef(null);
 
   const handleInputChange = (field, value) => setFormData({ ...formData, [field]: value });
-  const handleSave = () => { onUpdate?.(event.id, formData); setIsEditing(false); };
+  const handleSave = async () => {
+    try {
+      // Filter out read-only / non-column fields before sending to Supabase
+      const { id, created_at, created_by, ...updateFields } = formData;
+      await onUpdate?.(event.id, updateFields);
+      setIsEditing(false);
+    } catch (err) {
+      console.error('Save failed:', err);
+      // Stay in edit mode so user doesn't lose their changes
+    }
+  };
   const handleCancel = () => { setFormData({ ...event }); setIsEditing(false); };
+
+  // Keep formData in sync with event prop (e.g. after save completes)
+  useEffect(() => {
+    if (!isEditing) {
+      setFormData({ ...event });
+    }
+  }, [event]);
 
   const total = (parseFloat(formData.foodPrice) || 0) + (parseFloat(formData.drinksPrice) || 0) + (parseFloat(formData.techPrice) || 0) + (parseFloat(formData.programPrice) || 0);
   const eventTasks = (tasks || []).filter(t => t.event_id === event?.id);
