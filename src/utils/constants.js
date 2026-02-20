@@ -1,36 +1,40 @@
 export const EVENT_TYPES = [
-  'COOKING SCHOOL',
-  'SEMINAR',
-  'DINNER',
-  'COMPANY PARTY',
-  'MEETING',
-  'FILMING',
-  'MARKETS',
-  'OTHER EVENTS'
+  'KOKKIKOULU',
+  'SEMINAARI',
+  'ILLALLINEN',
+  'YRITYSTILAISUUS',
+  'KOKOUS',
+  'MARKKINAT',
+  'MUU TAPAHTUMA'
 ];
 
 export const LOCATIONS = [
-  'BLACK BOX 360',
-  'KELLOHALLI',
+  'BLACKBOX360',
   'FLAVOUR STUDIO',
+  'KELLOHALLI',
   'CUISINE',
   'PIZZALA',
   'FLAVOUR CATERING'
 ];
 
+// Preferred display order for location dropdowns
+export const LOCATION_ORDER = [
+  'Blackbox360', 'Flavour Studio', 'Kellohalli', 'Cuisine', 'Pizzala', 'Flavour Catering'
+];
+
 export const PROFILES = [
-  'NEW CONTACT',
-  'PROSPECT',
-  'CUSTOMER',
-  'REGULAR'
+  'UUSI KONTAKTI',
+  'PROSPEKTI',
+  'ASIAKAS',
+  'VAKIOASIAKAS'
 ];
 
 export const STATUSES = [
-  'PRELIMINARY',
-  'WORKING ON IT',
-  'NOT CONFIRMED',
-  'CONFIRMED',
-  'DONE'
+  'ALUSTAVA',
+  'TYÖN ALLA',
+  'EI VAHVISTETTU',
+  'VAHVISTETTU',
+  'VALMIS'
 ];
 
 export const DAYS = Array.from({ length: 31 }, (_, i) => 

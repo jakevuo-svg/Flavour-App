@@ -1,9 +1,9 @@
 import { useState, useRef, useEffect } from 'react';
 import S from '../../styles/theme';
-import { EVENT_TYPES, STATUSES } from '../../utils/constants';
+import { EVENT_TYPES, STATUSES, LOCATION_ORDER } from '../../utils/constants';
 import { supabase } from '../../services/supabaseClient';
 
-const PRIORITIES = ['HIGH', 'MEDIUM', 'LOW'];
+const PRIORITIES = ['KORKEA', 'NORMAALI', 'MATALA'];
 
 // Collapsible section component (pomppuvalikko)
 const Section = ({ title, children, defaultOpen = false, count }) => {
@@ -165,10 +165,17 @@ const AttachmentSection = ({ attachments = [], onAdd, onRemove, onUpload, fileIn
 };
 
 export default function EventCard({ event, onUpdate, onDelete, onBack, locations = [], persons = [], tasks = [], onAddTask, onUpdateTask, onDeleteTask, notes = [], onAddNote, onDeleteNote }) {
+  // Sort locations by preferred order
+  const sortedLocations = [...locations].sort((a, b) => {
+    const aIdx = LOCATION_ORDER.findIndex(name => a.name?.toLowerCase() === name.toLowerCase());
+    const bIdx = LOCATION_ORDER.findIndex(name => b.name?.toLowerCase() === name.toLowerCase());
+    return (aIdx >= 0 ? aIdx : 999) - (bIdx >= 0 ? bIdx : 999);
+  });
+
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({ ...event });
   const [showAddTask, setShowAddTask] = useState(false);
-  const [newTask, setNewTask] = useState({ title: '', priority: 'MEDIUM', description: '', assigned_to: '' });
+  const [newTask, setNewTask] = useState({ title: '', priority: 'NORMAALI', description: '', assigned_to: '' });
   const [showAddMaterial, setShowAddMaterial] = useState(false);
   const [newMaterial, setNewMaterial] = useState({ name: '', type: 'other', driveLink: '' });
   const [showAddNote, setShowAddNote] = useState(false);
@@ -240,7 +247,7 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
   const handleAddTask = () => {
     if (!newTask.title.trim()) return;
     onAddTask?.({ ...newTask, event_id: event.id, assigned_to: newTask.assigned_to || null });
-    setNewTask({ title: '', priority: 'MEDIUM', description: '', assigned_to: '' });
+    setNewTask({ title: '', priority: 'NORMAALI', description: '', assigned_to: '' });
     setShowAddTask(false);
   };
 
@@ -446,12 +453,12 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
                 <div style={{ ...S.label, marginBottom: 4 }}>Sijainti</div>
                 <select value={formData.location_name || ''} onChange={e => handleLocationChange(e.target.value)} style={{ ...S.select, width: '100%', boxSizing: 'border-box' }}>
                   <option value="">Valitse</option>
-                  {locations.map(l => <option key={l.id} value={l.name}>{l.name}</option>)}
+                  {sortedLocations.map(l => <option key={l.id} value={l.name}>{l.name}</option>)}
                 </select>
               </div>
               {EF({ label: "Pax", field: "guest_count", type: "number" })}
             </div>
-            <div style={S.formGrid}>{EF({ label: "Kieli", field: "language" })}{EF({ label: "Yritys", field: "company" })}</div>
+            <div style={S.formGrid}>{EF({ label: "Kieli", field: "language", options: ['Suomi', 'Englanti'] })}{EF({ label: "Yritys", field: "company" })}</div>
             <div style={S.formGrid}>{EF({ label: "Yhteystieto", field: "contact" })}{EF({ label: "Varaaja", field: "booker" })}</div>
           </Section>
           <Section title="TAVOITE" defaultOpen={!!formData.goal}>{EF({ label: "", field: "goal", textarea: true })}</Section>
@@ -464,7 +471,7 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
           </Section>
           <Section title="DEKORAATIOT" defaultOpen={!!formData.decorations}>{EF({ label: "", field: "decorations", textarea: true })}</Section>
           <Section title="LOGISTIIKKA" defaultOpen={!!formData.logistics}>{EF({ label: "", field: "logistics", textarea: true })}</Section>
-          <Section title="ORDER / TILAUS" defaultOpen={!!formData.orderLink}>
+          <Section title="TILAUS" defaultOpen={!!formData.orderLink}>
             {EF({ label: "Google Drive linkki", field: "orderLink", type: "url" })}
             {EF({ label: "Tilauksen lisätiedot", field: "orderNotes", textarea: true })}
           </Section>
@@ -607,7 +614,7 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
           <Section title="LOGISTIIKKA" defaultOpen={!!event?.logistics}><TextBlock text={event?.logistics} /></Section>
 
           {/* ORDER — with editable link + attachments */}
-          <Section title="ORDER / TILAUS" defaultOpen={!!event?.orderLink || orderAttachments.length > 0}>
+          <Section title="TILAUS" defaultOpen={!!event?.orderLink || orderAttachments.length > 0}>
             <div style={{ marginBottom: 10 }}>
               <div style={{ ...S.label, marginBottom: 4 }}>DRIVE-LINKKI</div>
               <EditableDriveLink url={formData.orderLink} label="Order Drive →" onSave={(val) => saveField('orderLink', val)} />

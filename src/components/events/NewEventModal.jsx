@@ -1,13 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
 import S from '../../styles/theme';
-import { EVENT_TYPES, STATUSES } from '../../utils/constants';
+import { EVENT_TYPES, STATUSES, LOCATION_ORDER } from '../../utils/constants';
 
 // Common restaurant allergens (EU 14 + dietary)
 const COMMON_ALLERGENS = [
   'Gluteeniton', 'Laktoositon', 'Maidoton', 'Munaton',
   'Pähkinätön', 'Kala', 'Äyriäiset', 'Soijaton',
-  'Selleri', 'Sinappi', 'Seesami', 'Lupiini',
-  'Vegaaninen', 'Kasvis', 'Sianlihaton', 'Alkoholiton',
+  'Vegaaninen', 'Kasvis', 'Sianlihaton',
 ];
 
 // Generate 30-minute interval time options
@@ -74,6 +73,15 @@ const TimeSelect = ({ value, onChange, label }) => {
 };
 
 export default function NewEventModal({ onClose, onAdd, locations = [], prefilledDate = '' }) {
+  // Sort locations by preferred order
+  const sortedLocations = [...locations].sort((a, b) => {
+    const aIdx = LOCATION_ORDER.findIndex(name => a.name?.toLowerCase() === name.toLowerCase());
+    const bIdx = LOCATION_ORDER.findIndex(name => b.name?.toLowerCase() === name.toLowerCase());
+    const aOrder = aIdx >= 0 ? aIdx : 999;
+    const bOrder = bIdx >= 0 ? bIdx : 999;
+    return aOrder - bOrder;
+  });
+
   const [activeSection, setActiveSection] = useState('PERUSTIEDOT');
   const [formData, setFormData] = useState({
     name: '', type: '', date: prefilledDate, start_time: '', end_time: '',
@@ -215,7 +223,7 @@ export default function NewEventModal({ onClose, onAdd, locations = [], prefille
                   <div style={S.label}>Sijainti</div>
                   <select value={formData.location_name} onChange={e => handleLocationChange(e.target.value)} style={{ ...S.select, width: '100%', boxSizing: 'border-box' }}>
                     <option value="">Valitse</option>
-                    {locations.map(l => <option key={l.id} value={l.name}>{l.name}</option>)}
+                    {sortedLocations.map(l => <option key={l.id} value={l.name}>{l.name}</option>)}
                   </select>
                 </div>
                 <div>
@@ -226,7 +234,11 @@ export default function NewEventModal({ onClose, onAdd, locations = [], prefille
               <div style={S.formGrid}>
                 <div>
                   <div style={S.label}>Kieli</div>
-                  <input value={formData.language} onChange={e => handleInputChange('language', e.target.value)} style={{ ...S.input, width: '100%', boxSizing: 'border-box' }} placeholder="Suomi / English" />
+                  <select value={formData.language} onChange={e => handleInputChange('language', e.target.value)} style={{ ...S.select, width: '100%', boxSizing: 'border-box' }}>
+                    <option value="">Valitse</option>
+                    <option value="Suomi">Suomi</option>
+                    <option value="Englanti">Englanti</option>
+                  </select>
                 </div>
                 <div>
                   <div style={S.label}>Yritys</div>
@@ -334,7 +346,7 @@ export default function NewEventModal({ onClose, onAdd, locations = [], prefille
 
               {/* ORDER / TILAUS */}
               <div style={{ border: '1px solid #333', padding: 12, background: '#1a1a1a' }}>
-                <div style={{ ...S.label, marginBottom: 6, fontWeight: 700 }}>ORDER / TILAUS</div>
+                <div style={{ ...S.label, marginBottom: 6, fontWeight: 700 }}>TILAUS</div>
                 <div style={S.label}>Google Drive -linkki</div>
                 <input type="url" value={formData.orderLink} onChange={e => handleInputChange('orderLink', e.target.value)} style={{ ...S.input, width: '100%', boxSizing: 'border-box', marginBottom: 8 }} placeholder="https://drive.google.com/..." />
                 <div style={S.label}>Tilauksen lisätiedot</div>
