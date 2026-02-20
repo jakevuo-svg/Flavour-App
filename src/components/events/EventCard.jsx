@@ -190,7 +190,7 @@ const AttachmentSection = ({ attachments = [], onAdd, onRemove, onUpload, fileIn
   );
 };
 
-export default function EventCard({ event, onUpdate, onDelete, onBack, locations = [], persons = [], tasks = [], onAddTask, onUpdateTask, onDeleteTask, notes = [], onAddNote, onDeleteNote, can = () => true }) {
+export default function EventCard({ event, onUpdate, onDelete, onBack, locations = [], persons = [], tasks = [], onAddTask, onUpdateTask, onDeleteTask, notes = [], onAddNote, onDeleteNote, can = () => true, onAssignWorker, onRemoveWorker }) {
   // Sort locations by preferred order (uses includes for flexible matching)
   const sortedLocations = [...locations].sort((a, b) => {
     const aName = (a.name || '').toLowerCase();
@@ -306,18 +306,32 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
 
   const addWorker = async (userId) => {
     if (!userId || assignedIds.has(userId)) return;
-    const { error } = await supabase.from('event_assignments').insert({ event_id: event.id, user_id: userId });
-    if (!error) {
+    try {
+      if (onAssignWorker) {
+        await onAssignWorker(event.id, userId);
+      } else {
+        const { error } = await supabase.from('event_assignments').insert({ event_id: event.id, user_id: userId });
+        if (error) throw error;
+      }
       const user = allSystemUsers.find(u => u.id === userId);
       if (user) setAssignedWorkers(prev => [...prev, user]);
+    } catch (err) {
+      console.error('Failed to assign worker:', err);
     }
     setShowAddWorker(false);
   };
 
   const removeWorker = async (userId) => {
-    const { error } = await supabase.from('event_assignments').delete().eq('event_id', event.id).eq('user_id', userId);
-    if (!error) {
+    try {
+      if (onRemoveWorker) {
+        await onRemoveWorker(event.id, userId);
+      } else {
+        const { error } = await supabase.from('event_assignments').delete().eq('event_id', event.id).eq('user_id', userId);
+        if (error) throw error;
+      }
       setAssignedWorkers(prev => prev.filter(w => w.id !== userId));
+    } catch (err) {
+      console.error('Failed to remove worker:', err);
     }
   };
 
@@ -694,11 +708,11 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
                   <span style={{ fontSize: 13, fontWeight: 600 }}>{worker.first_name} {worker.last_name}</span>
                   {worker.role && <span style={{ fontSize: 11, color: '#777', marginLeft: 8 }}>{worker.role}</span>}
                 </div>
-                <button onClick={() => removeWorker(worker.id)} style={{ ...S.btnSmall, fontSize: 10, padding: '2px 6px' }}>✕</button>
+                {can('action_edit') && <button onClick={() => removeWorker(worker.id)} style={{ ...S.btnSmall, fontSize: 10, padding: '2px 6px' }}>✕</button>}
               </div>
             ))}
 
-            {showAddWorker ? (
+            {can('action_edit') && showAddWorker ? (
               <div style={{ border: '1px solid #444', padding: 12, marginTop: 8, background: '#1a1a1a' }}>
                 <div style={{ ...S.label, marginBottom: 6 }}>LISÄÄ TYÖNTEKIJÄ</div>
                 {availableWorkers.length === 0 ? (
@@ -717,9 +731,9 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
                 )}
                 <button onClick={() => setShowAddWorker(false)} style={S.btnWire}>PERUUTA</button>
               </div>
-            ) : (
+            ) : can('action_edit') ? (
               <button onClick={() => setShowAddWorker(true)} style={{ ...S.btnSmall, marginTop: 8 }}>+ LISÄÄ TYÖNTEKIJÄ</button>
-            )}
+            ) : null}
           </Section>}
 
           {can('card_goal') && <Section title="TAVOITE" defaultOpen={!!event?.goal}><TextBlock text={event?.goal} /></Section>}

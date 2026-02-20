@@ -481,6 +481,8 @@ const AppContent = () => {
             notes={notes.filter(n => n.event_id === selectedEvent?.id)}
             onAddNote={handleAddNote}
             onDeleteNote={handleDeleteNote}
+            onAssignWorker={handleAssignWorker}
+            onRemoveWorker={removeWorkerAssignment}
           />
         ) : null;
 
