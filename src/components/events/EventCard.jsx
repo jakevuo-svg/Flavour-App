@@ -215,10 +215,42 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
   const orderFileRef = useRef(null);
 
   const handleInputChange = (field, value) => setFormData({ ...formData, [field]: value });
+
+  // Finnish labels for change tracking
+  const FIELD_LABELS = {
+    name: 'Nimi', type: 'Tyyppi', date: 'Päivämäärä', end_date: 'Loppupäivä',
+    start_time: 'Alkamisaika', end_time: 'Loppumisaika', location_name: 'Paikka',
+    guest_count: 'Vierasmäärä', language: 'Kieli', company: 'Yritys',
+    booker: 'Varaaja', contact: 'Yhteystieto', status: 'Tila', goal: 'Tavoite',
+    attentionNotes: 'Huomioitavaa', erv: 'ERV', schedule: 'Aikataulu',
+    menu: 'Menu', decorations: 'Koristelu', logistics: 'Logistiikka',
+    duringEvent: 'Tapahtuman aikana', feedback: 'Palaute',
+    food: 'Ruoka', foodPrice: 'Ruoan hinta', drinks: 'Juomat', drinksPrice: 'Juomien hinta',
+    tech: 'Tekniikka', techPrice: 'Tekniikan hinta', program: 'Ohjelma', programPrice: 'Ohjelman hinta',
+    orderNotes: 'Tilauksen muistiinpanot', notes: 'Muistiinpanot',
+  };
+
   const handleSave = async () => {
     try {
-      // Filter out read-only / non-column fields before sending to Supabase
       const { id, created_at, created_by, ...updateFields } = formData;
+
+      // Compute what changed for the change log
+      const changedFields = [];
+      for (const key of Object.keys(FIELD_LABELS)) {
+        const oldVal = (event[key] ?? '').toString();
+        const newVal = (updateFields[key] ?? '').toString();
+        if (oldVal !== newVal) {
+          const label = FIELD_LABELS[key];
+          const snippet = typeof updateFields[key] === 'string' && updateFields[key].length > 40
+            ? updateFields[key].slice(0, 40) + '…'
+            : updateFields[key];
+          changedFields.push(`${label}: ${snippet || '(tyhjennetty)'}`);
+        }
+      }
+      updateFields.last_change = changedFields.length > 0
+        ? changedFields.slice(0, 3).join(', ')
+        : '';
+
       await onUpdate?.(event.id, updateFields);
       setIsEditing(false);
     } catch (err) {
@@ -597,6 +629,7 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
                       </span>
                       <button onClick={() => onDeleteNote?.(note.id)} style={{ background: 'none', border: 'none', color: '#555', cursor: 'pointer', fontSize: 11 }}>✕</button>
                     </div>
+                    {note.title && <div style={{ fontSize: 13, fontWeight: 700, color: '#ddd', marginBottom: 4, textTransform: 'uppercase' }}>{note.title}</div>}
                     <div style={{ fontSize: 13, color: '#bbb', whiteSpace: 'pre-wrap', lineHeight: 1.5 }}>{note.content}</div>
                   </div>
                 ))}
@@ -929,6 +962,7 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
                   </span>
                   <button onClick={() => onDeleteNote?.(note.id)} style={{ background: 'none', border: 'none', color: '#555', cursor: 'pointer', fontSize: 11 }}>✕</button>
                 </div>
+                {note.title && <div style={{ fontSize: 13, fontWeight: 700, color: '#ddd', marginBottom: 4, textTransform: 'uppercase' }}>{note.title}</div>}
                 <div style={{ fontSize: 13, color: '#bbb', whiteSpace: 'pre-wrap', lineHeight: 1.5 }}>{note.content}</div>
               </div>
             ))}

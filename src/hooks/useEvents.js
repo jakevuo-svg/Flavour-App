@@ -95,6 +95,7 @@ export function useEvents() {
         notes: data.notes || '',
         duringEvent: data.duringEvent || '',
         feedback: data.feedback || '',
+        last_change: data.last_change || '',
         food: data.food || '',
         foodPrice: data.foodPrice || null,
         drinks: data.drinks || '',

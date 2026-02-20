@@ -162,25 +162,25 @@ const Dashboard = ({ events = [], persons = [], notes = [], recentActivity = [],
           <div style={{ ...S.pad, borderBottom: "1px solid #444" }}>
             <div style={S.label}>VIIMEKSI MUOKATUT</div>
           </div>
-          <div style={S.rowHeader}>
-            <span style={S.col(2)}>NIMI</span>
-            <span style={S.col(1)}>PVM</span>
-            <span style={S.col(1)}>TILA</span>
-            <span style={S.col(1)}>MUOKATTU</span>
-          </div>
           {recentlyModified.map(event => (
             <div
               key={event.id}
-              style={{ ...S.row, cursor: 'pointer' }}
+              style={{ ...S.row, cursor: 'pointer', flexDirection: 'column', alignItems: 'stretch', gap: 2 }}
               onClick={() => onEventClick?.(event)}
             >
-              <span style={{ ...S.col(2), fontWeight: 600 }}>{event.name}</span>
-              <span style={S.col(1)}>{new Date(event.date).toLocaleDateString('fi-FI')}</span>
-              <span style={S.col(1)}>{event.status || ''}</span>
-              <span style={{ ...S.col(1), color: '#999', fontSize: 11 }}>
-                {new Date(event.modified_at).toLocaleDateString('fi-FI')}{' '}
-                {new Date(event.modified_at).toLocaleTimeString('fi-FI', { hour: '2-digit', minute: '2-digit' })}
-              </span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontWeight: 600, flex: 2 }}>{event.name}</span>
+                <span style={{ flex: 1, fontSize: 11, color: '#999' }}>{event.status || ''}</span>
+                <span style={{ fontSize: 10, color: '#666', textAlign: 'right' }}>
+                  {new Date(event.modified_at).toLocaleDateString('fi-FI')}{' '}
+                  {new Date(event.modified_at).toLocaleTimeString('fi-FI', { hour: '2-digit', minute: '2-digit' })}
+                </span>
+              </div>
+              {event.last_change && (
+                <div style={{ fontSize: 11, color: '#888', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {event.last_change}
+                </div>
+              )}
             </div>
           ))}
         </div>

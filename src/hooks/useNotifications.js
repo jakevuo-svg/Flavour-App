@@ -128,10 +128,14 @@ export function useNotifications() {
   }, [pushNotification]);
 
   const emitNoteAdded = useCallback((note, contextName) => {
+    const noteTitle = note.title ? `"${note.title}"` : '';
+    const noteContent = note.content ? (note.content.length > 50 ? note.content.slice(0, 50) + '…' : note.content) : '';
+    const preview = noteTitle ? `${noteTitle} — ${noteContent}` : noteContent;
+    const target = contextName ? `${contextName}: ` : '';
     pushNotification({
       type: 'note_added',
       title: 'Muistiinpano lisätty',
-      message: contextName ? `Kohde: ${contextName}` : (note.content || '').slice(0, 60),
+      message: `${target}${preview}`,
       entity_type: note.event_id ? 'event' : note.person_id ? 'person' : null,
       entity_id: note.event_id || note.person_id || null,
     });

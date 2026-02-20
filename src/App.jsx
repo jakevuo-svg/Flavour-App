@@ -122,33 +122,51 @@ const AppContent = () => {
 
     // Convert actual notes to activity entries
     notes.forEach(note => {
-      let description = '';
+      let target = '';
       let entityType = '';
       let entityId = '';
 
       if (note.event_id) {
         const event = events.find(e => e.id === note.event_id);
-        description = `Lisäsi muistiinpanon tapahtumaan "${event?.name || 'Tuntematon'}"`;
+        target = event?.name || 'Tuntematon';
         entityType = 'event';
         entityId = note.event_id;
       } else if (note.person_id) {
         const person = persons.find(p => p.id === note.person_id);
-        description = `Lisäsi muistiinpanon henkilölle "${person ? person.first_name + ' ' + person.last_name : 'Tuntematon'}"`;
+        target = person ? `${person.first_name} ${person.last_name}` : 'Tuntematon';
         entityType = 'person';
         entityId = note.person_id;
       }
 
-      if (description) {
+      if (target) {
+        const titleSnippet = note.title ? `"${note.title}"` : '';
+        const contentSnippet = note.content ? (note.content.length > 50 ? note.content.slice(0, 50) + '…' : note.content) : '';
+        const notePreview = titleSnippet || contentSnippet;
         activities.push({
           id: `note-act-${note.id}`,
           timestamp: note.created_at,
           user_name: note.author || 'Unknown',
           action: 'ADDED_NOTE',
-          action_description: description,
+          action_description: `${target}: ${notePreview}`,
           entity_type: entityType,
           entity_id: entityId,
         });
       }
+    });
+
+    // Convert recent event modifications to activity entries
+    events.forEach(event => {
+      if (!event.modified_at) return;
+      const lastChange = event.last_change || '';
+      activities.push({
+        id: `event-mod-${event.id}`,
+        timestamp: event.modified_at,
+        user_name: '',
+        action: 'UPDATED_EVENT',
+        action_description: `${event.name}${lastChange ? ': ' + lastChange : ''}`,
+        entity_type: 'event',
+        entity_id: event.id,
+      });
     });
 
     // Sort newest first, limit to 20
