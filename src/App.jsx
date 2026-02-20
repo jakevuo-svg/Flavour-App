@@ -153,15 +153,20 @@ const AppContent = () => {
     emitPersonCreated({ ...data, id: p?.id || 'new' });
   };
 
-  const handleAddEvent = (data) => {
+  const handleAddEvent = async (data) => {
     if (newEventPrefilledDate) {
       data.date = newEventPrefilledDate;
       setNewEventPrefilledDate(null);
     }
-    const ev = addEvent(data);
-    setShowNewEvent(false);
-    showToast(t('eventAdded'), 'success');
-    emitEventCreated({ ...data, id: ev?.id || 'new' });
+    try {
+      const ev = await addEvent(data);
+      setShowNewEvent(false);
+      showToast(t('eventAdded'), 'success');
+      emitEventCreated({ ...data, id: ev?.id || 'new' });
+    } catch (err) {
+      console.error('Failed to create event:', err);
+      showToast('Tapahtuman luonti epäonnistui: ' + (err.message || 'tuntematon virhe'), 'error');
+    }
   };
 
   const handleAddNote = (data) => {

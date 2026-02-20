@@ -57,8 +57,49 @@ export function useEvents() {
   const addEvent = useCallback(async (data) => {
     try {
       setError(null);
+
+      // Combine allergens array + ervNotes into single 'erv' text field
+      const allergenText = (data.allergens || []).join(', ');
+      const ervNotesText = data.ervNotes || '';
+      const erv = [allergenText, ervNotesText].filter(Boolean).join(' — ');
+
+      // Only include fields that exist in the events table
       const eventData = {
-        ...data,
+        name: data.name || '',
+        type: data.type || '',
+        date: data.date || null,
+        start_time: data.start_time || '',
+        end_time: data.end_time || '',
+        location_name: data.location_name || '',
+        location_id: data.location_id || null,
+        guest_count: data.guest_count || null,
+        language: data.language || '',
+        company: data.company || '',
+        booker: data.booker || '',
+        contact: data.contact || '',
+        status: data.status || '',
+        goal: data.goal || '',
+        attentionNotes: data.attentionNotes || '',
+        erv: erv || '',
+        schedule: data.schedule || '',
+        menu: data.menu || '',
+        menuLink: data.menuLink || '',
+        menuAttachments: data.menuAttachments || [],
+        decorations: data.decorations || '',
+        logistics: data.logistics || '',
+        orderLink: data.orderLink || '',
+        orderNotes: data.orderNotes || '',
+        orderAttachments: data.orderAttachments || [],
+        materials: data.materials || [],
+        notes: data.notes || '',
+        food: data.food || '',
+        foodPrice: data.foodPrice || null,
+        drinks: data.drinks || '',
+        drinksPrice: data.drinksPrice || null,
+        tech: data.tech || '',
+        techPrice: data.techPrice || null,
+        program: data.program || '',
+        programPrice: data.programPrice || null,
         created_by: profile?.id,
         created_at: new Date().toISOString(),
         modified_at: new Date().toISOString(),
