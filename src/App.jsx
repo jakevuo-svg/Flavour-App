@@ -171,6 +171,7 @@ const AppContent = () => {
     });
 
     // Convert tasks to activity entries
+    console.log('[Activity] Processing tasks:', tasks.length, 'tasks');
     tasks.forEach(task => {
       const eventName = events.find(e => e.id === task.event_id)?.name || '';
       const statusLabels = { TODO: 'Tehtävä', IN_PROGRESS: 'Käynnissä', DONE: 'Valmis' };
@@ -180,7 +181,7 @@ const AppContent = () => {
           timestamp: task.created_at,
           user_name: '',
           action: 'ADDED_TASK',
-          action_description: `${eventName}: "${task.title}"`,
+          action_description: `${eventName}${eventName ? ': ' : ''}"${task.title}"`,
           entity_type: 'event',
           entity_id: task.event_id,
         });
@@ -191,17 +192,18 @@ const AppContent = () => {
           timestamp: task.updated_at,
           user_name: '',
           action: 'UPDATED_TASK',
-          action_description: `${eventName}: "${task.title}" → ${statusLabels[task.status] || task.status}`,
+          action_description: `${eventName}${eventName ? ': ' : ''}"${task.title}" → ${statusLabels[task.status] || task.status}`,
           entity_type: 'event',
           entity_id: task.event_id,
         });
       }
     });
+    console.log('[Activity] Total activities before sort:', activities.length, 'task entries:', activities.filter(a => a.action?.includes('TASK')).length);
 
     // Sort newest first, limit to 20
     return activities
       .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
-      .slice(0, 20);
+      .slice(0, 50);
   }, [notes, events, persons, tasks]);
 
   if (!isLoggedIn) {
@@ -319,9 +321,14 @@ const AppContent = () => {
   const handleAddTask = async (data) => {
     try {
       const task = await addTask(data);
+      if (!task) {
+        showToast('Tehtävän lisäys epäonnistui', 'error');
+        return null;
+      }
       const eventName = events.find(e => e.id === data.event_id)?.name || '';
-      emitTaskAdded(task || data, eventName);
+      emitTaskAdded(task, eventName);
       showToast('Tehtävä lisätty', 'success');
+      console.log('[App] Task added, has created_at:', !!task.created_at, task.created_at);
       return task;
     } catch (err) {
       console.error('Failed to add task:', err);

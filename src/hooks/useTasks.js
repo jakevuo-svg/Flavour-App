@@ -70,24 +70,24 @@ export function useTasks() {
         updateData.completed_at = null;
       }
 
-      const { data: updatedRow, error: err } = await supabase
+      const { error: err } = await supabase
         .from('event_tasks')
         .update(updateData)
-        .eq('id', taskId)
-        .select()
-        .single();
+        .eq('id', taskId);
 
       if (err) throw err;
 
-      // Always set updated_at in local state for dashboard tracking
-      const merged = { ...(updatedRow || updates), updated_at: now };
+      // Set updated_at locally for dashboard activity tracking
+      let result = null;
       setTasks(prev => prev.map(t => {
         if (t.id === taskId) {
-          return { ...t, ...merged };
+          result = { ...t, ...updateData, updated_at: now };
+          return result;
         }
         return t;
       }));
-      return merged;
+      console.log('[useTasks] Task updated:', taskId, 'updated_at:', now);
+      return result;
     } catch (err) {
       console.error('[useTasks] Failed to update task:', err);
       setError(err.message);
