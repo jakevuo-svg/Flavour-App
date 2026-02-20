@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import S from '../../styles/theme';
 
-const PROFILES = ['VIP', 'Asiakas', 'Kumppani', 'Media', 'Muu'];
+import { PROFILES } from '../../utils/constants';
 
 export default function PersonCard({ person, onUpdate, onDelete, onBack, events = [], notes = [], onEventClick, onAddNote, onDeleteNote }) {
   const [isEditing, setIsEditing] = useState(false);
@@ -114,7 +114,7 @@ export default function PersonCard({ person, onUpdate, onDelete, onBack, events 
             </div>
             <div style={S.formRow}>
               <div style={{ ...S.label, marginBottom: 4 }}>Työnimike</div>
-              <input value={formData.job || ''} onChange={e => handleInputChange('job', e.target.value)} style={{ ...S.input, width: '100%', boxSizing: 'border-box' }} />
+              <input value={formData.role || ''} onChange={e => handleInputChange('role', e.target.value)} style={{ ...S.input, width: '100%', boxSizing: 'border-box' }} />
             </div>
           </div>
           <div style={S.formGrid}>
@@ -134,9 +134,9 @@ export default function PersonCard({ person, onUpdate, onDelete, onBack, events 
             </div>
             <div style={S.formRow}>
               <div style={{ ...S.label, marginBottom: 4 }}>Profiili</div>
-              <select value={formData.profile || ''} onChange={e => handleInputChange('profile', e.target.value)} style={{ ...S.select, width: '100%', boxSizing: 'border-box' }}>
+              <select value={formData.type || ''} onChange={e => handleInputChange('type', e.target.value)} style={{ ...S.select, width: '100%', boxSizing: 'border-box' }}>
                 <option value="">Valitse</option>
-                {PROFILES.map(p => <option key={p} value={p}>{p}</option>)}
+                {PROFILES.map(p => <option key={p.value} value={p.value}>{p.label}</option>)}
               </select>
             </div>
           </div>
@@ -148,7 +148,7 @@ export default function PersonCard({ person, onUpdate, onDelete, onBack, events 
       ) : (
         <div>
           <div style={S.formGrid}>
-            {[['Etunimi', person?.first_name], ['Sukunimi', person?.last_name], ['Yritys', person?.company], ['Työnimike', person?.job], ['Sähköposti', person?.email], ['Puhelin', person?.phone], ['Verkkosivusto', person?.website], ['Profiili', person?.profile]].map(([label, val]) => (
+            {[['Etunimi', person?.first_name], ['Sukunimi', person?.last_name], ['Yritys', person?.company], ['Työnimike', person?.role], ['Sähköposti', person?.email], ['Puhelin', person?.phone], ['Verkkosivusto', person?.website], ['Profiili', PROFILES.find(p => p.value === person?.type)?.label || person?.type]].map(([label, val]) => (
               <div key={label} style={{ marginBottom: 10 }}>
                 <div style={S.label}>{label}</div>
                 <div style={{ fontSize: 13 }}>{val || '-'}</div>

@@ -6,14 +6,14 @@ import Field from '../common/Field';
 
 export default function NewPersonModal({ show, onClose, onAdd }) {
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
+    first_name: '',
+    last_name: '',
     company: '',
-    job: '',
+    role: '',
     email: '',
     phone: '',
     website: '',
-    profile: ''
+    type: ''
   });
 
   const handleInputChange = (field, value) => {
@@ -27,14 +27,14 @@ export default function NewPersonModal({ show, onClose, onAdd }) {
 
   const resetForm = () => {
     setFormData({
-      firstName: '',
-      lastName: '',
+      first_name: '',
+      last_name: '',
       company: '',
-      job: '',
+      role: '',
       email: '',
       phone: '',
       website: '',
-      profile: ''
+      type: ''
     });
   };
 
@@ -50,8 +50,8 @@ export default function NewPersonModal({ show, onClose, onAdd }) {
           <Field label="Etunimi">
             <input
               type="text"
-              value={formData.firstName}
-              onChange={(e) => handleInputChange('firstName', e.target.value)}
+              value={formData.first_name}
+              onChange={(e) => handleInputChange('first_name', e.target.value)}
               style={S.inputFull}
               placeholder="Etunimi"
             />
@@ -59,8 +59,8 @@ export default function NewPersonModal({ show, onClose, onAdd }) {
           <Field label="Sukunimi">
             <input
               type="text"
-              value={formData.lastName}
-              onChange={(e) => handleInputChange('lastName', e.target.value)}
+              value={formData.last_name}
+              onChange={(e) => handleInputChange('last_name', e.target.value)}
               style={S.inputFull}
               placeholder="Sukunimi"
             />
@@ -80,8 +80,8 @@ export default function NewPersonModal({ show, onClose, onAdd }) {
           <Field label="Työnimike">
             <input
               type="text"
-              value={formData.job}
-              onChange={(e) => handleInputChange('job', e.target.value)}
+              value={formData.role}
+              onChange={(e) => handleInputChange('role', e.target.value)}
               style={S.inputFull}
               placeholder="Työnimike"
             />
@@ -121,13 +121,13 @@ export default function NewPersonModal({ show, onClose, onAdd }) {
           </Field>
           <Field label="Profiili">
             <select
-              value={formData.profile}
-              onChange={(e) => handleInputChange('profile', e.target.value)}
+              value={formData.type}
+              onChange={(e) => handleInputChange('type', e.target.value)}
               style={S.selectFull}
             >
               <option value="">Valitse profiili</option>
               {PROFILES.map(p => (
-                <option key={p} value={p}>{p}</option>
+                <option key={p.value} value={p.value}>{p.label}</option>
               ))}
             </select>
           </Field>

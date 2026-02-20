@@ -23,10 +23,12 @@ export const LOCATION_ORDER = [
 ];
 
 export const PROFILES = [
-  'UUSI KONTAKTI',
-  'PROSPEKTI',
-  'ASIAKAS',
-  'VAKIOASIAKAS'
+  { value: 'NEW CONTACT', label: 'UUSI KONTAKTI' },
+  { value: 'PROSPECT', label: 'PROSPEKTI' },
+  { value: 'CUSTOMER', label: 'ASIAKAS' },
+  { value: 'REGULAR', label: 'VAKIOASIAKAS' },
+  { value: 'Yhteistyökumppani', label: 'YHTEISTYÖKUMPPANI' },
+  { value: 'Toimittaja', label: 'TOIMITTAJA' },
 ];
 
 export const STATUSES = [

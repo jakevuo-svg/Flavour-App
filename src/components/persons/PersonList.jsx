@@ -24,8 +24,8 @@ export default function PersonList({ persons = [], onPersonClick, searchQuery = 
       aVal = (a.company || '').toLowerCase();
       bVal = (b.company || '').toLowerCase();
     } else if (sortField === 'profile') {
-      aVal = (a.profile || '').toLowerCase();
-      bVal = (b.profile || '').toLowerCase();
+      aVal = (a.type || '').toLowerCase();
+      bVal = (b.type || '').toLowerCase();
     } else if (sortField === 'modified') {
       aVal = a.modified || a.updated_at || '';
       bVal = b.modified || b.updated_at || '';
@@ -57,7 +57,7 @@ export default function PersonList({ persons = [], onPersonClick, searchQuery = 
         <div key={person.id} style={S.row} onClick={() => onPersonClick?.(person)}>
           <span style={{ ...S.col(2), fontWeight: 600 }}>{person.first_name} {person.last_name}</span>
           <span style={{ ...S.col(2), color: '#999' }}>{person.company || ''}</span>
-          <span style={{ ...S.col(1), color: '#999' }}>{person.profile || ''}</span>
+          <span style={{ ...S.col(1), color: '#999' }}>{person.type || ''}</span>
           <span style={{ ...S.col(1), color: '#666', fontSize: 11 }}>
             {person.updated_at ? new Date(person.updated_at).toLocaleDateString('fi-FI') : ''}
           </span>

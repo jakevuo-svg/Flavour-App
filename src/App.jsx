@@ -49,7 +49,7 @@ const AppContent = () => {
   const { persons, addPerson, deletePerson, updatePerson } = usePersons();
   const { events, addEvent, deleteEvent, updateEvent, assignWorker, removeWorkerAssignment, getEventAssignments } = useEvents();
   const { notes, addNote, deleteNote, removeNotesForEvent } = useNotes();
-  const { locations, updateLocation, addFile: addLocationFile, removeFile: removeLocationFile, getFiles: getLocationFiles } = useLocations();
+  const { locations, addLocation, updateLocation, deleteLocation, addFile: addLocationFile, removeFile: removeLocationFile, getFiles: getLocationFiles } = useLocations();
   const { tasks, addTask, updateTask, deleteTask } = useTasks();
   const { permissions, togglePermission, hasPermission, getTabsForRole, resetToDefaults } = usePermissions();
   const {
@@ -505,7 +505,9 @@ const AppContent = () => {
             locations={locations}
             events={events}
             onEventClick={handleEventClick}
+            onAddLocation={addLocation}
             onUpdateLocation={updateLocation}
+            onDeleteLocation={deleteLocation}
             onAddFile={addLocationFile}
             onRemoveFile={removeLocationFile}
             onGetFiles={getLocationFiles}

@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../auth/AuthContext';
 import S from '../../styles/theme';
+import NewLocationModal from './NewLocationModal';
 
 const FILE_TYPES = [
   { key: 'floorplan', label: 'POHJAPIIRROS' },
@@ -84,7 +85,7 @@ const EditableDriveLink = ({ url, label, onSave }) => {
   );
 };
 
-const LocationList = ({ locations = [], events = [], onEventClick, onUpdateLocation, onAddFile, onRemoveFile, onGetFiles }) => {
+const LocationList = ({ locations = [], events = [], onEventClick, onUpdateLocation, onAddLocation, onDeleteLocation, onAddFile, onRemoveFile, onGetFiles }) => {
   const { profile } = useAuth();
   const [expandedId, setExpandedId] = useState(null);
   const [editing, setEditing] = useState(false);
@@ -92,6 +93,7 @@ const LocationList = ({ locations = [], events = [], onEventClick, onUpdateLocat
   const [locationFiles, setLocationFiles] = useState({});
   const [showAddFile, setShowAddFile] = useState(false);
   const [newFile, setNewFile] = useState({ name: '', type: 'other', driveLink: '' });
+  const [showNewLocation, setShowNewLocation] = useState(false);
   const fileInputRef = useRef(null);
   const isAdmin = profile?.role === 'admin';
 
@@ -210,12 +212,23 @@ const LocationList = ({ locations = [], events = [], onEventClick, onUpdateLocat
 
   return (
     <div style={{ ...S.border, ...S.bg, borderTop: "none" }}>
-      <div style={{ ...S.pad, borderBottom: "1px solid #444" }}>
+      <div style={{ ...S.pad, ...S.flexBetween, borderBottom: "1px solid #444" }}>
         <div style={S.label}>SIJAINNIT ({locations.length})</div>
+        {isAdmin && onAddLocation && (
+          <button onClick={() => setShowNewLocation(true)} style={S.btnSmall}>+ UUSI SIJAINTI</button>
+        )}
       </div>
 
+      {isAdmin && onAddLocation && (
+        <NewLocationModal
+          show={showNewLocation}
+          onClose={() => setShowNewLocation(false)}
+          onAdd={onAddLocation}
+        />
+      )}
+
       {/* Location cards grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 2, padding: 2 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 2, padding: 2 }}>
         {locations.map(location => (
           <div
             key={location.id}
@@ -262,6 +275,9 @@ const LocationList = ({ locations = [], events = [], onEventClick, onUpdateLocat
                   <button onClick={saveEdit} style={S.btnBlack}>TALLENNA</button>
                   <button onClick={cancelEdit} style={S.btnWire}>PERUUTA</button>
                 </>
+              )}
+              {isAdmin && onDeleteLocation && !editing && (
+                <button onClick={async (e) => { e.stopPropagation(); if (window.confirm('Haluatko varmasti poistaa tämän sijainnin?')) { await onDeleteLocation(expandedId); setExpandedId(null); } }} style={S.btnDanger}>POISTA</button>
               )}
               <button onClick={() => { setExpandedId(null); setEditing(false); }} style={S.btnSmall}>SULJE ✕</button>
             </div>
