@@ -76,8 +76,12 @@ export const getPersons = async () => {
   }
 
   // Fetch system users to filter them out — persons should only show clients
-  const { data: systemUsers } = await supabase.from('users').select('email');
+  const { data: systemUsers } = await supabase.from('users').select('email, first_name, last_name');
   const systemEmails = new Set((systemUsers || []).map(u => u.email?.toLowerCase()).filter(Boolean));
+  const systemNames = new Set((systemUsers || []).map(u => {
+    const name = `${(u.first_name || '').toLowerCase().trim()} ${(u.last_name || '').toLowerCase().trim()}`.trim();
+    return name || null;
+  }).filter(Boolean));
 
   const { data, error } = await supabase
     .from('persons')
@@ -89,8 +93,13 @@ export const getPersons = async () => {
     throw error;
   }
 
-  // Filter out system users (admins/workers) — keep only clients
-  const clients = (data || []).filter(p => !systemEmails.has(p.email?.toLowerCase()));
+  // Filter out system users (admins/workers) — match by email OR full name
+  const clients = (data || []).filter(p => {
+    if (p.email && systemEmails.has(p.email.toLowerCase())) return false;
+    const personName = `${(p.first_name || '').toLowerCase().trim()} ${(p.last_name || '').toLowerCase().trim()}`.trim();
+    if (personName && systemNames.has(personName)) return false;
+    return true;
+  });
   return clients;
 };
 
