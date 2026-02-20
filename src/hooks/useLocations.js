@@ -179,18 +179,20 @@ export function useLocations() {
     try {
       setError(null);
 
+      console.log('[getFiles] Fetching files for location:', locationId);
       const { data, error: err } = await supabase
         .from('location_files')
         .select('*')
         .eq('location_id', locationId)
         .order('created_at', { ascending: false });
 
+      console.log('[getFiles] Result:', { data, error: err });
       if (err) throw err;
       return data || [];
     } catch (err) {
       console.error('Failed to fetch location files:', err);
       setError(err.message);
-      throw err;
+      return [];
     }
   }, []);
 
