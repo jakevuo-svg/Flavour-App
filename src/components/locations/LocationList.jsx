@@ -284,7 +284,7 @@ const LocationList = ({ locations = [], events = [], onEventClick, onUpdateLocat
                 <div style={S.formGrid}>
                   <div>
                     <div style={S.label}>KAPASITEETTI</div>
-                    <input style={S.inputFull} type="number" value={editData.capacity || ''} onChange={e => setEditData({ ...editData, capacity: parseInt(e.target.value) || '' })} />
+                    <textarea style={{ ...S.inputFull, minHeight: 60, fontFamily: 'inherit', resize: 'vertical' }} value={editData.capacity || ''} onChange={e => setEditData({ ...editData, capacity: e.target.value })} placeholder="Esim. Istumaan 50-300 hlö, Seisomaan 50-650 hlö" />
                   </div>
                   <div>
                     <div style={S.label}>OSOITE</div>
@@ -435,17 +435,15 @@ const LocationList = ({ locations = [], events = [], onEventClick, onUpdateLocat
                   <div key={file.id} style={{ ...S.flexBetween, padding: '6px 0', borderBottom: '1px solid #333' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                       <span style={{ ...S.tag(false), fontSize: 9, padding: '2px 6px' }}>
-                        {(FILE_TYPES.find(t => t.key === file.type) || {}).label || 'MUU'}
+                        {(FILE_TYPES.find(t => t.key === file.file_type) || {}).label || 'MUU'}
                       </span>
-                      <span style={{ fontSize: 12 }}>{file.name}</span>
+                      <span style={{ fontSize: 12 }}>{file.file_name}</span>
                     </div>
                     <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                      {file.driveLink && <DriveLink url={file.driveLink} label="DRIVE" />}
-                      {file.fileData && file.fileType?.startsWith('image/') && (
-                        <img src={file.fileData} alt={file.name} style={{ width: 40, height: 40, objectFit: 'cover', border: '1px solid #444' }} />
-                      )}
-                      {file.fileData && (
-                        <a href={file.fileData} download={file.fileName || file.name} style={{ color: '#ddd', fontSize: 11, textDecoration: 'underline' }}>LATAA</a>
+                      {file.file_path && file.file_path.startsWith('http') && (
+                        <a href={file.file_path} target="_blank" rel="noopener noreferrer" style={{ color: '#ddd', fontSize: 11, textDecoration: 'underline' }}>
+                          {file.file_path.includes('drive.google.com') ? 'DRIVE' : 'AVAA'}
+                        </a>
                       )}
                       {isAdmin && (
                         <span onClick={() => handleRemoveFile(file.id)} style={{ color: '#666', cursor: 'pointer', fontSize: 11 }}>✕</span>

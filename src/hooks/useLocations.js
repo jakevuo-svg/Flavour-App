@@ -109,9 +109,42 @@ export function useLocations() {
     try {
       setError(null);
 
+      let filePath = fileData.driveLink || '';
+
+      // If actual file data (base64) is provided, upload to Supabase Storage
+      if (fileData.fileData && fileData.fileName) {
+        const fileExtension = fileData.fileName.split('.').pop();
+        const safeFileName = `loc-${locationId}-${Date.now()}.${fileExtension}`;
+        const storagePath = `location-files/${safeFileName}`;
+
+        // Convert base64 data URI to blob
+        const response = await fetch(fileData.fileData);
+        const blob = await response.blob();
+
+        const { error: uploadError } = await supabase.storage
+          .from('location-files')
+          .upload(storagePath, blob, { upsert: true, contentType: fileData.fileType || 'application/octet-stream' });
+
+        if (uploadError) throw uploadError;
+
+        // Get public URL
+        const { data: urlData } = supabase.storage
+          .from('location-files')
+          .getPublicUrl(storagePath);
+
+        filePath = urlData?.publicUrl || storagePath;
+      }
+
+      // Insert metadata record
       const { data, error: err } = await supabase
         .from('location_files')
-        .insert([{ location_id: locationId, ...fileData }])
+        .insert([{
+          location_id: locationId,
+          file_name: fileData.name || fileData.fileName || 'Untitled',
+          file_path: filePath,
+          file_type: fileData.fileType || fileData.type || 'other',
+          uploaded_by: profile?.id,
+        }])
         .select()
         .single();
 
@@ -122,7 +155,7 @@ export function useLocations() {
       setError(err.message);
       throw err;
     }
-  }, []);
+  }, [profile?.id]);
 
   const removeFile = useCallback(async (locationId, fileId) => {
     try {
