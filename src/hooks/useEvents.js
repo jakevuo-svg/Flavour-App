@@ -35,7 +35,7 @@ export function useEvents() {
         query = query.in('id', eventIds);
       }
 
-      const { data, error: err } = await query.order('created_at', { ascending: false });
+      const { data, error: err } = await query.order('modified_at', { ascending: false });
 
       if (err) {
         console.error('[useEvents] Supabase query error:', err);

@@ -26,6 +26,13 @@ const Dashboard = ({ events = [], persons = [], notes = [], recentActivity = [],
       .slice(0, 5);
   }, [events]);
 
+  const recentlyModified = useMemo(() => {
+    return [...events]
+      .filter(e => e.modified_at)
+      .sort((a, b) => new Date(b.modified_at) - new Date(a.modified_at))
+      .slice(0, 5);
+  }, [events]);
+
   // Filter recent activity
   const getActionCategory = (action) => {
     if (!action) return 'ALL';
@@ -146,6 +153,36 @@ const Dashboard = ({ events = [], persons = [], notes = [], recentActivity = [],
               <div style={{ fontSize: 24, fontWeight: 700 }}>{upcomingEvents.length}</div>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Recently Modified Events */}
+      {recentlyModified.length > 0 && (
+        <div style={{ ...S.border, ...S.bg, borderTop: "none" }}>
+          <div style={{ ...S.pad, borderBottom: "1px solid #444" }}>
+            <div style={S.label}>VIIMEKSI MUOKATUT</div>
+          </div>
+          <div style={S.rowHeader}>
+            <span style={S.col(2)}>NIMI</span>
+            <span style={S.col(1)}>PVM</span>
+            <span style={S.col(1)}>TILA</span>
+            <span style={S.col(1)}>MUOKATTU</span>
+          </div>
+          {recentlyModified.map(event => (
+            <div
+              key={event.id}
+              style={{ ...S.row, cursor: 'pointer' }}
+              onClick={() => onEventClick?.(event)}
+            >
+              <span style={{ ...S.col(2), fontWeight: 600 }}>{event.name}</span>
+              <span style={S.col(1)}>{new Date(event.date).toLocaleDateString('fi-FI')}</span>
+              <span style={S.col(1)}>{event.status || ''}</span>
+              <span style={{ ...S.col(1), color: '#999', fontSize: 11 }}>
+                {new Date(event.modified_at).toLocaleDateString('fi-FI')}{' '}
+                {new Date(event.modified_at).toLocaleTimeString('fi-FI', { hour: '2-digit', minute: '2-digit' })}
+              </span>
+            </div>
+          ))}
         </div>
       )}
 

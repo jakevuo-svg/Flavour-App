@@ -117,12 +117,18 @@ export function useNotes() {
     }
   }, []);
 
+  // Remove notes for a deleted event from local state (DB CASCADE handles the actual deletion)
+  const removeNotesForEvent = useCallback((eventId) => {
+    setNotes(prev => prev.filter(n => n.event_id !== eventId));
+  }, []);
+
   return {
     notes,
     loading,
     error,
     addNote,
     deleteNote,
+    removeNotesForEvent,
     getNotesForEvent,
     getNotesForPerson,
     refetch: fetchNotes,

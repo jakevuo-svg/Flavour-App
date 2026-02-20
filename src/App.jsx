@@ -48,7 +48,7 @@ const AppContent = () => {
   // Data hooks
   const { persons, addPerson, deletePerson, updatePerson } = usePersons();
   const { events, addEvent, deleteEvent, updateEvent, assignWorker, removeWorkerAssignment, getEventAssignments } = useEvents();
-  const { notes, addNote, deleteNote } = useNotes();
+  const { notes, addNote, deleteNote, removeNotesForEvent } = useNotes();
   const { locations, updateLocation, addFile: addLocationFile, removeFile: removeLocationFile, getFiles: getLocationFiles } = useLocations();
   const { tasks, addTask, updateTask, deleteTask } = useTasks();
   const { permissions, togglePermission, hasPermission, getTabsForRole, resetToDefaults } = usePermissions();
@@ -180,21 +180,37 @@ const AppContent = () => {
     emitNoteAdded(data, contextName);
   };
 
-  const handleDeleteNote = (id) => {
-    deleteNote(id);
-    showToast(t('noteDeleted'), 'success');
+  const handleDeleteNote = async (id) => {
+    try {
+      await deleteNote(id);
+      showToast(t('noteDeleted'), 'success');
+    } catch (err) {
+      console.error('Failed to delete note:', err);
+      showToast('Muistiinpanon poisto epäonnistui', 'error');
+    }
   };
 
-  const handleDeletePerson = (id) => {
-    deletePerson(id);
-    setSelectedPerson(null);
-    showToast(t('personDeleted'), 'success');
+  const handleDeletePerson = async (id) => {
+    try {
+      await deletePerson(id);
+      setSelectedPerson(null);
+      showToast(t('personDeleted'), 'success');
+    } catch (err) {
+      console.error('Failed to delete person:', err);
+      showToast('Henkilön poisto epäonnistui', 'error');
+    }
   };
 
-  const handleDeleteEvent = (id) => {
-    deleteEvent(id);
-    setSelectedEvent(null);
-    showToast(t('eventDeleted'), 'success');
+  const handleDeleteEvent = async (id) => {
+    try {
+      await deleteEvent(id);
+      removeNotesForEvent(id); // Clean up notes from local state (DB CASCADE handles actual deletion)
+      setSelectedEvent(null);
+      showToast(t('eventDeleted'), 'success');
+    } catch (err) {
+      console.error('Failed to delete event:', err);
+      showToast('Tapahtuman poisto epäonnistui', 'error');
+    }
   };
 
   const handlePersonClick = (person) => {
@@ -276,7 +292,7 @@ const AppContent = () => {
             onUpdate={updatePerson}
             onDelete={handleDeletePerson}
             onAddNote={addNote}
-            onDeleteNote={deleteNote}
+            onDeleteNote={handleDeleteNote}
           />
         ) : null;
 
@@ -309,7 +325,7 @@ const AppContent = () => {
             onDeleteTask={deleteTask}
             notes={notes.filter(n => n.event_id === selectedEvent?.id)}
             onAddNote={handleAddNote}
-            onDeleteNote={deleteNote}
+            onDeleteNote={handleDeleteNote}
           />
         ) : null;
 
