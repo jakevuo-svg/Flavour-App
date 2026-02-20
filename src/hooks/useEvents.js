@@ -93,6 +93,8 @@ export function useEvents() {
         orderAttachments: data.orderAttachments || [],
         materials: data.materials || [],
         notes: data.notes || '',
+        duringEvent: data.duringEvent || '',
+        feedback: data.feedback || '',
         food: data.food || '',
         foodPrice: data.foodPrice || null,
         drinks: data.drinks || '',

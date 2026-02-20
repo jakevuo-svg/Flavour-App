@@ -478,10 +478,16 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
             {EF({ label: "Google Drive linkki", field: "orderLink", type: "url" })}
             {EF({ label: "Tilauksen lisätiedot", field: "orderNotes", textarea: true })}
           </Section>
+          <Section title="TAPAHTUMAN AIKANA" defaultOpen={!!formData.duringEvent}>
+            {EF({ label: "Ohjeet ja tehtävät tapahtuman aikana", field: "duringEvent", textarea: true })}
+          </Section>
           <Section title="HINNOITTELU" defaultOpen={true}>
             {[['Ruoka', 'food', 'foodPrice'], ['Juomat', 'drinks', 'drinksPrice'], ['Tekniikka', 'tech', 'techPrice'], ['Ohjelma', 'program', 'programPrice']].map(([label, desc, price]) => (
               <div key={desc} style={S.formGrid}>{EF({ label, field: desc })}{EF({ label: `${label} hinta (€)`, field: price, type: "number" })}</div>
             ))}
+          </Section>
+          <Section title="PALAUTE" defaultOpen={!!formData.feedback}>
+            {EF({ label: "Asiakaspalaute ja omat huomiot", field: "feedback", textarea: true })}
           </Section>
           <Section title="MUISTIINPANOT" defaultOpen={!!formData.notes || notes.length > 0} count={notes.length + (formData.notes ? 1 : 0)}>
             {EF({ label: "Yleiset muistiinpanot", field: "notes", textarea: true })}
@@ -722,6 +728,8 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
             )}
           </Section>
 
+          <Section title="TAPAHTUMAN AIKANA" defaultOpen={!!event?.duringEvent}><TextBlock text={event?.duringEvent} /></Section>
+
           <Section title="HINNOITTELU" defaultOpen={total > 0}>
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
               <tbody>
@@ -740,6 +748,8 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
               </tbody>
             </table>
           </Section>
+
+          <Section title="PALAUTE" defaultOpen={!!event?.feedback}><TextBlock text={event?.feedback} /></Section>
 
           <Section title="TEHTÄVÄT" defaultOpen={true} count={eventTasks.length}>
             <div style={{ ...S.flexBetween, marginBottom: 8 }}>
