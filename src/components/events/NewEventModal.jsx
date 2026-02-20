@@ -84,7 +84,7 @@ export default function NewEventModal({ onClose, onAdd, locations = [], prefille
 
   const [activeSection, setActiveSection] = useState('PERUSTIEDOT');
   const [formData, setFormData] = useState({
-    name: '', type: '', date: prefilledDate, start_time: '', end_time: '',
+    name: '', type: '', date: prefilledDate, end_date: '', start_time: '', end_time: '',
     location_name: '', location_id: '', guest_count: '', language: '',
     company: '', booker: '', contact: '', clientName: '', status: '',
     goal: '', attentionNotes: '', allergens: [], ervNotes: '', schedule: '', menu: '',
@@ -117,11 +117,19 @@ export default function NewEventModal({ onClose, onAdd, locations = [], prefille
     setFormData({ ...formData, location_name: locName, location_id: loc?.id || '' });
   };
 
-  const handleSubmit = () => { onAdd(formData); resetForm(); };
+  const [validationError, setValidationError] = useState('');
+
+  const handleSubmit = () => {
+    if (!formData.name.trim()) { setValidationError('Tapahtuman nimi puuttuu'); setActiveSection('PERUSTIEDOT'); return; }
+    if (!formData.date) { setValidationError('Päivämäärä puuttuu'); setActiveSection('PERUSTIEDOT'); return; }
+    setValidationError('');
+    onAdd(formData);
+    resetForm();
+  };
 
   const resetForm = () => {
     setFormData({
-      name: '', type: '', date: prefilledDate, start_time: '', end_time: '',
+      name: '', type: '', date: prefilledDate, end_date: '', start_time: '', end_time: '',
       location_name: '', location_id: '', guest_count: '', language: '',
       company: '', booker: '', contact: '', clientName: '', status: '',
       goal: '', attentionNotes: '', allergens: [], ervNotes: '', schedule: '', menu: '',
@@ -210,13 +218,17 @@ export default function NewEventModal({ onClose, onAdd, locations = [], prefille
               </div>
               <div style={S.formGrid}>
                 <div>
-                  <div style={S.label}>Päivämäärä</div>
+                  <div style={S.label}>Alkupäivä</div>
                   <input type="date" value={formData.date} onChange={e => handleInputChange('date', e.target.value)} style={{ ...S.input, width: '100%', boxSizing: 'border-box' }} />
                 </div>
-                <div style={S.formGrid}>
-                  <TimeSelect value={formData.start_time} onChange={v => handleInputChange('start_time', v)} label="Alkaa" />
-                  <TimeSelect value={formData.end_time} onChange={v => handleInputChange('end_time', v)} label="Päättyy" />
+                <div>
+                  <div style={S.label}>Loppupäivä</div>
+                  <input type="date" value={formData.end_date} onChange={e => handleInputChange('end_date', e.target.value)} style={{ ...S.input, width: '100%', boxSizing: 'border-box' }} />
                 </div>
+              </div>
+              <div style={S.formGrid}>
+                <TimeSelect value={formData.start_time} onChange={v => handleInputChange('start_time', v)} label="Alkaa" />
+                <TimeSelect value={formData.end_time} onChange={v => handleInputChange('end_time', v)} label="Päättyy" />
               </div>
               <div style={S.formGrid}>
                 <div>
@@ -400,6 +412,11 @@ export default function NewEventModal({ onClose, onAdd, locations = [], prefille
           )}
         </div>
 
+        {validationError && (
+          <div style={{ marginTop: 12, padding: '8px 12px', background: '#4a1c1c', border: '1px solid #ff4444', color: '#ff6666', fontSize: 12, fontWeight: 600 }}>
+            {validationError}
+          </div>
+        )}
         <div style={{ ...S.flex, ...S.gap, marginTop: 16, borderTop: '2px solid #444', paddingTop: 16 }}>
           <button onClick={handleSubmit} style={S.btnBlack}>LISÄÄ TAPAHTUMA</button>
           <button onClick={handleClose} style={S.btnWire}>PERUUTA</button>

@@ -67,7 +67,7 @@ export function useEvents() {
       const eventData = {
         name: data.name || '',
         type: data.type || '',
-        date: data.date || null,
+        date: data.date || new Date().toISOString().split('T')[0],
         start_time: data.start_time || '',
         end_time: data.end_time || '',
         location_name: data.location_name || '',
