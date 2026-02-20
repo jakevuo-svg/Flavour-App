@@ -96,6 +96,26 @@ const AppContent = () => {
   const [toast, setToast] = useState(null);
   const [showChangePassword, setShowChangePassword] = useState(false);
 
+  // Keep selectedEvent in sync with the events array (so edits reflect immediately)
+  useEffect(() => {
+    if (selectedEvent) {
+      const updated = events.find(e => e.id === selectedEvent.id);
+      if (updated && updated !== selectedEvent) {
+        setSelectedEvent(updated);
+      }
+    }
+  }, [events, selectedEvent]);
+
+  // Keep selectedPerson in sync with the persons array
+  useEffect(() => {
+    if (selectedPerson) {
+      const updated = persons.find(p => p.id === selectedPerson.id);
+      if (updated && updated !== selectedPerson) {
+        setSelectedPerson(updated);
+      }
+    }
+  }, [persons, selectedPerson]);
+
   // Dynamic recent activity — built from real notes
   const recentActivity = useMemo(() => {
     const activities = [];
@@ -146,11 +166,16 @@ const AppContent = () => {
     setTimeout(() => setToast(null), 3000);
   };
 
-  const handleAddPerson = (data) => {
-    const p = addPerson(data);
-    setShowNewPerson(false);
-    showToast(t('personAdded'), 'success');
-    emitPersonCreated({ ...data, id: p?.id || 'new' });
+  const handleAddPerson = async (data) => {
+    try {
+      const p = await addPerson(data);
+      setShowNewPerson(false);
+      showToast(t('personAdded'), 'success');
+      emitPersonCreated({ ...data, id: p?.id || 'new' });
+    } catch (err) {
+      console.error('Failed to add person:', err);
+      showToast('Henkilön lisäys epäonnistui', 'error');
+    }
   };
 
   const handleAddEvent = async (data) => {
@@ -169,15 +194,26 @@ const AppContent = () => {
     }
   };
 
-  const handleAddNote = (data) => {
-    addNote(data);
-    showToast(t('noteAdded'), 'success');
-    const contextName = data.event_id
-      ? events.find(e => e.id === data.event_id)?.name
-      : data.person_id
-        ? persons.find(p => p.id === data.person_id)?.first_name + ' ' + persons.find(p => p.id === data.person_id)?.last_name
-        : null;
-    emitNoteAdded(data, contextName);
+  const handleAddNote = async (data) => {
+    try {
+      // Convert empty strings to null for foreign keys (Supabase rejects '' for UUID columns)
+      const noteData = {
+        ...data,
+        event_id: data.event_id || null,
+        person_id: data.person_id || null,
+      };
+      await addNote(noteData);
+      showToast(t('noteAdded'), 'success');
+      const contextName = noteData.event_id
+        ? events.find(e => e.id === noteData.event_id)?.name
+        : noteData.person_id
+          ? persons.find(p => p.id === noteData.person_id)?.first_name + ' ' + persons.find(p => p.id === noteData.person_id)?.last_name
+          : null;
+      emitNoteAdded(noteData, contextName);
+    } catch (err) {
+      console.error('Failed to add note:', err);
+      showToast('Muistiinpanon lisäys epäonnistui', 'error');
+    }
   };
 
   const handleDeleteNote = async (id) => {

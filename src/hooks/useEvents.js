@@ -129,7 +129,6 @@ export function useEvents() {
       setError(null);
       const updateData = {
         ...data,
-        modified_by: profile?.id,
         modified_at: new Date().toISOString(),
       };
 
