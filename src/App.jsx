@@ -296,6 +296,26 @@ const AppContent = () => {
     }
   };
 
+  const handleUpdateEvent = async (id, data) => {
+    try {
+      const result = await updateEvent(id, data);
+      // Emit notification for event update
+      const eventName = result?.name || events.find(e => e.id === id)?.name || '';
+      const changeDesc = data.last_change || '';
+      emitEventUpdated({ id, name: eventName, last_change: changeDesc });
+      return result;
+    } catch (err) {
+      console.error('Failed to update event:', err);
+      throw err;
+    }
+  };
+
+  const handleNoteClick = (activity) => {
+    // Navigate to notes tab
+    setView('notes');
+    setActiveTab('NOTES');
+  };
+
   const handleAddTask = async (data) => {
     try {
       const task = await addTask(data);
@@ -311,13 +331,14 @@ const AppContent = () => {
 
   const handleUpdateTask = async (id, data) => {
     try {
-      const task = await updateTask(id, data);
-      const merged = { ...task, ...data };
-      const eventName = events.find(e => e.id === merged.event_id)?.name || '';
+      const updatedTask = await updateTask(id, data);
+      // updatedTask is the full task object from Supabase
+      const taskObj = typeof updatedTask === 'object' && updatedTask ? updatedTask : { ...data, id };
+      const eventName = events.find(e => e.id === taskObj.event_id)?.name || '';
       if (data.status) {
-        emitTaskStatusChanged(merged, eventName);
+        emitTaskStatusChanged(taskObj, eventName);
       }
-      return task;
+      return updatedTask;
     } catch (err) {
       console.error('Failed to update task:', err);
       showToast('Tehtävän päivitys epäonnistui', 'error');
@@ -371,6 +392,7 @@ const AppContent = () => {
             recentActivity={recentActivity}
             onEventClick={handleEventClick}
             onPersonClick={handlePersonClick}
+            onNoteClick={handleNoteClick}
             onTaskStatusChange={handleUpdateTask}
           />
         );
@@ -428,7 +450,7 @@ const AppContent = () => {
               setView('eventList');
               setActiveTab('EVENTS');
             }}
-            onUpdate={updateEvent}
+            onUpdate={handleUpdateEvent}
             onDelete={handleDeleteEvent}
             tasks={tasks}
             onAddTask={handleAddTask}
@@ -504,6 +526,7 @@ const AppContent = () => {
             recentActivity={recentActivity}
             onEventClick={handleEventClick}
             onPersonClick={handlePersonClick}
+            onNoteClick={handleNoteClick}
             onTaskStatusChange={handleUpdateTask}
           />
         );

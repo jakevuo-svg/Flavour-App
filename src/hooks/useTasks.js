@@ -61,29 +61,33 @@ export function useTasks() {
 
   const updateTask = async (taskId, updates) => {
     try {
+      const now = new Date().toISOString();
       const updateData = { ...updates };
       if (updates.status === 'DONE') {
-        updateData.completed_at = new Date().toISOString();
+        updateData.completed_at = now;
       }
       if (updates.status && updates.status !== 'DONE') {
         updateData.completed_at = null;
       }
 
-      const { error: err } = await supabase
+      const { data: updatedRow, error: err } = await supabase
         .from('event_tasks')
         .update(updateData)
-        .eq('id', taskId);
+        .eq('id', taskId)
+        .select()
+        .single();
 
       if (err) throw err;
 
+      // Always set updated_at in local state for dashboard tracking
+      const merged = { ...(updatedRow || updates), updated_at: now };
       setTasks(prev => prev.map(t => {
         if (t.id === taskId) {
-          const updated = { ...t, ...updateData };
-          return updated;
+          return { ...t, ...merged };
         }
         return t;
       }));
-      return true;
+      return merged;
     } catch (err) {
       console.error('[useTasks] Failed to update task:', err);
       setError(err.message);

@@ -120,10 +120,11 @@ export function useNotifications() {
   }, [pushNotification]);
 
   const emitEventUpdated = useCallback((event) => {
+    const changeDesc = event.last_change ? `: ${event.last_change}` : '';
     pushNotification({
       type: 'event_updated',
       title: 'Tapahtuma päivitetty',
-      message: `"${event.name}"`,
+      message: `"${event.name}"${changeDesc}`,
       entity_type: 'event',
       entity_id: event.id,
     });

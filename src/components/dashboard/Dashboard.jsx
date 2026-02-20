@@ -10,7 +10,7 @@ const FILTERS = [
   { key: 'PERSON', label: 'HENKILÖT' },
 ];
 
-const Dashboard = ({ events = [], persons = [], notes = [], recentActivity = [], tasks = [], onEventClick, onPersonClick, onTaskStatusChange }) => {
+const Dashboard = ({ events = [], persons = [], notes = [], recentActivity = [], tasks = [], onEventClick, onPersonClick, onNoteClick, onTaskStatusChange }) => {
   const { user } = useAuth();
   const [recentFilter, setRecentFilter] = useState('ALL');
   const [expandedGroups, setExpandedGroups] = useState({});
@@ -107,6 +107,11 @@ const Dashboard = ({ events = [], persons = [], notes = [], recentActivity = [],
           ) : (
             filteredActivity.map(a => {
               const handleClick = () => {
+                // Notes → navigate to notes section
+                if (a.action === 'ADDED_NOTE') {
+                  onNoteClick?.(a);
+                  return;
+                }
                 if (a.entity_type === 'event' && a.entity_id) {
                   const event = events.find(e => e.id === a.entity_id);
                   if (event) onEventClick?.(event);
@@ -115,7 +120,7 @@ const Dashboard = ({ events = [], persons = [], notes = [], recentActivity = [],
                   if (person) onPersonClick?.(person);
                 }
               };
-              const isClickable = a.entity_type && a.entity_id;
+              const isClickable = (a.action === 'ADDED_NOTE') || (a.entity_type && a.entity_id);
               return (
                 <div
                   key={a.id}
