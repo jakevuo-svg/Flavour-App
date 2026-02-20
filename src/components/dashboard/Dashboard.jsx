@@ -5,8 +5,9 @@ import S from '../../styles/theme';
 const FILTERS = [
   { key: 'ALL', label: 'KAIKKI' },
   { key: 'EVENT', label: 'TAPAHTUMAT' },
-  { key: 'PERSON', label: 'HENKILÖT' },
+  { key: 'TASK', label: 'TEHTÄVÄT' },
   { key: 'NOTE', label: 'MUISTIINPANOT' },
+  { key: 'PERSON', label: 'HENKILÖT' },
 ];
 
 const Dashboard = ({ events = [], persons = [], notes = [], recentActivity = [], tasks = [], onEventClick, onPersonClick, onTaskStatusChange }) => {
@@ -36,6 +37,7 @@ const Dashboard = ({ events = [], persons = [], notes = [], recentActivity = [],
   // Filter recent activity
   const getActionCategory = (action) => {
     if (!action) return 'ALL';
+    if (action.includes('TASK')) return 'TASK';
     if (action.includes('EVENT')) return 'EVENT';
     if (action.includes('PERSON')) return 'PERSON';
     if (action.includes('NOTE')) return 'NOTE';

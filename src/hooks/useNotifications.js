@@ -20,6 +20,8 @@ export const NOTIF_TYPES = {
   note_added: { icon: '✎', label: 'Muistiinpano' },
   deadline_approaching: { icon: '!', label: 'Deadline lähestyy' },
   task_overdue: { icon: '!!', label: 'Tehtävä myöhässä' },
+  task_added: { icon: '☐', label: 'Uusi tehtävä' },
+  task_updated: { icon: '☑', label: 'Tehtävä päivitetty' },
   person_updated: { icon: '○', label: 'Henkilö päivitetty' },
   person_created: { icon: '●', label: 'Uusi henkilö' },
   reminder: { icon: '◎', label: 'Muistutus' },
@@ -183,6 +185,27 @@ export function useNotifications() {
     });
   }, [pushNotification]);
 
+  const emitTaskAdded = useCallback((task, eventName) => {
+    pushNotification({
+      type: 'task_added',
+      title: 'Uusi tehtävä',
+      message: `"${task.title}" — ${eventName || ''}`,
+      entity_type: 'event',
+      entity_id: task.event_id,
+    });
+  }, [pushNotification]);
+
+  const emitTaskStatusChanged = useCallback((task, eventName) => {
+    const statusLabels = { TODO: 'Tehtävä', IN_PROGRESS: 'Käynnissä', DONE: 'Valmis' };
+    pushNotification({
+      type: 'task_updated',
+      title: 'Tehtävän tila muutettu',
+      message: `"${task.title}" → ${statusLabels[task.status] || task.status} — ${eventName || ''}`,
+      entity_type: 'event',
+      entity_id: task.event_id,
+    });
+  }, [pushNotification]);
+
   return {
     notifications,
     unreadCount,
@@ -202,5 +225,7 @@ export function useNotifications() {
     emitPersonUpdated,
     emitDeadline,
     emitTaskOverdue,
+    emitTaskAdded,
+    emitTaskStatusChanged,
   };
 }

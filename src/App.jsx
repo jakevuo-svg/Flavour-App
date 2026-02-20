@@ -56,6 +56,7 @@ const AppContent = () => {
     notifications, unreadCount,
     markRead, markAllRead, dismiss: dismissNotif, clearAll: clearAllNotifs,
     emitEventCreated, emitEventUpdated, emitNoteAdded, emitPersonCreated, emitDeadline, emitTaskOverdue,
+    emitTaskAdded, emitTaskStatusChanged,
   } = useNotifications();
 
   // Check deadlines on mount and when events change
@@ -169,11 +170,39 @@ const AppContent = () => {
       });
     });
 
+    // Convert tasks to activity entries
+    tasks.forEach(task => {
+      const eventName = events.find(e => e.id === task.event_id)?.name || '';
+      const statusLabels = { TODO: 'Tehtävä', IN_PROGRESS: 'Käynnissä', DONE: 'Valmis' };
+      if (task.created_at) {
+        activities.push({
+          id: `task-add-${task.id}`,
+          timestamp: task.created_at,
+          user_name: '',
+          action: 'ADDED_TASK',
+          action_description: `${eventName}: "${task.title}"`,
+          entity_type: 'event',
+          entity_id: task.event_id,
+        });
+      }
+      if (task.updated_at && task.updated_at !== task.created_at) {
+        activities.push({
+          id: `task-upd-${task.id}`,
+          timestamp: task.updated_at,
+          user_name: '',
+          action: 'UPDATED_TASK',
+          action_description: `${eventName}: "${task.title}" → ${statusLabels[task.status] || task.status}`,
+          entity_type: 'event',
+          entity_id: task.event_id,
+        });
+      }
+    });
+
     // Sort newest first, limit to 20
     return activities
       .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
       .slice(0, 20);
-  }, [notes, events, persons]);
+  }, [notes, events, persons, tasks]);
 
   if (!isLoggedIn) {
     return <LoginScreen />;
@@ -267,6 +296,34 @@ const AppContent = () => {
     }
   };
 
+  const handleAddTask = async (data) => {
+    try {
+      const task = await addTask(data);
+      const eventName = events.find(e => e.id === data.event_id)?.name || '';
+      emitTaskAdded(task || data, eventName);
+      showToast('Tehtävä lisätty', 'success');
+      return task;
+    } catch (err) {
+      console.error('Failed to add task:', err);
+      showToast('Tehtävän lisäys epäonnistui', 'error');
+    }
+  };
+
+  const handleUpdateTask = async (id, data) => {
+    try {
+      const task = await updateTask(id, data);
+      const merged = { ...task, ...data };
+      const eventName = events.find(e => e.id === merged.event_id)?.name || '';
+      if (data.status) {
+        emitTaskStatusChanged(merged, eventName);
+      }
+      return task;
+    } catch (err) {
+      console.error('Failed to update task:', err);
+      showToast('Tehtävän päivitys epäonnistui', 'error');
+    }
+  };
+
   const handlePersonClick = (person) => {
     setSelectedPerson(person);
     setView('personCard');
@@ -314,7 +371,7 @@ const AppContent = () => {
             recentActivity={recentActivity}
             onEventClick={handleEventClick}
             onPersonClick={handlePersonClick}
-            onTaskStatusChange={updateTask}
+            onTaskStatusChange={handleUpdateTask}
           />
         );
 
@@ -374,8 +431,8 @@ const AppContent = () => {
             onUpdate={updateEvent}
             onDelete={handleDeleteEvent}
             tasks={tasks}
-            onAddTask={addTask}
-            onUpdateTask={updateTask}
+            onAddTask={handleAddTask}
+            onUpdateTask={handleUpdateTask}
             onDeleteTask={deleteTask}
             notes={notes.filter(n => n.event_id === selectedEvent?.id)}
             onAddNote={handleAddNote}
@@ -447,7 +504,7 @@ const AppContent = () => {
             recentActivity={recentActivity}
             onEventClick={handleEventClick}
             onPersonClick={handlePersonClick}
-            onTaskStatusChange={updateTask}
+            onTaskStatusChange={handleUpdateTask}
           />
         );
     }

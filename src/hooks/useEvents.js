@@ -95,7 +95,6 @@ export function useEvents() {
         notes: data.notes || '',
         duringEvent: data.duringEvent || '',
         feedback: data.feedback || '',
-        last_change: data.last_change || '',
         food: data.food || '',
         foodPrice: data.foodPrice || null,
         drinks: data.drinks || '',
@@ -128,8 +127,10 @@ export function useEvents() {
   const updateEvent = useCallback(async (id, data) => {
     try {
       setError(null);
+      // Strip client-only fields before sending to DB
+      const { last_change, ...dbFields } = data;
       const updateData = {
-        ...data,
+        ...dbFields,
         modified_at: new Date().toISOString(),
       };
 
@@ -141,8 +142,10 @@ export function useEvents() {
         .single();
 
       if (err) throw err;
-      setEvents(prev => prev.map(e => e.id === id ? updated : e));
-      return updated;
+      // Merge last_change into local state only (not in DB)
+      const withMeta = { ...updated, last_change: last_change || '' };
+      setEvents(prev => prev.map(e => e.id === id ? withMeta : e));
+      return withMeta;
     } catch (err) {
       console.error('Failed to update event:', err);
       setError(err.message);

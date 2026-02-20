@@ -3,7 +3,7 @@ import { useAuth } from '../auth/AuthContext';
 import S from '../../styles/theme';
 
 const NotesView = ({ notes = [], events = [], persons = [], onAddNote, onDeleteNote }) => {
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   const [expandedNoteId, setExpandedNoteId] = useState(null);
   const [formData, setFormData] = useState({
     title: '',
@@ -11,8 +11,6 @@ const NotesView = ({ notes = [], events = [], persons = [], onAddNote, onDeleteN
     event_id: '',
     person_id: '',
   });
-
-  const isAdmin = user?.role === 'admin';
 
   const handleSubmit = (e) => {
     e.preventDefault();
