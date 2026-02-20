@@ -431,26 +431,51 @@ const LocationList = ({ locations = [], events = [], onEventClick, onUpdateLocat
           <Section title="TIEDOSTOT / MATERIAALIT" count={files.length}>
             {files.length > 0 && (
               <div style={{ marginBottom: 12 }}>
-                {files.map(file => (
-                  <div key={file.id} style={{ ...S.flexBetween, padding: '6px 0', borderBottom: '1px solid #333' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <span style={{ ...S.tag(false), fontSize: 9, padding: '2px 6px' }}>
-                        {(FILE_TYPES.find(t => t.key === file.file_type) || {}).label || 'MUU'}
-                      </span>
-                      <span style={{ fontSize: 12 }}>{file.file_name}</span>
-                    </div>
-                    <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                      {file.file_path && file.file_path.startsWith('http') && (
-                        <a href={file.file_path} target="_blank" rel="noopener noreferrer" style={{ color: '#ddd', fontSize: 11, textDecoration: 'underline' }}>
-                          {file.file_path.includes('drive.google.com') ? 'DRIVE' : 'AVAA'}
-                        </a>
+                {files.map(file => {
+                  const isImage = file.file_type?.startsWith('image/');
+                  const isPdf = file.file_type === 'application/pdf' || file.file_name?.toLowerCase().endsWith('.pdf');
+                  const isViewable = isImage || isPdf;
+                  return (
+                    <div key={file.id} style={{ borderBottom: '1px solid #333', padding: '8px 0' }}>
+                      <div style={{ ...S.flexBetween }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                          <span style={{ ...S.tag(false), fontSize: 9, padding: '2px 6px' }}>
+                            {(FILE_TYPES.find(t => t.key === file.file_type) || {}).label || 'MUU'}
+                          </span>
+                          <span style={{ fontSize: 12 }}>{file.file_name}</span>
+                        </div>
+                        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                          {file.file_path && file.file_path.startsWith('http') && (
+                            isViewable ? (
+                              <button
+                                onClick={() => {
+                                  const w = window.open('', '_blank');
+                                  if (isImage) {
+                                    w.document.write(`<html><body style="margin:0;display:flex;justify-content:center;align-items:center;min-height:100vh;background:#111"><img src="${file.file_path}" style="max-width:100%;max-height:100vh" /></body></html>`);
+                                  } else {
+                                    w.document.write(`<html><body style="margin:0"><iframe src="${file.file_path}" style="width:100%;height:100vh;border:none"></iframe></body></html>`);
+                                  }
+                                  w.document.title = file.file_name;
+                                }}
+                                style={{ background: 'none', border: '1px solid #555', color: '#ddd', fontSize: 11, padding: '2px 8px', cursor: 'pointer' }}
+                              >NÄYTÄ</button>
+                            ) : (
+                              <a href={file.file_path} target="_blank" rel="noopener noreferrer" style={{ color: '#ddd', fontSize: 11, textDecoration: 'underline' }}>
+                                {file.file_path.includes('drive.google.com') ? 'DRIVE' : 'AVAA'}
+                              </a>
+                            )
+                          )}
+                          {isAdmin && (
+                            <span onClick={() => handleRemoveFile(file.id)} style={{ color: '#666', cursor: 'pointer', fontSize: 11 }}>✕</span>
+                          )}
+                        </div>
+                      </div>
+                      {isImage && file.file_path?.startsWith('http') && (
+                        <img src={file.file_path} alt={file.file_name} style={{ marginTop: 6, maxWidth: '100%', maxHeight: 120, objectFit: 'contain', border: '1px solid #333', borderRadius: 2 }} />
                       )}
-                      {isAdmin && (
-                        <span onClick={() => handleRemoveFile(file.id)} style={{ color: '#666', cursor: 'pointer', fontSize: 11 }}>✕</span>
-                      )}
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
 
