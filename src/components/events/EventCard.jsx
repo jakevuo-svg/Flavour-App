@@ -190,7 +190,7 @@ const AttachmentSection = ({ attachments = [], onAdd, onRemove, onUpload, fileIn
   );
 };
 
-export default function EventCard({ event, onUpdate, onDelete, onBack, locations = [], persons = [], tasks = [], onAddTask, onUpdateTask, onDeleteTask, notes = [], onAddNote, onDeleteNote }) {
+export default function EventCard({ event, onUpdate, onDelete, onBack, locations = [], persons = [], tasks = [], onAddTask, onUpdateTask, onDeleteTask, notes = [], onAddNote, onDeleteNote, can = () => true }) {
   // Sort locations by preferred order (uses includes for flexible matching)
   const sortedLocations = [...locations].sort((a, b) => {
     const aName = (a.name || '').toLowerCase();
@@ -536,12 +536,14 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
               </div>
               {EF({ label: "Pax", field: "guest_count", type: "number" })}
             </div>
-            <div style={S.formGrid}>{EF({ label: "Kieli", field: "language", options: ['Suomi', 'Englanti'] })}{EF({ label: "Yritys", field: "company" })}</div>
-            <div style={S.formGrid}>{EF({ label: "Yhteystieto", field: "contact" })}{EF({ label: "Varaaja", field: "booker" })}</div>
+            {can('card_contacts') && <>
+              <div style={S.formGrid}>{EF({ label: "Kieli", field: "language", options: ['Suomi', 'Englanti'] })}{EF({ label: "Yritys", field: "company" })}</div>
+              <div style={S.formGrid}>{EF({ label: "Yhteystieto", field: "contact" })}{EF({ label: "Varaaja", field: "booker" })}</div>
+            </>}
           </Section>
-          <Section title="TAVOITE" defaultOpen={!!formData.goal}>{EF({ label: "", field: "goal", textarea: true })}</Section>
-          <Section title="HUOMIOITAVAA" defaultOpen={!!formData.attentionNotes}>{EF({ label: "", field: "attentionNotes", textarea: true })}</Section>
-          <Section title="ERV (ALLERGIAT/DIEETIT)" defaultOpen={!!formData.erv}>
+          {can('card_goal') && <Section title="TAVOITE" defaultOpen={!!formData.goal}>{EF({ label: "", field: "goal", textarea: true })}</Section>}
+          {can('card_attention') && <Section title="HUOMIOITAVAA" defaultOpen={!!formData.attentionNotes}>{EF({ label: "", field: "attentionNotes", textarea: true })}</Section>}
+          {can('card_erv') && <Section title="ERV (ALLERGIAT/DIEETIT)" defaultOpen={!!formData.erv}>
             {(() => {
               const parsed = parseErv(formData.erv);
               const toggleAllergen = (allergen) => {
@@ -590,30 +592,30 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
                 </div>
               );
             })()}
-          </Section>
-          <Section title="AIKATAULU" defaultOpen={!!formData.schedule}>{EF({ label: "", field: "schedule", textarea: true })}</Section>
-          <Section title="MENU" defaultOpen={!!formData.menu}>
+          </Section>}
+          {can('card_schedule') && <Section title="AIKATAULU" defaultOpen={!!formData.schedule}>{EF({ label: "", field: "schedule", textarea: true })}</Section>}
+          {can('card_menu') && <Section title="MENU" defaultOpen={!!formData.menu}>
             {EF({ label: "", field: "menu", textarea: true })}
             {EF({ label: "Menu Drive linkki", field: "menuLink", type: "url" })}
-          </Section>
-          <Section title="DEKORAATIOT" defaultOpen={!!formData.decorations}>{EF({ label: "", field: "decorations", textarea: true })}</Section>
-          <Section title="LOGISTIIKKA" defaultOpen={!!formData.logistics}>{EF({ label: "", field: "logistics", textarea: true })}</Section>
-          <Section title="TILAUS" defaultOpen={!!formData.orderLink}>
+          </Section>}
+          {can('card_decorations') && <Section title="DEKORAATIOT" defaultOpen={!!formData.decorations}>{EF({ label: "", field: "decorations", textarea: true })}</Section>}
+          {can('card_logistics') && <Section title="LOGISTIIKKA" defaultOpen={!!formData.logistics}>{EF({ label: "", field: "logistics", textarea: true })}</Section>}
+          {can('card_order') && <Section title="TILAUS" defaultOpen={!!formData.orderLink}>
             {EF({ label: "Google Drive linkki", field: "orderLink", type: "url" })}
             {EF({ label: "Tilauksen lisätiedot", field: "orderNotes", textarea: true })}
-          </Section>
-          <Section title="TAPAHTUMAN AIKANA" defaultOpen={!!formData.duringEvent}>
+          </Section>}
+          {can('card_during') && <Section title="TAPAHTUMAN AIKANA" defaultOpen={!!formData.duringEvent}>
             {EF({ label: "Ohjeet ja tehtävät tapahtuman aikana", field: "duringEvent", textarea: true })}
-          </Section>
-          <Section title="HINNOITTELU" defaultOpen={true}>
+          </Section>}
+          {can('card_pricing') && <Section title="HINNOITTELU" defaultOpen={true}>
             {[['Ruoka', 'food', 'foodPrice'], ['Juomat', 'drinks', 'drinksPrice'], ['Tekniikka', 'tech', 'techPrice'], ['Ohjelma', 'program', 'programPrice']].map(([label, desc, price]) => (
               <div key={desc} style={S.formGrid}>{EF({ label, field: desc })}{EF({ label: `${label} hinta (€)`, field: price, type: "number" })}</div>
             ))}
-          </Section>
-          <Section title="PALAUTE" defaultOpen={!!formData.feedback}>
+          </Section>}
+          {can('card_feedback') && <Section title="PALAUTE" defaultOpen={!!formData.feedback}>
             {EF({ label: "Asiakaspalaute ja omat huomiot", field: "feedback", textarea: true })}
-          </Section>
-          <Section title="MUISTIINPANOT" defaultOpen={!!formData.notes || notes.length > 0} count={notes.length + (formData.notes ? 1 : 0)}>
+          </Section>}
+          {can('card_notes') && <Section title="MUISTIINPANOT" defaultOpen={!!formData.notes || notes.length > 0} count={notes.length + (formData.notes ? 1 : 0)}>
             {EF({ label: "Yleiset muistiinpanot", field: "notes", textarea: true })}
 
             {/* Global notes for this event — same as view mode */}
@@ -657,7 +659,7 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
             ) : (
               <button onClick={() => setShowAddNote(true)} style={{ ...S.btnSmall, marginTop: 8 }}>+ LISÄÄ MUISTIINPANO</button>
             )}
-          </Section>
+          </Section>}
         </div>
       ) : (
         /* ===== VIEW MODE — collapsible sections ===== */
@@ -670,8 +672,8 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
                 ['Loppupäivä', event?.end_date ? new Date(event.end_date).toLocaleDateString('fi-FI') : '-'],
                 ['Aika', `${event?.start_time || ''}${event?.end_time ? ' – ' + event.end_time : ''}`],
                 ['Sijainti', event?.location_name], ['Pax', event?.guest_count],
-                ['Kieli', event?.language], ['Yritys', event?.company],
-                ['Yhteystieto', event?.contact], ['Varaaja', event?.booker],
+                ['Kieli', event?.language],
+                ...(can('card_contacts') ? [['Yritys', event?.company], ['Yhteystieto', event?.contact], ['Varaaja', event?.booker]] : []),
               ].map(([label, val]) => (
                 <div key={label} style={{ marginBottom: 6 }}>
                   <div style={S.label}>{label}</div>
@@ -682,7 +684,7 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
           </Section>
 
           {/* TYÖNTEKIJÄT */}
-          <Section title="TYÖNTEKIJÄT" defaultOpen={true} count={assignedWorkers.length}>
+          {can('card_workers') && <Section title="TYÖNTEKIJÄT" defaultOpen={true} count={assignedWorkers.length}>
             {assignedWorkers.length === 0 && !showAddWorker && (
               <div style={{ color: '#666', fontSize: 12, marginBottom: 8 }}>Ei lisättyjä työntekijöitä</div>
             )}
@@ -718,11 +720,11 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
             ) : (
               <button onClick={() => setShowAddWorker(true)} style={{ ...S.btnSmall, marginTop: 8 }}>+ LISÄÄ TYÖNTEKIJÄ</button>
             )}
-          </Section>
+          </Section>}
 
-          <Section title="TAVOITE" defaultOpen={!!event?.goal}><TextBlock text={event?.goal} /></Section>
-          <Section title="HUOMIOITAVAA" defaultOpen={!!event?.attentionNotes}><TextBlock text={event?.attentionNotes} /></Section>
-          <Section title="ERV (ALLERGIAT/DIEETIT)" defaultOpen={!!event?.erv}>
+          {can('card_goal') && <Section title="TAVOITE" defaultOpen={!!event?.goal}><TextBlock text={event?.goal} /></Section>}
+          {can('card_attention') && <Section title="HUOMIOITAVAA" defaultOpen={!!event?.attentionNotes}><TextBlock text={event?.attentionNotes} /></Section>}
+          {can('card_erv') && <Section title="ERV (ALLERGIAT/DIEETIT)" defaultOpen={!!event?.erv}>
             {(() => {
               const parsed = parseErv(event?.erv);
               return (
@@ -739,11 +741,11 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
                 </div>
               );
             })()}
-          </Section>
-          <Section title="AIKATAULU" defaultOpen={!!event?.schedule}><TextBlock text={event?.schedule} /></Section>
+          </Section>}
+          {can('card_schedule') && <Section title="AIKATAULU" defaultOpen={!!event?.schedule}><TextBlock text={event?.schedule} /></Section>}
 
           {/* MENU — with editable link + attachments */}
-          <Section title="MENU" defaultOpen={!!event?.menu || menuAttachments.length > 0}>
+          {can('card_menu') && <Section title="MENU" defaultOpen={!!event?.menu || menuAttachments.length > 0}>
             <TextBlock text={event?.menu} />
             <div style={{ marginTop: 10, paddingTop: 8, borderTop: '1px solid #333' }}>
               <div style={{ ...S.label, marginBottom: 4 }}>DRIVE-LINKKI</div>
@@ -760,13 +762,13 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
               />
               <input ref={menuFileRef} type="file" style={{ display: 'none' }} onChange={(e) => handleAttachmentUpload('menuAttachments', e)} accept="image/*,.pdf,.doc,.docx,.xls,.xlsx" />
             </div>
-          </Section>
+          </Section>}
 
-          <Section title="DEKORAATIOT" defaultOpen={!!event?.decorations}><TextBlock text={event?.decorations} /></Section>
-          <Section title="LOGISTIIKKA" defaultOpen={!!event?.logistics}><TextBlock text={event?.logistics} /></Section>
+          {can('card_decorations') && <Section title="DEKORAATIOT" defaultOpen={!!event?.decorations}><TextBlock text={event?.decorations} /></Section>}
+          {can('card_logistics') && <Section title="LOGISTIIKKA" defaultOpen={!!event?.logistics}><TextBlock text={event?.logistics} /></Section>}
 
           {/* ORDER — with editable link + attachments */}
-          <Section title="TILAUS" defaultOpen={!!event?.orderLink || orderAttachments.length > 0}>
+          {can('card_order') && <Section title="TILAUS" defaultOpen={!!event?.orderLink || orderAttachments.length > 0}>
             <div style={{ marginBottom: 10 }}>
               <div style={{ ...S.label, marginBottom: 4 }}>DRIVE-LINKKI</div>
               <EditableDriveLink url={formData.orderLink} label="Order Drive →" onSave={(val) => saveField('orderLink', val)} />
@@ -788,9 +790,9 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
               />
               <input ref={orderFileRef} type="file" style={{ display: 'none' }} onChange={(e) => handleAttachmentUpload('orderAttachments', e)} accept="image/*,.pdf,.doc,.docx,.xls,.xlsx" />
             </div>
-          </Section>
+          </Section>}
 
-          <Section title="MATERIAALIT / LIITTEET" defaultOpen={materials.length > 0} count={materials.length}>
+          {can('card_materials') && <Section title="MATERIAALIT / LIITTEET" defaultOpen={materials.length > 0} count={materials.length}>
             {/* Existing materials */}
             {materials.length === 0 && !showAddMaterial && (
               <div style={{ color: '#666', fontSize: 12, marginBottom: 8 }}>Ei materiaaleja</div>
@@ -868,11 +870,11 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
                 <button onClick={addMaterialLink} style={S.btnBlack}>LISÄÄ</button>
               </div>
             )}
-          </Section>
+          </Section>}
 
-          <Section title="TAPAHTUMAN AIKANA" defaultOpen={!!event?.duringEvent}><TextBlock text={event?.duringEvent} /></Section>
+          {can('card_during') && <Section title="TAPAHTUMAN AIKANA" defaultOpen={!!event?.duringEvent}><TextBlock text={event?.duringEvent} /></Section>}
 
-          <Section title="HINNOITTELU" defaultOpen={total > 0}>
+          {can('card_pricing') && <Section title="HINNOITTELU" defaultOpen={total > 0}>
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
               <tbody>
                 {[['Ruoka', event?.food, event?.foodPrice], ['Juomat', event?.drinks, event?.drinksPrice], ['Tekniikka', event?.tech, event?.techPrice], ['Ohjelma', event?.program, event?.programPrice]].map(([label, desc, price]) => (
@@ -889,11 +891,11 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
                 </tr>
               </tbody>
             </table>
-          </Section>
+          </Section>}
 
-          <Section title="PALAUTE" defaultOpen={!!event?.feedback}><TextBlock text={event?.feedback} /></Section>
+          {can('card_feedback') && <Section title="PALAUTE" defaultOpen={!!event?.feedback}><TextBlock text={event?.feedback} /></Section>}
 
-          <Section title="TEHTÄVÄT" defaultOpen={true} count={eventTasks.length}>
+          {can('card_tasks') && <Section title="TEHTÄVÄT" defaultOpen={true} count={eventTasks.length}>
             <div style={{ ...S.flexBetween, marginBottom: 8 }}>
               <span></span>
               <button onClick={() => setShowAddTask(!showAddTask)} style={S.btnSmall}>
@@ -941,10 +943,10 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
                 <button onClick={() => onDeleteTask?.(task.id)} style={{ ...S.btnSmall, fontSize: 10, padding: '2px 6px', flexShrink: 0 }}>✕</button>
               </div>
             ))}
-          </Section>
+          </Section>}
 
           {/* MUISTIINPANOT — uses global notes system */}
-          <Section title="MUISTIINPANOT" defaultOpen={true} count={notes.length + (event?.notes ? 1 : 0)}>
+          {can('card_notes') && <Section title="MUISTIINPANOT" defaultOpen={true} count={notes.length + (event?.notes ? 1 : 0)}>
             {/* Legacy notes text */}
             {event?.notes && (
               <div style={{ marginBottom: 12, paddingBottom: 8, borderBottom: '1px solid #333' }}>
@@ -1001,7 +1003,7 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
             ) : (
               <button onClick={() => setShowAddNote(true)} style={{ ...S.btnSmall, marginTop: 8 }}>+ LISÄÄ MUISTIINPANO</button>
             )}
-          </Section>
+          </Section>}
         </div>
       )}
     </div>
