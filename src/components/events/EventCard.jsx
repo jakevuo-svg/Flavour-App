@@ -5,6 +5,32 @@ import { supabase } from '../../services/supabaseClient';
 
 const PRIORITIES = ['KORKEA', 'NORMAALI', 'MATALA'];
 
+const COMMON_ALLERGENS = [
+  'Gluteeniton', 'Laktoositon', 'Maidoton', 'Munaton',
+  'Pähkinätön', 'Kala', 'Äyriäiset', 'Soijaton',
+  'Vegaaninen', 'Kasvis', 'Sianlihaton',
+];
+
+// Parse erv text field into { allergens: string[], notes: string }
+const parseErv = (erv) => {
+  if (!erv) return { allergens: [], notes: '' };
+  const parts = erv.split(' — ');
+  const allergenPart = parts[0] || '';
+  const notesPart = parts.slice(1).join(' — ');
+  const allergens = COMMON_ALLERGENS.filter(a => allergenPart.includes(a));
+  // Notes = anything that's not a known allergen
+  const knownText = allergens.join(', ');
+  const extraAllergenText = allergenPart.replace(knownText, '').replace(/^[, ]+|[, ]+$/g, '').trim();
+  const notes = [extraAllergenText, notesPart].filter(Boolean).join(' — ');
+  return { allergens, notes };
+};
+
+// Combine allergens + notes back into erv text
+const buildErv = (allergens, notes) => {
+  const allergenText = allergens.join(', ');
+  return [allergenText, notes].filter(Boolean).join(' — ');
+};
+
 // Collapsible section component (pomppuvalikko)
 const Section = ({ title, children, defaultOpen = false, count }) => {
   const [open, setOpen] = useState(defaultOpen);
@@ -466,7 +492,56 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
           </Section>
           <Section title="TAVOITE" defaultOpen={!!formData.goal}>{EF({ label: "", field: "goal", textarea: true })}</Section>
           <Section title="HUOMIOITAVAA" defaultOpen={!!formData.attentionNotes}>{EF({ label: "", field: "attentionNotes", textarea: true })}</Section>
-          <Section title="ERV (ALLERGIAT/DIEETIT)" defaultOpen={!!formData.erv}>{EF({ label: "", field: "erv", textarea: true })}</Section>
+          <Section title="ERV (ALLERGIAT/DIEETIT)" defaultOpen={!!formData.erv}>
+            {(() => {
+              const parsed = parseErv(formData.erv);
+              const toggleAllergen = (allergen) => {
+                const newAllergens = parsed.allergens.includes(allergen)
+                  ? parsed.allergens.filter(a => a !== allergen)
+                  : [...parsed.allergens, allergen];
+                handleInputChange('erv', buildErv(newAllergens, parsed.notes));
+              };
+              return (
+                <div>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 8 }}>
+                    {COMMON_ALLERGENS.map(a => {
+                      const active = parsed.allergens.includes(a);
+                      return (
+                        <div key={a} onClick={() => toggleAllergen(a)} style={{
+                          display: 'flex', alignItems: 'center', gap: 6,
+                          border: active ? '2px solid #ddd' : '1px solid #555',
+                          background: active ? '#ddd' : '#1e1e1e',
+                          color: active ? '#111' : '#999',
+                          padding: '4px 10px', cursor: 'pointer',
+                          fontSize: 11, fontWeight: 600, textTransform: 'uppercase',
+                          transition: 'all 0.15s',
+                        }}>
+                          <span style={{
+                            width: 14, height: 14,
+                            border: active ? '2px solid #111' : '2px solid #666',
+                            background: active ? '#111' : 'transparent',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            fontSize: 10, color: active ? '#ddd' : 'transparent', flexShrink: 0,
+                          }}>{active ? '✓' : ''}</span>
+                          {a}
+                        </div>
+                      );
+                    })}
+                  </div>
+                  {parsed.allergens.length > 0 && (
+                    <div style={{ marginBottom: 6, fontSize: 11, color: '#999' }}>Valittu: {parsed.allergens.join(', ')}</div>
+                  )}
+                  <div style={{ ...S.label, marginBottom: 4 }}>Lisätiedot allergioista</div>
+                  <textarea
+                    value={parsed.notes}
+                    onChange={e => handleInputChange('erv', buildErv(parsed.allergens, e.target.value))}
+                    style={{ ...S.input, width: '100%', minHeight: 50, boxSizing: 'border-box', fontFamily: 'inherit' }}
+                    placeholder="Muut allergiat tai erityisruokavaliot..."
+                  />
+                </div>
+              );
+            })()}
+          </Section>
           <Section title="AIKATAULU" defaultOpen={!!formData.schedule}>{EF({ label: "", field: "schedule", textarea: true })}</Section>
           <Section title="MENU" defaultOpen={!!formData.menu}>
             {EF({ label: "", field: "menu", textarea: true })}
@@ -597,7 +672,24 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
 
           <Section title="TAVOITE" defaultOpen={!!event?.goal}><TextBlock text={event?.goal} /></Section>
           <Section title="HUOMIOITAVAA" defaultOpen={!!event?.attentionNotes}><TextBlock text={event?.attentionNotes} /></Section>
-          <Section title="ERV (ALLERGIAT/DIEETIT)" defaultOpen={!!event?.erv}><TextBlock text={event?.erv} /></Section>
+          <Section title="ERV (ALLERGIAT/DIEETIT)" defaultOpen={!!event?.erv}>
+            {(() => {
+              const parsed = parseErv(event?.erv);
+              return (
+                <div>
+                  {parsed.allergens.length > 0 && (
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 8 }}>
+                      {parsed.allergens.map(a => (
+                        <span key={a} style={{ border: '2px solid #ddd', background: '#ddd', color: '#111', padding: '4px 10px', fontSize: 11, fontWeight: 600, textTransform: 'uppercase' }}>{a}</span>
+                      ))}
+                    </div>
+                  )}
+                  {parsed.notes && <TextBlock text={parsed.notes} />}
+                  {!event?.erv && <div style={{ color: '#666', fontSize: 12 }}>Ei erityisruokavalioita</div>}
+                </div>
+              );
+            })()}
+          </Section>
           <Section title="AIKATAULU" defaultOpen={!!event?.schedule}><TextBlock text={event?.schedule} /></Section>
 
           {/* MENU — with editable link + attachments */}
