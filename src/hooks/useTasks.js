@@ -35,13 +35,23 @@ export function useTasks() {
 
   const addTask = async (taskData) => {
     try {
+      // Map Finnish priority labels to DB values
+      const priorityMap = { 'KORKEA': 'HIGH', 'NORMAALI': 'MEDIUM', 'MATALA': 'LOW' };
+      const rawPriority = taskData.priority || 'MEDIUM';
+      const dbPriority = priorityMap[rawPriority] || rawPriority;
+
+      // Only include fields that exist in event_tasks table
       const insertData = {
-        ...taskData,
+        title: taskData.title,
+        event_id: taskData.event_id || null,
         status: taskData.status || 'TODO',
-        priority: taskData.priority || 'MEDIUM',
+        priority: dbPriority,
+        due_date: taskData.due_date || null,
+        assigned_to: taskData.assigned_to || null,
         created_by: profile?.id,
-        created_at: new Date().toISOString(),
       };
+
+      console.log('[useTasks] Inserting task:', JSON.stringify(insertData));
 
       const { data: newTask, error: err } = await supabase
         .from('event_tasks')
@@ -49,7 +59,11 @@ export function useTasks() {
         .select()
         .single();
 
-      if (err) throw err;
+      if (err) {
+        console.error('[useTasks] Supabase insert error:', err.message, err.details, err.hint);
+        throw err;
+      }
+      console.log('[useTasks] Task created successfully:', newTask?.id);
       setTasks(prev => [newTask, ...prev]);
       return newTask;
     } catch (err) {

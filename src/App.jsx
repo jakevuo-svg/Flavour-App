@@ -322,13 +322,13 @@ const AppContent = () => {
     try {
       const task = await addTask(data);
       if (!task) {
-        showToast('Tehtävän lisäys epäonnistui', 'error');
+        // addTask already logged the error to console
+        showToast('Tehtävän lisäys epäonnistui — katso konsoli (F12)', 'error');
         return null;
       }
       const eventName = events.find(e => e.id === data.event_id)?.name || '';
       emitTaskAdded(task, eventName);
       showToast('Tehtävä lisätty', 'success');
-      console.log('[App] Task added, has created_at:', !!task.created_at, task.created_at);
       return task;
     } catch (err) {
       console.error('Failed to add task:', err);
