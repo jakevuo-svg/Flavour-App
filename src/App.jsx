@@ -466,6 +466,7 @@ const AppContent = () => {
             event={selectedEvent}
             locations={locations}
             persons={persons}
+            can={can}
             onBack={() => {
               setSelectedEvent(null);
               setView('eventList');
