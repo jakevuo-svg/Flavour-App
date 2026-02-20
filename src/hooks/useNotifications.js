@@ -22,6 +22,7 @@ export const NOTIF_TYPES = {
   task_overdue: { icon: '!!', label: 'Tehtävä myöhässä' },
   task_added: { icon: '☐', label: 'Uusi tehtävä' },
   task_updated: { icon: '☑', label: 'Tehtävä päivitetty' },
+  worker_assigned: { icon: '⊕', label: 'Työntekijä lisätty' },
   person_updated: { icon: '○', label: 'Henkilö päivitetty' },
   person_created: { icon: '●', label: 'Uusi henkilö' },
   reminder: { icon: '◎', label: 'Muistutus' },
@@ -32,12 +33,12 @@ export const NOTIF_TYPES = {
 const DEFAULT_PREFERENCES = {
   admin: {
     event_created: true, event_updated: true, note_added: true,
-    deadline_approaching: true, task_overdue: true,
+    deadline_approaching: true, task_overdue: true, worker_assigned: true,
     person_updated: true, person_created: true, reminder: true, system: true,
   },
   worker: {
     event_created: true, event_updated: true, note_added: true,
-    deadline_approaching: true, task_overdue: true,
+    deadline_approaching: true, task_overdue: true, worker_assigned: true,
     person_updated: false, person_created: false, reminder: true, system: false,
   },
   temporary: {
@@ -186,6 +187,16 @@ export function useNotifications() {
     });
   }, [pushNotification]);
 
+  const emitWorkerAssigned = useCallback((eventName, workerName) => {
+    pushNotification({
+      type: 'worker_assigned',
+      title: 'Työntekijä lisätty tapahtumaan',
+      message: `${workerName} → ${eventName}`,
+      entity_type: 'event',
+      entity_id: null,
+    });
+  }, [pushNotification]);
+
   const emitTaskAdded = useCallback((task, eventName) => {
     pushNotification({
       type: 'task_added',
@@ -226,6 +237,7 @@ export function useNotifications() {
     emitPersonUpdated,
     emitDeadline,
     emitTaskOverdue,
+    emitWorkerAssigned,
     emitTaskAdded,
     emitTaskStatusChanged,
   };

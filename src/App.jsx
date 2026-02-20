@@ -56,7 +56,7 @@ const AppContent = () => {
     notifications, unreadCount,
     markRead, markAllRead, dismiss: dismissNotif, clearAll: clearAllNotifs,
     emitEventCreated, emitEventUpdated, emitNoteAdded, emitPersonCreated, emitDeadline, emitTaskOverdue,
-    emitTaskAdded, emitTaskStatusChanged,
+    emitTaskAdded, emitTaskStatusChanged, emitWorkerAssigned,
   } = useNotifications();
 
   // Check deadlines on mount and when events change
@@ -318,6 +318,20 @@ const AppContent = () => {
     setActiveTab('NOTES');
   };
 
+  const handleAssignWorker = async (eventId, workerId) => {
+    try {
+      const result = await assignWorker(eventId, workerId);
+      const eventName = events.find(e => e.id === eventId)?.name || '';
+      const worker = persons.find(p => p.id === workerId);
+      const workerName = worker ? `${worker.first_name} ${worker.last_name}` : 'Työntekijä';
+      emitWorkerAssigned(eventName, workerName);
+      return result;
+    } catch (err) {
+      console.error('Failed to assign worker:', err);
+      throw err;
+    }
+  };
+
   const handleAddTask = async (data) => {
     try {
       const task = await addTask(data);
@@ -507,7 +521,7 @@ const AppContent = () => {
           <div>
             <UserManagement
               events={events}
-              assignWorker={assignWorker}
+              assignWorker={handleAssignWorker}
               removeWorkerAssignment={removeWorkerAssignment}
             />
             <RolePermissions
