@@ -20,14 +20,30 @@ export default function NewLocationModal({ show, onClose, onAdd }) {
     setFormData({ ...formData, [field]: value });
   };
 
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+
   const handleSubmit = async () => {
-    if (!formData.name.trim()) return;
+    setError('');
+    if (!formData.name.trim()) {
+      setError('Sijainnin nimi on pakollinen');
+      return;
+    }
+    // Convert empty strings to null for clean DB inserts
+    const cleanData = {};
+    for (const [key, val] of Object.entries(formData)) {
+      cleanData[key] = (typeof val === 'string' && val.trim() === '') ? null : val;
+    }
+    setLoading(true);
     try {
-      await onAdd(formData);
+      await onAdd(cleanData);
       resetForm();
       onClose();
     } catch (err) {
       console.error('Failed to add location:', err);
+      setError('Sijainnin lisäys epäonnistui: ' + (err.message || 'tuntematon virhe'));
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -146,8 +162,10 @@ export default function NewLocationModal({ show, onClose, onAdd }) {
           />
         </Field>
 
+        {error && <div style={{ color: '#ff6b6b', fontSize: 12, padding: '6px 0' }}>{error}</div>}
+
         <div style={{ ...S.flexWrap, gap: 8, marginTop: 16 }}>
-          <button onClick={handleSubmit} style={S.btnBlack}>LISÄÄ SIJAINTI</button>
+          <button onClick={handleSubmit} disabled={loading} style={S.btnBlack}>{loading ? 'LISÄTÄÄN...' : 'LISÄÄ SIJAINTI'}</button>
           <button onClick={handleClose} style={S.btnWire}>PERUUTA</button>
         </div>
       </div>

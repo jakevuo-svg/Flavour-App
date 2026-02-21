@@ -228,6 +228,7 @@ const AppContent = () => {
     } catch (err) {
       console.error('Failed to add person:', err);
       showToast('Henkilön lisäys epäonnistui', 'error');
+      throw err;
     }
   };
 

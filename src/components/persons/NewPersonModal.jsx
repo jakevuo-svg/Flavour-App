@@ -20,9 +20,25 @@ export default function NewPersonModal({ show, onClose, onAdd }) {
     setFormData({ ...formData, [field]: value });
   };
 
-  const handleSubmit = () => {
-    onAdd(formData);
-    resetForm();
+  const [error, setError] = useState('');
+
+  const handleSubmit = async () => {
+    setError('');
+    if (!formData.first_name.trim() || !formData.last_name.trim()) {
+      setError('Etunimi ja sukunimi ovat pakollisia');
+      return;
+    }
+    // Convert empty strings to null so DB CHECK constraints are satisfied
+    const cleanData = {};
+    for (const [key, val] of Object.entries(formData)) {
+      cleanData[key] = (typeof val === 'string' && val.trim() === '') ? null : val;
+    }
+    try {
+      await onAdd(cleanData);
+      resetForm();
+    } catch (err) {
+      setError('Henkilön lisäys epäonnistui: ' + (err.message || 'tuntematon virhe'));
+    }
   };
 
   const resetForm = () => {
@@ -132,6 +148,8 @@ export default function NewPersonModal({ show, onClose, onAdd }) {
             </select>
           </Field>
         </div>
+
+        {error && <div style={{ color: '#ff6b6b', fontSize: 12, padding: '6px 0' }}>{error}</div>}
 
         <div style={{ ...S.flexWrap, gap: 8, marginTop: 16 }}>
           <button
