@@ -40,7 +40,6 @@ export function useLocations() {
       setError(null);
       const locationData = {
         ...data,
-        created_by: profile?.id,
         created_at: new Date().toISOString(),
         modified_at: new Date().toISOString(),
       };
