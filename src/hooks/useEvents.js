@@ -175,7 +175,8 @@ export function useEvents() {
     try {
       setError(null);
 
-      const insertData = {
+      // Build full insert with shift fields
+      const fullData = {
         event_id: eventId,
         user_id: workerId,
         ...(assignmentData.start_time ? { start_time: assignmentData.start_time } : {}),
@@ -186,11 +187,29 @@ export function useEvents() {
 
       const { data, error: err } = await supabase
         .from('event_assignments')
-        .insert([insertData])
+        .insert([fullData])
         .select()
         .single();
 
-      if (err) throw err;
+      if (err) {
+        // If column not found (migration not run yet), fallback to base fields only
+        if (err.message?.includes('schema cache') || err.message?.includes('column')) {
+          console.warn('Shift columns not found, falling back to basic assignment');
+          const baseData = {
+            event_id: eventId,
+            user_id: workerId,
+            ...(assignmentData.role ? { role: assignmentData.role } : {}),
+          };
+          const { data: fallbackData, error: fallbackErr } = await supabase
+            .from('event_assignments')
+            .insert([baseData])
+            .select()
+            .single();
+          if (fallbackErr) throw fallbackErr;
+          return fallbackData;
+        }
+        throw err;
+      }
       return data;
     } catch (err) {
       console.error('Failed to assign worker:', err);
