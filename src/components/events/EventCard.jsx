@@ -210,6 +210,7 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
   const [newNoteText, setNewNoteText] = useState('');
   const [noteMentionId, setNoteMentionId] = useState('');
   const [showAddWorker, setShowAddWorker] = useState(false);
+  const [newShift, setNewShift] = useState({ userId: '', start_time: '', end_time: '', role: 'staff', notes: '' });
   const fileInputRef = useRef(null);
   const menuFileRef = useRef(null);
   const orderFileRef = useRef(null);
@@ -304,21 +305,37 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
   const assignedIds = new Set(assignedWorkers.map(w => w.id));
   const availableWorkers = allSystemUsers.filter(u => !assignedIds.has(u.id));
 
-  const addWorker = async (userId) => {
+  const addWorker = async (shiftData) => {
+    const userId = shiftData?.userId || shiftData;
     if (!userId || assignedIds.has(userId)) return;
     try {
+      const assignmentData = {
+        event_id: event.id,
+        user_id: userId,
+        ...(shiftData.start_time ? { start_time: shiftData.start_time } : {}),
+        ...(shiftData.end_time ? { end_time: shiftData.end_time } : {}),
+        ...(shiftData.role ? { role: shiftData.role } : {}),
+        ...(shiftData.notes ? { notes: shiftData.notes } : {}),
+      };
       if (onAssignWorker) {
-        await onAssignWorker(event.id, userId);
+        await onAssignWorker(event.id, userId, assignmentData);
       } else {
-        const { error } = await supabase.from('event_assignments').insert({ event_id: event.id, user_id: userId });
+        const { error } = await supabase.from('event_assignments').insert(assignmentData);
         if (error) throw error;
       }
       const user = allSystemUsers.find(u => u.id === userId);
-      if (user) setAssignedWorkers(prev => [...prev, user]);
+      if (user) setAssignedWorkers(prev => [...prev, {
+        ...user,
+        assignment_role: shiftData.role || 'staff',
+        start_time: shiftData.start_time || null,
+        end_time: shiftData.end_time || null,
+        assignment_notes: shiftData.notes || null,
+      }]);
     } catch (err) {
       console.error('Failed to assign worker:', err);
     }
     setShowAddWorker(false);
+    setNewShift({ userId: '', start_time: '', end_time: '', role: 'staff', notes: '' });
   };
 
   const removeWorker = async (userId) => {
@@ -702,37 +719,124 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
             {assignedWorkers.length === 0 && !showAddWorker && (
               <div style={{ color: '#666', fontSize: 12, marginBottom: 8 }}>Ei lisättyjä työntekijöitä</div>
             )}
-            {assignedWorkers.map(worker => (
-              <div key={worker.id} style={{ ...S.row, alignItems: 'center', padding: '6px 0' }}>
-                <div style={{ flex: 1 }}>
-                  <span style={{ fontSize: 13, fontWeight: 600 }}>{worker.first_name} {worker.last_name}</span>
-                  {worker.role && <span style={{ fontSize: 11, color: '#777', marginLeft: 8 }}>{worker.role}</span>}
-                </div>
-                {can('action_edit') && <button onClick={() => removeWorker(worker.id)} style={{ ...S.btnSmall, fontSize: 10, padding: '2px 6px' }}>✕</button>}
-              </div>
-            ))}
 
+            {/* Worker list — booking/shift style */}
+            {assignedWorkers.map(worker => {
+              const shiftRole = worker.assignment_role || 'staff';
+              const ROLE_LABELS = { staff: 'Henkilökunta', kitchen: 'Keittiö', service: 'Tarjoilu', setup: 'Rakennus', host: 'Juontaja', other: 'Muu' };
+              return (
+                <div key={worker.id} style={{ borderBottom: '1px solid #333', padding: '8px 0', display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                  {/* Time column */}
+                  <div style={{ flex: '0 0 90px', textAlign: 'center' }}>
+                    {worker.start_time || worker.end_time ? (
+                      <div style={{ fontSize: 14, fontWeight: 700, fontFamily: 'monospace', letterSpacing: 1 }}>
+                        {worker.start_time || '??'}<span style={{ color: '#555' }}>–</span>{worker.end_time || '??'}
+                      </div>
+                    ) : (
+                      <div style={{ fontSize: 11, color: '#555' }}>Ei aikaa</div>
+                    )}
+                  </div>
+                  {/* Info column */}
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 13, fontWeight: 600 }}>{worker.first_name} {worker.last_name}</div>
+                    <div style={{ display: 'flex', gap: 6, marginTop: 3, flexWrap: 'wrap' }}>
+                      <span style={{ ...S.tag(false), fontSize: 9, padding: '1px 6px' }}>{ROLE_LABELS[shiftRole] || shiftRole}</span>
+                    </div>
+                    {worker.assignment_notes && (
+                      <div style={{ fontSize: 11, color: '#888', marginTop: 3, fontStyle: 'italic' }}>{worker.assignment_notes}</div>
+                    )}
+                  </div>
+                  {/* Remove button */}
+                  {can('action_edit') && <button onClick={() => removeWorker(worker.id)} style={{ ...S.btnSmall, fontSize: 10, padding: '2px 6px', flex: '0 0 auto' }}>✕</button>}
+                </div>
+              );
+            })}
+
+            {/* Add worker — booking form */}
             {can('action_edit') && showAddWorker ? (
-              <div style={{ border: '1px solid #444', padding: 12, marginTop: 8, background: '#1a1a1a' }}>
-                <div style={{ ...S.label, marginBottom: 6 }}>LISÄÄ TYÖNTEKIJÄ</div>
+              <div style={{ border: '1px solid #555', padding: 12, marginTop: 8, background: '#1a1a1a' }}>
+                <div style={{ ...S.label, marginBottom: 8 }}>UUSI VUORO</div>
                 {availableWorkers.length === 0 ? (
                   <div style={{ color: '#666', fontSize: 12 }}>Kaikki työntekijät on jo lisätty</div>
                 ) : (
-                  <select
-                    onChange={e => { if (e.target.value) addWorker(e.target.value); }}
-                    style={{ ...S.selectFull, marginBottom: 8 }}
-                    defaultValue=""
-                  >
-                    <option value="">Valitse työntekijä...</option>
-                    {availableWorkers.map(u => (
-                      <option key={u.id} value={u.id}>{u.first_name} {u.last_name}{u.role ? ` — ${u.role}` : ''}</option>
-                    ))}
-                  </select>
+                  <>
+                    {/* Row 1: Worker select */}
+                    <div style={{ marginBottom: 8 }}>
+                      <div style={{ fontSize: 10, color: '#888', marginBottom: 3 }}>HENKILÖ</div>
+                      <select
+                        value={newShift.userId}
+                        onChange={e => setNewShift({ ...newShift, userId: e.target.value })}
+                        style={S.selectFull}
+                      >
+                        <option value="">Valitse työntekijä...</option>
+                        {availableWorkers.map(u => (
+                          <option key={u.id} value={u.id}>{u.first_name} {u.last_name}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* Row 2: Time + Role */}
+                    <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: 10, color: '#888', marginBottom: 3 }}>ALKAA</div>
+                        <input
+                          type="time"
+                          value={newShift.start_time}
+                          onChange={e => setNewShift({ ...newShift, start_time: e.target.value })}
+                          style={S.inputFull}
+                        />
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: 10, color: '#888', marginBottom: 3 }}>LOPPUU</div>
+                        <input
+                          type="time"
+                          value={newShift.end_time}
+                          onChange={e => setNewShift({ ...newShift, end_time: e.target.value })}
+                          style={S.inputFull}
+                        />
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: 10, color: '#888', marginBottom: 3 }}>ROOLI</div>
+                        <select
+                          value={newShift.role}
+                          onChange={e => setNewShift({ ...newShift, role: e.target.value })}
+                          style={S.selectFull}
+                        >
+                          <option value="staff">Henkilökunta</option>
+                          <option value="kitchen">Keittiö</option>
+                          <option value="service">Tarjoilu</option>
+                          <option value="setup">Rakennus</option>
+                          <option value="host">Juontaja</option>
+                          <option value="other">Muu</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    {/* Row 3: Notes */}
+                    <div style={{ marginBottom: 8 }}>
+                      <div style={{ fontSize: 10, color: '#888', marginBottom: 3 }}>LISÄTIEDOT</div>
+                      <input
+                        value={newShift.notes}
+                        onChange={e => setNewShift({ ...newShift, notes: e.target.value })}
+                        style={S.inputFull}
+                        placeholder="Esim. tuo omat keittiövaatteet..."
+                      />
+                    </div>
+
+                    {/* Buttons */}
+                    <div style={{ display: 'flex', gap: 8 }}>
+                      <button
+                        onClick={() => { if (newShift.userId) addWorker(newShift); }}
+                        disabled={!newShift.userId}
+                        style={{ ...S.btnBlack, opacity: newShift.userId ? 1 : 0.4 }}
+                      >LISÄÄ VUORO</button>
+                      <button onClick={() => { setShowAddWorker(false); setNewShift({ userId: '', start_time: '', end_time: '', role: 'staff', notes: '' }); }} style={S.btnWire}>PERUUTA</button>
+                    </div>
+                  </>
                 )}
-                <button onClick={() => setShowAddWorker(false)} style={S.btnWire}>PERUUTA</button>
               </div>
             ) : can('action_edit') ? (
-              <button onClick={() => setShowAddWorker(true)} style={{ ...S.btnSmall, marginTop: 8 }}>+ LISÄÄ TYÖNTEKIJÄ</button>
+              <button onClick={() => setShowAddWorker(true)} style={{ ...S.btnSmall, marginTop: 8 }}>+ LISÄÄ VUORO</button>
             ) : null}
           </Section>}
 

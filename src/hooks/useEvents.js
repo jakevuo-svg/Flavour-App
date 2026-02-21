@@ -171,13 +171,22 @@ export function useEvents() {
     }
   }, []);
 
-  const assignWorker = useCallback(async (eventId, workerId) => {
+  const assignWorker = useCallback(async (eventId, workerId, assignmentData = {}) => {
     try {
       setError(null);
 
+      const insertData = {
+        event_id: eventId,
+        user_id: workerId,
+        ...(assignmentData.start_time ? { start_time: assignmentData.start_time } : {}),
+        ...(assignmentData.end_time ? { end_time: assignmentData.end_time } : {}),
+        ...(assignmentData.role ? { role: assignmentData.role } : {}),
+        ...(assignmentData.notes ? { notes: assignmentData.notes } : {}),
+      };
+
       const { data, error: err } = await supabase
         .from('event_assignments')
-        .insert([{ event_id: eventId, user_id: workerId }])
+        .insert([insertData])
         .select()
         .single();
 

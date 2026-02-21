@@ -323,9 +323,9 @@ const AppContent = () => {
     setActiveTab('NOTES');
   };
 
-  const handleAssignWorker = async (eventId, workerId) => {
+  const handleAssignWorker = async (eventId, workerId, assignmentData = {}) => {
     try {
-      const result = await assignWorker(eventId, workerId);
+      const result = await assignWorker(eventId, workerId, assignmentData);
       const eventName = events.find(e => e.id === eventId)?.name || '';
       const worker = persons.find(p => p.id === workerId);
       const workerName = worker ? `${worker.first_name} ${worker.last_name}` : 'Työntekijä';
