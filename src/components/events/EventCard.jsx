@@ -498,7 +498,7 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
     let content = newNoteText.trim();
     // Prepend @mention if selected
     if (noteMentionId) {
-      const mentioned = assignedWorkers.find(w => w.id === noteMentionId) || persons.find(p => p.id === noteMentionId);
+      const mentioned = allSystemUsers.find(u => u.id === noteMentionId) || assignedWorkers.find(w => w.id === noteMentionId) || persons.find(p => p.id === noteMentionId);
       const mentionName = mentioned ? `${mentioned.first_name} ${mentioned.last_name}` : 'Tuntematon';
       content = `@${mentionName}: ${content}`;
     }
@@ -846,13 +846,15 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
               <div style={{ border: '1px solid #444', padding: 12, marginTop: 8, background: '#1a1a1a' }}>
                 <div style={{ marginBottom: 8 }}>
                   <div style={{ ...S.label, marginBottom: 4 }}>MAINITSE HENKILÖ</div>
-                  <select value={noteMentionId} onChange={e => setNoteMentionId(e.target.value)} style={S.selectFull}>
+                  <select value={noteMentionId} onChange={e => setNoteMentionId(e.target.value)} style={{ ...S.selectFull, color: '#ddd', background: '#1e1e1e' }}>
                     <option value="">Ei mainintaa</option>
-                    {assignedWorkers.map(w => (
-                      <option key={w.id} value={w.id}>@{w.first_name} {w.last_name} (työntekijä)</option>
+                    {allSystemUsers.length > 0 && <option disabled style={{ fontWeight: 700 }}>— Tiimi —</option>}
+                    {allSystemUsers.map(u => (
+                      <option key={`u-${u.id}`} value={u.id}>@{u.first_name} {u.last_name}</option>
                     ))}
-                    {persons.map(p => (
-                      <option key={p.id} value={p.id}>@{p.first_name} {p.last_name}</option>
+                    {persons.filter(p => !allSystemUsers.some(u => u.id === p.id)).length > 0 && <option disabled style={{ fontWeight: 700 }}>— Henkilöt —</option>}
+                    {persons.filter(p => !allSystemUsers.some(u => u.id === p.id)).map(p => (
+                      <option key={`p-${p.id}`} value={p.id}>@{p.first_name} {p.last_name}</option>
                     ))}
                   </select>
                 </div>
@@ -1408,14 +1410,16 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
                   <select
                     value={noteMentionId}
                     onChange={e => setNoteMentionId(e.target.value)}
-                    style={S.selectFull}
+                    style={{ ...S.selectFull, color: '#ddd', background: '#1e1e1e' }}
                   >
                     <option value="">Ei mainintaa</option>
-                    {assignedWorkers.map(w => (
-                      <option key={w.id} value={w.id}>@{w.first_name} {w.last_name} (työntekijä)</option>
+                    {allSystemUsers.length > 0 && <option disabled style={{ fontWeight: 700 }}>— Tiimi —</option>}
+                    {allSystemUsers.map(u => (
+                      <option key={`u-${u.id}`} value={u.id}>@{u.first_name} {u.last_name}</option>
                     ))}
-                    {persons.map(p => (
-                      <option key={p.id} value={p.id}>@{p.first_name} {p.last_name}</option>
+                    {persons.filter(p => !allSystemUsers.some(u => u.id === p.id)).length > 0 && <option disabled style={{ fontWeight: 700 }}>— Henkilöt —</option>}
+                    {persons.filter(p => !allSystemUsers.some(u => u.id === p.id)).map(p => (
+                      <option key={`p-${p.id}`} value={p.id}>@{p.first_name} {p.last_name}</option>
                     ))}
                   </select>
                 </div>
