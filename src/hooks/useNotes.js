@@ -38,8 +38,12 @@ export function useNotes() {
   const addNote = useCallback(async (data) => {
     try {
       setError(null);
+      // Only include known columns to avoid Supabase errors from extra fields
       const noteData = {
-        ...data,
+        content: data.content || '',
+        event_id: data.event_id || null,
+        person_id: data.person_id || null,
+        title: data.title || null,
         created_by: profile?.id,
         author: profile?.first_name ? `${profile.first_name} ${profile.last_name}` : 'Unknown',
         created_at: new Date().toISOString(),
