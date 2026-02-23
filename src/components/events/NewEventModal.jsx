@@ -114,7 +114,7 @@ export default function NewEventModal({ onClose, onAdd, locations = [], prefille
 
   const handleLocationChange = (locName) => {
     const loc = locations.find(l => l.name === locName);
-    setFormData({ ...formData, location_name: locName, location_id: loc?.id || '' });
+    setFormData(prev => ({ ...prev, location_name: locName, location_id: loc?.id || '' }));
   };
 
   const [validationError, setValidationError] = useState('');
@@ -233,10 +233,14 @@ export default function NewEventModal({ onClose, onAdd, locations = [], prefille
               <div style={S.formGrid}>
                 <div>
                   <div style={S.label}>Sijainti</div>
-                  <select value={formData.location_name} onChange={e => handleLocationChange(e.target.value)} style={{ ...S.select, width: '100%', boxSizing: 'border-box' }}>
-                    <option value="">Valitse</option>
-                    {sortedLocations.map(l => <option key={l.id} value={l.name}>{l.name}</option>)}
-                  </select>
+                  {sortedLocations.length === 0 ? (
+                    <div style={{ color: '#666', fontSize: 12, padding: '6px 0' }}>Ei sijainteja — lisää ensin sijainti Sijainnit-välilehdellä</div>
+                  ) : (
+                    <select value={formData.location_name} onChange={e => handleLocationChange(e.target.value)} style={{ ...S.select, width: '100%', boxSizing: 'border-box' }}>
+                      <option value="">Valitse sijainti ({sortedLocations.length})</option>
+                      {sortedLocations.map(l => <option key={l.id} value={l.name}>{l.name}</option>)}
+                    </select>
+                  )}
                 </div>
                 <div>
                   <div style={S.label}>Pax</div>

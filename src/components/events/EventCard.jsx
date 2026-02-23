@@ -367,7 +367,7 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
 
   const handleLocationChange = (locName) => {
     const loc = locations.find(l => l.name === locName);
-    setFormData({ ...formData, location_name: locName, location_id: loc?.id || '' });
+    setFormData(prev => ({ ...prev, location_name: locName, location_id: loc?.id || '' }));
   };
 
   // Save field directly (for inline edits without full edit mode)
@@ -676,6 +676,9 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
                   <div style={{ ...S.label, marginBottom: 4 }}>MAINITSE HENKILÖ</div>
                   <select value={noteMentionId} onChange={e => setNoteMentionId(e.target.value)} style={S.selectFull}>
                     <option value="">Ei mainintaa</option>
+                    {assignedWorkers.map(w => (
+                      <option key={w.id} value={w.id}>@{w.first_name} {w.last_name} (työntekijä)</option>
+                    ))}
                     {persons.map(p => (
                       <option key={p.id} value={p.id}>@{p.first_name} {p.last_name}</option>
                     ))}
@@ -1033,8 +1036,17 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
                   <div style={{ ...S.label, marginBottom: 4 }}>VASTUUHENKILÖ</div>
                   <select value={newTask.assigned_to} onChange={e => setNewTask({ ...newTask, assigned_to: e.target.value })} style={{ ...S.selectFull }}>
                     <option value="">Ei vastuuhenkilöä</option>
+                    {assignedWorkers.length > 0 && <option disabled style={{ color: '#666', fontStyle: 'italic' }}>— Tapahtuman työntekijät —</option>}
                     {assignedWorkers.map(w => (
                       <option key={w.id} value={w.id}>{w.first_name} {w.last_name}</option>
+                    ))}
+                    {allSystemUsers.filter(u => !assignedIds.has(u.id)).length > 0 && <option disabled style={{ color: '#666', fontStyle: 'italic' }}>— Muut käyttäjät —</option>}
+                    {allSystemUsers.filter(u => !assignedIds.has(u.id)).map(u => (
+                      <option key={u.id} value={u.id}>{u.first_name} {u.last_name}</option>
+                    ))}
+                    {persons.length > 0 && <option disabled style={{ color: '#666', fontStyle: 'italic' }}>— Kontaktit —</option>}
+                    {persons.map(p => (
+                      <option key={`p-${p.id}`} value={p.id}>{p.first_name} {p.last_name}</option>
                     ))}
                   </select>
                 </div>
