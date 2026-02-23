@@ -224,6 +224,7 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
   const [noteMentionId, setNoteMentionId] = useState('');
   const [showAddWorker, setShowAddWorker] = useState(false);
   const [newShift, setNewShift] = useState({ userId: '', start_time: '', end_time: '', role: 'staff', notes: '' });
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const fileInputRef = useRef(null);
   const menuFileRef = useRef(null);
   const orderFileRef = useRef(null);
@@ -551,7 +552,7 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
             {!isEditing ? (
               <>
                 <button onClick={() => setIsEditing(true)} style={S.btnWire}>MUOKKAA</button>
-                <button onClick={() => onDelete?.(event.id)} style={S.btnDanger}>POISTA</button>
+                <button onClick={() => setShowDeleteConfirm(true)} style={S.btnDanger}>POISTA</button>
               </>
             ) : (
               <>
@@ -562,6 +563,61 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
           </div>
         </div>
       </div>
+
+      {/* Delete confirmation modal */}
+      {showDeleteConfirm && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          background: 'rgba(0,0,0,0.7)', zIndex: 9999,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }} onClick={() => setShowDeleteConfirm(false)}>
+          <div style={{
+            background: '#111', border: '2px solid #ff4444', padding: 24,
+            maxWidth: 400, width: '90%',
+          }} onClick={e => e.stopPropagation()}>
+            <div style={{ fontSize: 16, fontWeight: 700, color: '#ff4444', marginBottom: 12 }}>
+              POISTA TAPAHTUMA?
+            </div>
+            <div style={{ fontSize: 13, color: '#ccc', marginBottom: 8 }}>
+              Oletko varma, että haluat poistaa tapahtuman:
+            </div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: '#fff', marginBottom: 4 }}>
+              {event?.name}
+            </div>
+            <div style={{ fontSize: 12, color: '#888', marginBottom: 16 }}>
+              {event?.date ? new Date(event.date).toLocaleDateString('fi-FI') : ''} • {event?.company || ''} • Pax {event?.guest_count || '-'}
+            </div>
+            <div style={{
+              fontSize: 11, color: '#ff6666', marginBottom: 16, padding: '8px 10px',
+              background: '#2a1111', border: '1px solid #4a1c1c',
+            }}>
+              Tätä toimintoa ei voi peruuttaa. Kaikki tapahtuman tiedot, tehtävät ja muistiinpanot poistetaan pysyvästi.
+            </div>
+            <div style={{ display: 'flex', gap: 10 }}>
+              <button
+                onClick={() => { setShowDeleteConfirm(false); onDelete?.(event.id); }}
+                style={{
+                  background: '#ff4444', color: '#fff', border: 'none',
+                  padding: '8px 20px', fontSize: 12, fontWeight: 700,
+                  cursor: 'pointer', letterSpacing: 1,
+                }}
+              >
+                KYLLÄ, POISTA
+              </button>
+              <button
+                onClick={() => setShowDeleteConfirm(false)}
+                style={{
+                  background: 'transparent', color: '#ccc', border: '1px solid #555',
+                  padding: '8px 20px', fontSize: 12, fontWeight: 700,
+                  cursor: 'pointer',
+                }}
+              >
+                PERUUTA
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {isEditing ? (
         /* ===== EDIT MODE — collapsible sections ===== */

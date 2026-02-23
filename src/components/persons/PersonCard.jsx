@@ -11,6 +11,7 @@ export default function PersonCard({ person, onUpdate, onDelete, onBack, events 
   const [newNoteText, setNewNoteText] = useState('');
   const [showAddFeedback, setShowAddFeedback] = useState(false);
   const [newFeedback, setNewFeedback] = useState({ text: '', rating: 5, eventName: '' });
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const handleInputChange = (field, value) => setFormData({ ...formData, [field]: value });
   const handleSave = () => { onUpdate?.(person.id, formData); setIsEditing(false); };
@@ -89,7 +90,7 @@ export default function PersonCard({ person, onUpdate, onDelete, onBack, events 
           {!isEditing && (
             <>
               <button onClick={() => setIsEditing(true)} style={S.btnWire}>MUOKKAA</button>
-              <button onClick={() => onDelete?.(person.id)} style={S.btnDanger}>POISTA</button>
+              <button onClick={() => setShowDeleteConfirm(true)} style={S.btnDanger}>POISTA</button>
             </>
           )}
         </div>
@@ -309,6 +310,59 @@ export default function PersonCard({ person, onUpdate, onDelete, onBack, events 
           ) : (
             <button onClick={() => setShowAddFeedback(true)} style={{ ...S.btnSmall, marginTop: 8 }}>+ LISÄÄ PALAUTE</button>
           )}
+        </div>
+      )}
+
+      {/* Delete confirmation modal */}
+      {showDeleteConfirm && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          background: 'rgba(0,0,0,0.7)', zIndex: 9999,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }} onClick={() => setShowDeleteConfirm(false)}>
+          <div style={{
+            background: '#111', border: '2px solid #ff4444', padding: 24,
+            maxWidth: 400, width: '90%',
+          }} onClick={e => e.stopPropagation()}>
+            <div style={{ fontSize: 16, fontWeight: 700, color: '#ff4444', marginBottom: 12 }}>
+              POISTA HENKILÖ?
+            </div>
+            <div style={{ fontSize: 13, color: '#ccc', marginBottom: 8 }}>
+              Oletko varma, että haluat poistaa henkilön:
+            </div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: '#fff', marginBottom: 4 }}>
+              {person?.first_name} {person?.last_name}
+            </div>
+            {person?.company && <div style={{ fontSize: 12, color: '#888', marginBottom: 16 }}>{person.company}</div>}
+            <div style={{
+              fontSize: 11, color: '#ff6666', marginBottom: 16, padding: '8px 10px',
+              background: '#2a1111', border: '1px solid #4a1c1c',
+            }}>
+              Tätä toimintoa ei voi peruuttaa.
+            </div>
+            <div style={{ display: 'flex', gap: 10 }}>
+              <button
+                onClick={() => { setShowDeleteConfirm(false); onDelete?.(person.id); }}
+                style={{
+                  background: '#ff4444', color: '#fff', border: 'none',
+                  padding: '8px 20px', fontSize: 12, fontWeight: 700,
+                  cursor: 'pointer', letterSpacing: 1,
+                }}
+              >
+                KYLLÄ, POISTA
+              </button>
+              <button
+                onClick={() => setShowDeleteConfirm(false)}
+                style={{
+                  background: 'transparent', color: '#ccc', border: '1px solid #555',
+                  padding: '8px 20px', fontSize: 12, fontWeight: 700,
+                  cursor: 'pointer',
+                }}
+              >
+                PERUUTA
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
