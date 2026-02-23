@@ -11,23 +11,36 @@ const COMMON_ALLERGENS = [
   'Vegaaninen', 'Kasvis', 'Sianlihaton',
 ];
 
-// Parse erv text field into { allergens: string[], notes: string }
+// Parse erv text field into { allergens: [{name, count}], notes: string }
 const parseErv = (erv) => {
   if (!erv) return { allergens: [], notes: '' };
   const parts = erv.split(' — ');
   const allergenPart = parts[0] || '';
   const notesPart = parts.slice(1).join(' — ');
-  const allergens = COMMON_ALLERGENS.filter(a => allergenPart.includes(a));
-  // Notes = anything that's not a known allergen
-  const knownText = allergens.join(', ');
-  const extraAllergenText = allergenPart.replace(knownText, '').replace(/^[, ]+|[, ]+$/g, '').trim();
-  const notes = [extraAllergenText, notesPart].filter(Boolean).join(' — ');
+  const allergens = [];
+  COMMON_ALLERGENS.forEach(a => {
+    // Match "Gluteeniton x3" or "Gluteeniton" (count defaults to 0 = not specified)
+    const regex = new RegExp(a + '\\s*x(\\d+)');
+    const match = allergenPart.match(regex);
+    if (match) {
+      allergens.push({ name: a, count: parseInt(match[1], 10) });
+    } else if (allergenPart.includes(a)) {
+      allergens.push({ name: a, count: 0 });
+    }
+  });
+  // Notes = anything that's not a known allergen or count
+  let remaining = allergenPart;
+  allergens.forEach(a => {
+    remaining = remaining.replace(new RegExp(a.name + '\\s*x\\d+'), '').replace(a.name, '');
+  });
+  remaining = remaining.replace(/^[, ]+|[, ]+$/g, '').replace(/,\s*,/g, ',').trim();
+  const notes = [remaining, notesPart].filter(Boolean).join(' — ');
   return { allergens, notes };
 };
 
 // Combine allergens + notes back into erv text
 const buildErv = (allergens, notes) => {
-  const allergenText = allergens.join(', ');
+  const allergenText = allergens.map(a => a.count > 0 ? `${a.name} x${a.count}` : a.name).join(', ');
   return [allergenText, notes].filter(Boolean).join(' — ');
 };
 
@@ -650,16 +663,24 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
             {(() => {
               const parsed = parseErv(formData.erv);
               const toggleAllergen = (allergen) => {
-                const newAllergens = parsed.allergens.includes(allergen)
-                  ? parsed.allergens.filter(a => a !== allergen)
-                  : [...parsed.allergens, allergen];
+                const exists = parsed.allergens.find(a => a.name === allergen);
+                const newAllergens = exists
+                  ? parsed.allergens.filter(a => a.name !== allergen)
+                  : [...parsed.allergens, { name: allergen, count: 0 }];
+                handleInputChange('erv', buildErv(newAllergens, parsed.notes));
+              };
+              const setAllergenCount = (allergen, count) => {
+                const newAllergens = parsed.allergens.map(a =>
+                  a.name === allergen ? { ...a, count: Math.max(0, parseInt(count, 10) || 0) } : a
+                );
                 handleInputChange('erv', buildErv(newAllergens, parsed.notes));
               };
               return (
                 <div>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 8 }}>
                     {COMMON_ALLERGENS.map(a => {
-                      const active = parsed.allergens.includes(a);
+                      const entry = parsed.allergens.find(al => al.name === a);
+                      const active = !!entry;
                       return (
                         <div key={a} onClick={() => toggleAllergen(a)} style={{
                           display: 'flex', alignItems: 'center', gap: 6,
@@ -683,7 +704,26 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
                     })}
                   </div>
                   {parsed.allergens.length > 0 && (
-                    <div style={{ marginBottom: 6, fontSize: 11, color: '#999' }}>Valittu: {parsed.allergens.join(', ')}</div>
+                    <div style={{ marginBottom: 10 }}>
+                      <div style={{ ...S.label, marginBottom: 6 }}>KAPPALEMÄÄRÄT</div>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                        {parsed.allergens.map(a => (
+                          <div key={a.name} style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#1a1a1a', border: '1px solid #444', padding: '4px 8px' }}>
+                            <span style={{ fontSize: 11, color: '#ccc', fontWeight: 600, textTransform: 'uppercase' }}>{a.name}</span>
+                            <input
+                              type="number"
+                              min="0"
+                              value={a.count || ''}
+                              onClick={e => e.stopPropagation()}
+                              onChange={e => setAllergenCount(a.name, e.target.value)}
+                              placeholder="kpl"
+                              style={{ ...S.input, width: 50, textAlign: 'center', padding: '2px 4px', fontSize: 12 }}
+                            />
+                            <span style={{ fontSize: 10, color: '#666' }}>kpl</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   )}
                   <div style={{ ...S.label, marginBottom: 4 }}>Lisätiedot allergioista</div>
                   <textarea
@@ -1027,7 +1067,10 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
                   {parsed.allergens.length > 0 && (
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 8 }}>
                       {parsed.allergens.map(a => (
-                        <span key={a} style={{ border: '2px solid #ddd', background: '#ddd', color: '#111', padding: '4px 10px', fontSize: 11, fontWeight: 600, textTransform: 'uppercase' }}>{a}</span>
+                        <span key={a.name} style={{ border: '2px solid #ddd', background: '#ddd', color: '#111', padding: '4px 10px', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: 4 }}>
+                          {a.name}
+                          {a.count > 0 && <span style={{ background: '#111', color: '#ddd', padding: '1px 5px', fontSize: 10, fontWeight: 700, marginLeft: 2 }}>{a.count}</span>}
+                        </span>
                       ))}
                     </div>
                   )}

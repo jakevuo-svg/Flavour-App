@@ -58,8 +58,11 @@ export function useEvents() {
     try {
       setError(null);
 
-      // Combine allergens array + ervNotes into single 'erv' text field
-      const allergenText = (data.allergens || []).join(', ');
+      // Combine allergens array (with counts) + ervNotes into single 'erv' text field
+      const allergenText = (data.allergens || []).map(a => {
+        if (typeof a === 'string') return a; // backward compat
+        return a.count > 0 ? `${a.name} x${a.count}` : a.name;
+      }).join(', ');
       const ervNotesText = data.ervNotes || '';
       const erv = [allergenText, ervNotesText].filter(Boolean).join(' — ');
 

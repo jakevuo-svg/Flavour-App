@@ -121,11 +121,23 @@ export default function NewEventModal({ onClose, onAdd, locations = [], prefille
   };
 
   const toggleAllergen = (allergen) => {
+    setFormData(prev => {
+      const exists = prev.allergens.find(a => a.name === allergen);
+      return {
+        ...prev,
+        allergens: exists
+          ? prev.allergens.filter(a => a.name !== allergen)
+          : [...prev.allergens, { name: allergen, count: 0 }]
+      };
+    });
+  };
+
+  const setAllergenCount = (allergen, count) => {
     setFormData(prev => ({
       ...prev,
-      allergens: prev.allergens.includes(allergen)
-        ? prev.allergens.filter(a => a !== allergen)
-        : [...prev.allergens, allergen]
+      allergens: prev.allergens.map(a =>
+        a.name === allergen ? { ...a, count: Math.max(0, parseInt(count, 10) || 0) } : a
+      )
     }));
   };
 
@@ -306,7 +318,8 @@ export default function NewEventModal({ onClose, onAdd, locations = [], prefille
                 <div style={{ ...S.label, marginBottom: 6 }}>ERV / ALLERGEENIT</div>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
                   {COMMON_ALLERGENS.map(a => {
-                    const active = formData.allergens.includes(a);
+                    const entry = formData.allergens.find(al => al.name === a);
+                    const active = !!entry;
                     return (
                       <div
                         key={a}
@@ -337,8 +350,25 @@ export default function NewEventModal({ onClose, onAdd, locations = [], prefille
                   })}
                 </div>
                 {formData.allergens.length > 0 && (
-                  <div style={{ marginTop: 6, fontSize: 11, color: '#999' }}>
-                    Valittu: {formData.allergens.join(', ')}
+                  <div style={{ marginTop: 8 }}>
+                    <div style={{ ...S.label, marginBottom: 6 }}>KAPPALEMÄÄRÄT</div>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                      {formData.allergens.map(a => (
+                        <div key={a.name} style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#1a1a1a', border: '1px solid #444', padding: '4px 8px' }}>
+                          <span style={{ fontSize: 11, color: '#ccc', fontWeight: 600, textTransform: 'uppercase' }}>{a.name}</span>
+                          <input
+                            type="number"
+                            min="0"
+                            value={a.count || ''}
+                            onClick={e => e.stopPropagation()}
+                            onChange={e => setAllergenCount(a.name, e.target.value)}
+                            placeholder="kpl"
+                            style={{ ...S.input, width: 50, textAlign: 'center', padding: '2px 4px', fontSize: 12 }}
+                          />
+                          <span style={{ fontSize: 10, color: '#666' }}>kpl</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
                 <div style={{ marginTop: 8 }}>
