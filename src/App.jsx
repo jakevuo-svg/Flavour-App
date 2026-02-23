@@ -232,6 +232,34 @@ const AppContent = () => {
     }
   };
 
+  // Auto-create a person from a name string if not already in persons list
+  const autoCreatePerson = async (nameStr, company) => {
+    if (!nameStr || !nameStr.trim()) return;
+    const name = nameStr.trim();
+    const parts = name.split(/\s+/);
+    const firstName = parts[0] || '';
+    const lastName = parts.slice(1).join(' ') || '';
+    if (!firstName) return;
+
+    // Check if person already exists (case-insensitive match on full name)
+    const exists = persons.some(p => {
+      const pFull = `${p.first_name} ${p.last_name}`.toLowerCase().trim();
+      return pFull === name.toLowerCase();
+    });
+    if (exists) return;
+
+    try {
+      await addPerson({
+        first_name: firstName,
+        last_name: lastName,
+        company: company || '',
+        type: 'NEW CONTACT',
+      });
+    } catch (err) {
+      console.warn('Auto-create person failed:', err);
+    }
+  };
+
   const handleAddEvent = async (data) => {
     if (newEventPrefilledDate) {
       data.date = newEventPrefilledDate;
@@ -242,6 +270,13 @@ const AppContent = () => {
       setShowNewEvent(false);
       showToast(t('eventAdded'), 'success');
       emitEventCreated({ ...data, id: ev?.id || 'new' });
+
+      // Auto-create persons from booker and contact fields
+      const company = data.company || '';
+      await Promise.allSettled([
+        autoCreatePerson(data.booker, company),
+        autoCreatePerson(data.contact, company),
+      ]);
     } catch (err) {
       console.error('Failed to create event:', err);
       showToast('Tapahtuman luonti epäonnistui: ' + (err.message || 'tuntematon virhe'), 'error');
