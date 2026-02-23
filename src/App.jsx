@@ -494,7 +494,7 @@ const AppContent = () => {
             onEventClick={handleEventClick}
             onUpdate={updatePerson}
             onDelete={handleDeletePerson}
-            onAddNote={addNote}
+            onAddNote={handleAddNote}
             onUpdateNote={updateNote}
             onDeleteNote={handleDeleteNote}
           />
