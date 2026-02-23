@@ -48,7 +48,7 @@ const AppContent = () => {
   // Data hooks
   const { persons, addPerson, deletePerson, updatePerson } = usePersons();
   const { events, addEvent, deleteEvent, updateEvent, assignWorker, removeWorkerAssignment, getEventAssignments } = useEvents();
-  const { notes, addNote, deleteNote, removeNotesForEvent } = useNotes();
+  const { notes, addNote, updateNote, deleteNote, removeNotesForEvent } = useNotes();
   const { locations, addLocation, updateLocation, deleteLocation, addFile: addLocationFile, removeFile: removeLocationFile, getFiles: getLocationFiles } = useLocations();
   const { tasks, addTask, updateTask, deleteTask } = useTasks();
   const { permissions, togglePermission, hasPermission, getTabsForRole, resetToDefaults } = usePermissions();
@@ -495,6 +495,7 @@ const AppContent = () => {
             onUpdate={updatePerson}
             onDelete={handleDeletePerson}
             onAddNote={addNote}
+            onUpdateNote={updateNote}
             onDeleteNote={handleDeleteNote}
           />
         ) : null;
@@ -529,6 +530,7 @@ const AppContent = () => {
             onDeleteTask={deleteTask}
             notes={notes.filter(n => n.event_id === selectedEvent?.id)}
             onAddNote={handleAddNote}
+            onUpdateNote={updateNote}
             onDeleteNote={handleDeleteNote}
             onAssignWorker={handleAssignWorker}
             onRemoveWorker={removeWorkerAssignment}

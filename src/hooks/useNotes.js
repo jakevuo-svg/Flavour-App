@@ -61,6 +61,25 @@ export function useNotes() {
     }
   }, [profile?.id]);
 
+  const updateNote = useCallback(async (id, data) => {
+    try {
+      setError(null);
+      const { data: updated, error: err } = await supabase
+        .from('notes')
+        .update({ ...data, modified_at: new Date().toISOString() })
+        .eq('id', id)
+        .select()
+        .single();
+      if (err) throw err;
+      setNotes(prev => prev.map(n => n.id === id ? updated : n));
+      return updated;
+    } catch (err) {
+      console.error('Failed to update note:', err);
+      setError(err.message);
+      throw err;
+    }
+  }, []);
+
   const deleteNote = useCallback(async (id) => {
     try {
       setError(null);
@@ -127,6 +146,7 @@ export function useNotes() {
     loading,
     error,
     addNote,
+    updateNote,
     deleteNote,
     removeNotesForEvent,
     getNotesForEvent,

@@ -3,12 +3,14 @@ import S from '../../styles/theme';
 
 import { PROFILES } from '../../utils/constants';
 
-export default function PersonCard({ person, onUpdate, onDelete, onBack, events = [], notes = [], onEventClick, onAddNote, onDeleteNote }) {
+export default function PersonCard({ person, onUpdate, onDelete, onBack, events = [], notes = [], onEventClick, onAddNote, onDeleteNote, onUpdateNote }) {
   const [isEditing, setIsEditing] = useState(false);
   const [activeTab, setActiveTab] = useState('NOTES');
   const [formData, setFormData] = useState({ ...person });
   const [showAddNote, setShowAddNote] = useState(false);
   const [newNoteText, setNewNoteText] = useState('');
+  const [editingNoteId, setEditingNoteId] = useState(null);
+  const [editingNoteText, setEditingNoteText] = useState('');
   const [showAddFeedback, setShowAddFeedback] = useState(false);
   const [newFeedback, setNewFeedback] = useState({ text: '', rating: 5, eventName: '' });
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -196,11 +198,30 @@ export default function PersonCard({ person, onUpdate, onDelete, onBack, events 
                 <span style={{ fontSize: 10, color: '#666' }}>
                   {note.author && <span style={{ marginRight: 8 }}>{note.author}</span>}
                   {note.created_at && new Date(note.created_at).toLocaleDateString('fi-FI')} {note.created_at && new Date(note.created_at).toLocaleTimeString('fi-FI', { hour: '2-digit', minute: '2-digit' })}
+                  {note.modified_at && note.modified_at !== note.created_at && <span style={{ marginLeft: 6, color: '#555', fontStyle: 'italic' }}>(muokattu)</span>}
                 </span>
-                <button onClick={() => onDeleteNote?.(note.id)} style={{ background: 'none', border: 'none', color: '#555', cursor: 'pointer', fontSize: 11 }}>✕</button>
+                <div style={{ display: 'flex', gap: 6 }}>
+                  <button onClick={() => { setEditingNoteId(note.id); setEditingNoteText(note.content); }} style={{ background: 'none', border: 'none', color: '#666', cursor: 'pointer', fontSize: 11 }}>✎</button>
+                  <button onClick={() => onDeleteNote?.(note.id)} style={{ background: 'none', border: 'none', color: '#555', cursor: 'pointer', fontSize: 11 }}>✕</button>
+                </div>
               </div>
               {note.title && <div style={{ fontWeight: 600, marginBottom: 4, fontSize: 13 }}>{note.title}</div>}
-              <div style={{ fontSize: 13, color: '#bbb', whiteSpace: 'pre-wrap', lineHeight: 1.5 }}>{note.content}</div>
+              {editingNoteId === note.id ? (
+                <div>
+                  <textarea
+                    value={editingNoteText}
+                    onChange={e => setEditingNoteText(e.target.value)}
+                    style={{ ...S.input, width: '100%', minHeight: 60, boxSizing: 'border-box', fontFamily: 'inherit', marginBottom: 8 }}
+                    autoFocus
+                  />
+                  <div style={{ display: 'flex', gap: 8 }}>
+                    <button onClick={() => { onUpdateNote?.(note.id, { content: editingNoteText }); setEditingNoteId(null); setEditingNoteText(''); }} style={S.btnBlack}>TALLENNA</button>
+                    <button onClick={() => { setEditingNoteId(null); setEditingNoteText(''); }} style={S.btnWire}>PERUUTA</button>
+                  </div>
+                </div>
+              ) : (
+                <div style={{ fontSize: 13, color: '#bbb', whiteSpace: 'pre-wrap', lineHeight: 1.5 }}>{note.content}</div>
+              )}
             </div>
           ))}
 
