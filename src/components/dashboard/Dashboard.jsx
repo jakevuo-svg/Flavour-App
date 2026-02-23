@@ -1,6 +1,13 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useAuth } from '../auth/AuthContext';
 import S from '../../styles/theme';
+
+// Priority label + color for "my tasks" section
+const PRIO_STYLE = {
+  KORKEA: { bg: '#4a1c1c', border: '#ff4444', color: '#ff6666' },
+  NORMAALI: { bg: '#1a1a1a', border: '#555', color: '#ddd' },
+  MATALA: { bg: '#1a1a1a', border: '#333', color: '#888' },
+};
 
 const FILTERS = [
   { key: 'ALL', label: 'KAIKKI' },
@@ -11,13 +18,32 @@ const FILTERS = [
 ];
 
 const Dashboard = ({ events = [], persons = [], notes = [], recentActivity = [], tasks = [], onEventClick, onPersonClick, onNoteClick, onTaskStatusChange }) => {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const [recentFilter, setRecentFilter] = useState('ALL');
   const [expandedGroups, setExpandedGroups] = useState({});
 
   const toggleGroup = (name) => setExpandedGroups(prev => ({ ...prev, [name]: !prev[name] }));
 
   const isWorker = user?.role === 'worker' || user?.role === 'temporary';
+
+  // Tasks assigned to the current user (show for ALL roles)
+  const myTasks = useMemo(() => {
+    if (!profile?.id) return [];
+    return tasks
+      .filter(t => t.assigned_to === profile.id && t.status !== 'DONE')
+      .map(t => ({
+        ...t,
+        eventName: events.find(e => e.id === t.event_id)?.name || '',
+        event: events.find(e => e.id === t.event_id),
+      }))
+      .sort((a, b) => {
+        const prio = { KORKEA: 0, NORMAALI: 1, MATALA: 2 };
+        const prioDiff = (prio[a.priority] || 1) - (prio[b.priority] || 1);
+        if (prioDiff !== 0) return prioDiff;
+        if (a.due_date && b.due_date) return new Date(a.due_date) - new Date(b.due_date);
+        return 0;
+      });
+  }, [tasks, events, profile?.id]);
 
   const upcomingEvents = useMemo(() => {
     const now = new Date();
@@ -138,6 +164,76 @@ const Dashboard = ({ events = [], persons = [], notes = [], recentActivity = [],
           )}
         </div>
       </div>
+
+      {/* MY TASKS — prominent reminder for assigned tasks */}
+      {myTasks.length > 0 && (
+        <div style={{ ...S.border, ...S.bg, borderTop: "none" }}>
+          <div style={{ ...S.pad, borderBottom: "1px solid #444", background: '#1a1a1a' }}>
+            <div style={{ ...S.flexBetween }}>
+              <div style={{ ...S.label, display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontSize: 16 }}>!</span>
+                SINULLE MÄÄRÄTYT TEHTÄVÄT ({myTasks.length})
+              </div>
+            </div>
+          </div>
+          {myTasks.map(task => {
+            const pStyle = PRIO_STYLE[task.priority] || PRIO_STYLE.NORMAALI;
+            const isOverdue = task.due_date && new Date(task.due_date) < new Date();
+            return (
+              <div
+                key={task.id}
+                style={{
+                  padding: '10px 12px', borderBottom: '1px solid #333',
+                  background: isOverdue ? '#2a1a1a' : pStyle.bg,
+                  cursor: task.event ? 'pointer' : 'default',
+                }}
+                onClick={() => task.event && onEventClick?.(task.event)}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 3 }}>
+                      <div
+                        onClick={(e) => { e.stopPropagation(); onTaskStatusChange?.(task.id, { status: task.status === 'TODO' ? 'IN_PROGRESS' : 'DONE' }); }}
+                        style={{
+                          width: 18, height: 18,
+                          border: `2px solid ${pStyle.border}`,
+                          background: task.status === 'IN_PROGRESS' ? '#333' : 'transparent',
+                          cursor: 'pointer', flexShrink: 0,
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          fontSize: 11, color: '#ddd',
+                        }}
+                      >
+                        {task.status === 'IN_PROGRESS' ? '◐' : ''}
+                      </div>
+                      <span style={{ fontWeight: 700, fontSize: 13, color: pStyle.color }}>{task.title}</span>
+                    </div>
+                    {task.description && (
+                      <div style={{ fontSize: 11, color: '#888', marginLeft: 26, marginBottom: 2 }}>{task.description}</div>
+                    )}
+                    <div style={{ display: 'flex', gap: 8, marginLeft: 26, flexWrap: 'wrap', alignItems: 'center' }}>
+                      {task.eventName && (
+                        <span style={{ fontSize: 10, color: '#666', textTransform: 'uppercase' }}>{task.eventName}</span>
+                      )}
+                      <span style={{ fontSize: 10, padding: '1px 6px', border: `1px solid ${pStyle.border}`, color: pStyle.color }}>{task.priority}</span>
+                      <span style={{ fontSize: 10, padding: '1px 6px', border: '1px solid #555', color: '#999' }}>{task.status === 'IN_PROGRESS' ? 'KESKEN' : 'TODO'}</span>
+                    </div>
+                  </div>
+                  {task.due_date && (
+                    <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                      <div style={{ fontSize: 11, color: isOverdue ? '#ff6666' : '#888', fontWeight: isOverdue ? 700 : 400 }}>
+                        {isOverdue ? 'MYÖHÄSSÄ' : 'DL'}
+                      </div>
+                      <div style={{ fontSize: 12, color: isOverdue ? '#ff6666' : '#999' }}>
+                        {new Date(task.due_date).toLocaleDateString('fi-FI', { day: 'numeric', month: 'numeric' })}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
 
       {/* Stats row */}
       {!isWorker && (
