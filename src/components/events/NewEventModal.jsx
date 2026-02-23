@@ -94,7 +94,7 @@ export default function NewEventModal({ onClose, onAdd, locations = [], prefille
     location_name: '', location_id: '', guest_count: '', language: '',
     company: '', booker: '', contact: '', clientName: '', status: '',
     goal: '', attentionNotes: '', allergens: [], ervNotes: '', schedule: '', menu: '',
-    menuLink: '', menuAttachments: [], drinkService: [], drinkNotes: '',
+    menuLink: '', menuAttachments: [], drinkService: [], drinkNotes: '', drinkTicketSource: '',
     decorations: '', logistics: '',
     orderLink: '', orderNotes: '', orderAttachments: [],
     materials: [], notes: '',
@@ -111,12 +111,13 @@ export default function NewEventModal({ onClose, onAdd, locations = [], prefille
   const handleInputChange = (field, value) => setFormData({ ...formData, [field]: value });
 
   const toggleDrinkOption = (opt) => {
-    setFormData(prev => ({
-      ...prev,
-      drinkService: prev.drinkService.includes(opt)
-        ? prev.drinkService.filter(d => d !== opt)
-        : [...prev.drinkService, opt]
-    }));
+    setFormData(prev => {
+      const has = prev.drinkService.includes(opt);
+      const newList = has ? prev.drinkService.filter(d => d !== opt) : [...prev.drinkService, opt];
+      // Clear drinkTicketSource if Drinkkilippuja is deselected
+      const clearTicket = opt === 'Drinkkilippuja' && has;
+      return { ...prev, drinkService: newList, ...(clearTicket ? { drinkTicketSource: '' } : {}) };
+    });
   };
 
   const toggleAllergen = (allergen) => {
@@ -149,7 +150,7 @@ export default function NewEventModal({ onClose, onAdd, locations = [], prefille
       location_name: '', location_id: '', guest_count: '', language: '',
       company: '', booker: '', contact: '', clientName: '', status: '',
       goal: '', attentionNotes: '', allergens: [], ervNotes: '', schedule: '', menu: '',
-      menuLink: '', menuAttachments: [], drinkService: [], drinkNotes: '',
+      menuLink: '', menuAttachments: [], drinkService: [], drinkNotes: '', drinkTicketSource: '',
       decorations: '', logistics: '',
       orderLink: '', orderNotes: '', orderAttachments: [],
       materials: [], notes: '',
@@ -395,6 +396,36 @@ export default function NewEventModal({ onClose, onAdd, locations = [], prefille
                     );
                   })}
                 </div>
+                {formData.drinkService.includes('Drinkkilippuja') && (
+                  <div style={{ border: '1px solid #444', padding: 10, marginBottom: 8, background: '#111' }}>
+                    <div style={{ ...S.label, marginBottom: 6 }}>DRINKKILIPPUJEN LÄHDE</div>
+                    <div style={{ display: 'flex', gap: 8 }}>
+                      {[{ value: 'asiakas', label: 'ASIAKKAALTA' }, { value: 'me', label: 'MEILTÄ' }].map(opt => {
+                        const active = formData.drinkTicketSource === opt.value;
+                        return (
+                          <div key={opt.value} onClick={() => handleInputChange('drinkTicketSource', opt.value)} style={{
+                            display: 'flex', alignItems: 'center', gap: 6,
+                            border: active ? '2px solid #ddd' : '1px solid #555',
+                            background: active ? '#ddd' : '#1e1e1e',
+                            color: active ? '#111' : '#999',
+                            padding: '6px 14px', cursor: 'pointer',
+                            fontSize: 11, fontWeight: 600, transition: 'all 0.15s',
+                          }}>
+                            <span style={{
+                              width: 12, height: 12, borderRadius: '50%',
+                              border: active ? '2px solid #111' : '2px solid #666',
+                              background: active ? '#111' : 'transparent',
+                              display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                            }}>
+                              {active && <span style={{ width: 4, height: 4, borderRadius: '50%', background: '#ddd' }} />}
+                            </span>
+                            {opt.label}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
                 {formData.drinkService.length > 0 && (
                   <div style={{ marginBottom: 6, fontSize: 11, color: '#999' }}>Valittu: {formData.drinkService.join(', ')}</div>
                 )}

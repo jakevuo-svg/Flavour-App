@@ -239,7 +239,7 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
     attentionNotes: 'Huomioitavaa', erv: 'ERV', schedule: 'Aikataulu',
     menu: 'Menu', decorations: 'Koristelu', logistics: 'Logistiikka',
     duringEvent: 'Tapahtuman aikana', feedback: 'Palaute',
-    drinkService: 'Juomatapa', drinkNotes: 'Juomien lisätiedot',
+    drinkService: 'Juomatapa', drinkNotes: 'Juomien lisätiedot', drinkTicketSource: 'Drinkkilippujen lähde',
     food: 'Ruoka', foodPrice: 'Ruoan hinta', drinks: 'Juomat', drinksPrice: 'Juomien hinta',
     tech: 'Tekniikka', techPrice: 'Tekniikan hinta', program: 'Ohjelma', programPrice: 'Ohjelman hinta',
     orderNotes: 'Tilauksen muistiinpanot', notes: 'Muistiinpanot',
@@ -680,6 +680,36 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
                       );
                     })}
                   </div>
+                  {selected.includes('Drinkkilippuja') && (
+                    <div style={{ border: '1px solid #444', padding: 10, marginBottom: 8, background: '#111' }}>
+                      <div style={{ ...S.label, marginBottom: 6 }}>DRINKKILIPPUJEN LÄHDE</div>
+                      <div style={{ display: 'flex', gap: 8 }}>
+                        {[{ value: 'asiakas', label: 'ASIAKKAALTA' }, { value: 'me', label: 'MEILTÄ' }].map(opt => {
+                          const active = formData.drinkTicketSource === opt.value;
+                          return (
+                            <div key={opt.value} onClick={() => handleInputChange('drinkTicketSource', opt.value)} style={{
+                              display: 'flex', alignItems: 'center', gap: 6,
+                              border: active ? '2px solid #ddd' : '1px solid #555',
+                              background: active ? '#ddd' : '#1e1e1e',
+                              color: active ? '#111' : '#999',
+                              padding: '6px 14px', cursor: 'pointer',
+                              fontSize: 11, fontWeight: 600, transition: 'all 0.15s',
+                            }}>
+                              <span style={{
+                                width: 12, height: 12, borderRadius: '50%',
+                                border: active ? '2px solid #111' : '2px solid #666',
+                                background: active ? '#111' : 'transparent',
+                                display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                              }}>
+                                {active && <span style={{ width: 4, height: 4, borderRadius: '50%', background: '#ddd' }} />}
+                              </span>
+                              {opt.label}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
                   {selected.length > 0 && (
                     <div style={{ marginBottom: 6, fontSize: 11, color: '#999' }}>Valittu: {selected.join(', ')}</div>
                   )}
@@ -964,6 +994,14 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
                     </div>
                   ) : (
                     <div style={{ color: '#666', fontSize: 12, marginBottom: 4 }}>Ei valittua juomatapaa</div>
+                  )}
+                  {selected.includes('Drinkkilippuja') && event?.drinkTicketSource && (
+                    <div style={{ marginBottom: 8, padding: '6px 10px', border: '1px solid #444', background: '#1a1a1a', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{ fontSize: 10, color: '#888', textTransform: 'uppercase' }}>Drinkkilippujen lähde:</span>
+                      <span style={{ fontSize: 12, fontWeight: 600, color: '#ddd' }}>
+                        {event.drinkTicketSource === 'asiakas' ? 'ASIAKKAALTA' : event.drinkTicketSource === 'me' ? 'MEILTÄ' : event.drinkTicketSource}
+                      </span>
+                    </div>
                   )}
                   {event?.drinkNotes && (
                     <div style={{ marginTop: 6, paddingTop: 6, borderTop: '1px solid #333' }}>
