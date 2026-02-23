@@ -1183,25 +1183,101 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
               </div>
             )}
             {eventTasks.length === 0 && !showAddTask && <div style={{ color: '#666', fontSize: 12 }}>Ei tehtäviä</div>}
-            {eventTasks.map(task => (
-              <div key={task.id} style={{ ...S.row, alignItems: 'center' }}>
-                <button onClick={() => cycleStatus(task)} style={{ ...S.btnSmall, width: 28, height: 28, padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, flexShrink: 0, marginRight: 8, background: task.status === 'DONE' ? '#333' : 'transparent' }} title={task.status}>
-                  {task.status === 'DONE' ? '✓' : task.status === 'IN_PROGRESS' ? '◐' : '○'}
-                </button>
-                <div style={{ ...S.col(3), display: 'flex', flexDirection: 'column' }}>
-                  <span style={{ fontWeight: task.status === 'DONE' ? 400 : 600, textDecoration: task.status === 'DONE' ? 'line-through' : 'none', color: task.status === 'DONE' ? '#666' : '#ddd' }}>
-                    {task.title}
-                    {task.description && <span style={{ color: '#777', fontSize: 11, marginLeft: 8 }}>{task.description}</span>}
-                  </span>
-                  {task.assigned_to && (
-                    <span style={{ fontSize: 10, color: '#888', marginTop: 2 }}>→ {(() => { const w = assignedWorkers.find(w => w.id === task.assigned_to) || persons.find(p => p.id === task.assigned_to); return w ? `${w.first_name} ${w.last_name}` : 'Tuntematon'; })()}</span>
-                  )}
+            {eventTasks.map(task => {
+              const isDone = task.status === 'DONE';
+              const isInProgress = task.status === 'IN_PROGRESS';
+              const assignee = task.assigned_to
+                ? (assignedWorkers.find(w => w.id === task.assigned_to) || allSystemUsers.find(u => u.id === task.assigned_to) || persons.find(p => p.id === task.assigned_to))
+                : null;
+              const assigneeName = assignee ? `${assignee.first_name} ${assignee.last_name}` : null;
+              const priColor = task.priority === 'KORKEA' ? '#ff4444' : task.priority === 'MATALA' ? '#666' : '#999';
+              return (
+                <div key={task.id} style={{
+                  border: isDone ? '1px solid #333' : '1px solid #555',
+                  background: isDone ? '#111' : '#1a1a1a',
+                  padding: 12, marginBottom: 8,
+                  opacity: isDone ? 0.7 : 1,
+                }}>
+                  {/* Row 1: Title + priority + delete */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <span style={{
+                        fontSize: 13, fontWeight: 600,
+                        textDecoration: isDone ? 'line-through' : 'none',
+                        color: isDone ? '#666' : '#ddd',
+                      }}>
+                        {task.title}
+                      </span>
+                      {task.description && (
+                        <div style={{ fontSize: 11, color: '#888', marginTop: 2 }}>{task.description}</div>
+                      )}
+                    </div>
+                    <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexShrink: 0, marginLeft: 8 }}>
+                      <span style={{ fontSize: 9, color: priColor, fontWeight: 700, textTransform: 'uppercase' }}>{task.priority}</span>
+                      <button onClick={() => onDeleteTask?.(task.id)} style={{ ...S.btnSmall, fontSize: 10, padding: '2px 6px' }}>✕</button>
+                    </div>
+                  </div>
+
+                  {/* Row 2: Assigned person */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
+                    <span style={{ fontSize: 10, color: '#666', textTransform: 'uppercase' }}>Vastuuhenkilö:</span>
+                    {assigneeName ? (
+                      <span style={{ fontSize: 12, fontWeight: 600, color: isDone ? '#666' : '#ccc' }}>{assigneeName}</span>
+                    ) : (
+                      <span style={{ fontSize: 11, color: '#555', fontStyle: 'italic' }}>Ei määritetty</span>
+                    )}
+                  </div>
+
+                  {/* Row 3: Status + DONE button */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    {!isDone ? (
+                      <button
+                        onClick={() => onUpdateTask?.(task.id, { status: 'DONE' })}
+                        style={{
+                          background: '#ddd', color: '#111', border: 'none',
+                          padding: '5px 16px', fontSize: 11, fontWeight: 700,
+                          cursor: 'pointer', letterSpacing: 1,
+                        }}
+                      >
+                        ✓ VALMIS
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => onUpdateTask?.(task.id, { status: 'TODO' })}
+                        style={{
+                          background: 'transparent', color: '#888', border: '1px solid #555',
+                          padding: '5px 16px', fontSize: 11, fontWeight: 700,
+                          cursor: 'pointer', letterSpacing: 1,
+                        }}
+                      >
+                        ↩ PALAUTA
+                      </button>
+                    )}
+                    {!isDone && (
+                      <button
+                        onClick={() => onUpdateTask?.(task.id, { status: isInProgress ? 'TODO' : 'IN_PROGRESS' })}
+                        style={{
+                          background: isInProgress ? '#333' : 'transparent',
+                          color: isInProgress ? '#ddd' : '#888',
+                          border: '1px solid #555',
+                          padding: '5px 12px', fontSize: 10, fontWeight: 600,
+                          cursor: 'pointer',
+                        }}
+                      >
+                        {isInProgress ? '◐ KÄYNNISSÄ' : '▶ ALOITA'}
+                      </button>
+                    )}
+                    <span style={{
+                      fontSize: 10, fontWeight: 600, marginLeft: 'auto',
+                      color: isDone ? '#4a4' : isInProgress ? '#fa0' : '#888',
+                      textTransform: 'uppercase',
+                    }}>
+                      {isDone ? '✓ VALMIS' : isInProgress ? '◐ KÄYNNISSÄ' : '○ AVOIN'}
+                    </span>
+                  </div>
                 </div>
-                <span style={{ fontSize: 10, color: '#999', marginRight: 8 }}>{task.priority}</span>
-                <span style={{ fontSize: 10, color: '#999', marginRight: 8 }}>{task.status}</span>
-                <button onClick={() => onDeleteTask?.(task.id)} style={{ ...S.btnSmall, fontSize: 10, padding: '2px 6px', flexShrink: 0 }}>✕</button>
-              </div>
-            ))}
+              );
+            })}
           </Section>}
 
           {/* MUISTIINPANOT — uses global notes system */}
