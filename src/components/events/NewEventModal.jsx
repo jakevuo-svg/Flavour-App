@@ -9,6 +9,12 @@ const COMMON_ALLERGENS = [
   'Vegaaninen', 'Kasvis', 'Sianlihaton',
 ];
 
+// Drink service options
+const DRINK_OPTIONS = [
+  'Open Bar', 'Viinit ruoan kanssa', 'Drinkkilippuja', 'Kuohuviini',
+  'Cocktails', 'Olutpaketti', 'Alkoholiton', 'Kahvi & tee',
+];
+
 // Generate 30-minute interval time options
 const TIME_OPTIONS = [];
 for (let h = 0; h < 24; h++) {
@@ -88,7 +94,8 @@ export default function NewEventModal({ onClose, onAdd, locations = [], prefille
     location_name: '', location_id: '', guest_count: '', language: '',
     company: '', booker: '', contact: '', clientName: '', status: '',
     goal: '', attentionNotes: '', allergens: [], ervNotes: '', schedule: '', menu: '',
-    menuLink: '', menuAttachments: [], decorations: '', logistics: '',
+    menuLink: '', menuAttachments: [], drinkService: [], drinkNotes: '',
+    decorations: '', logistics: '',
     orderLink: '', orderNotes: '', orderAttachments: [],
     materials: [], notes: '',
     food: '', foodPrice: '', drinks: '', drinksPrice: '',
@@ -102,6 +109,15 @@ export default function NewEventModal({ onClose, onAdd, locations = [], prefille
   }, [prefilledDate]);
 
   const handleInputChange = (field, value) => setFormData({ ...formData, [field]: value });
+
+  const toggleDrinkOption = (opt) => {
+    setFormData(prev => ({
+      ...prev,
+      drinkService: prev.drinkService.includes(opt)
+        ? prev.drinkService.filter(d => d !== opt)
+        : [...prev.drinkService, opt]
+    }));
+  };
 
   const toggleAllergen = (allergen) => {
     setFormData(prev => ({
@@ -133,7 +149,8 @@ export default function NewEventModal({ onClose, onAdd, locations = [], prefille
       location_name: '', location_id: '', guest_count: '', language: '',
       company: '', booker: '', contact: '', clientName: '', status: '',
       goal: '', attentionNotes: '', allergens: [], ervNotes: '', schedule: '', menu: '',
-      menuLink: '', menuAttachments: [], decorations: '', logistics: '',
+      menuLink: '', menuAttachments: [], drinkService: [], drinkNotes: '',
+      decorations: '', logistics: '',
       orderLink: '', orderNotes: '', orderAttachments: [],
       materials: [], notes: '',
       food: '', foodPrice: '', drinks: '', drinksPrice: '',
@@ -348,6 +365,41 @@ export default function NewEventModal({ onClose, onAdd, locations = [], prefille
                 ))}
                 <button onClick={() => menuFileRef.current?.click()} style={S.btnSmall}>+ LATAA TIEDOSTO</button>
                 <input ref={menuFileRef} type="file" style={{ display: 'none' }} onChange={(e) => handleFileUpload('menuAttachments', e)} accept="image/*,.pdf,.doc,.docx,.xls,.xlsx" />
+              </div>
+
+              {/* JUOMAT */}
+              <div style={{ border: '1px solid #333', padding: 12, background: '#1a1a1a' }}>
+                <div style={{ ...S.label, marginBottom: 6, fontWeight: 700 }}>JUOMAT</div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 8 }}>
+                  {DRINK_OPTIONS.map(opt => {
+                    const active = formData.drinkService.includes(opt);
+                    return (
+                      <div key={opt} onClick={() => toggleDrinkOption(opt)} style={{
+                        display: 'flex', alignItems: 'center', gap: 6,
+                        border: active ? '2px solid #ddd' : '1px solid #555',
+                        background: active ? '#ddd' : '#1e1e1e',
+                        color: active ? '#111' : '#999',
+                        padding: '4px 10px', cursor: 'pointer',
+                        fontSize: 11, fontWeight: 600, textTransform: 'uppercase',
+                        transition: 'all 0.15s',
+                      }}>
+                        <span style={{
+                          width: 14, height: 14,
+                          border: active ? '2px solid #111' : '2px solid #666',
+                          background: active ? '#111' : 'transparent',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          fontSize: 10, color: active ? '#ddd' : 'transparent', flexShrink: 0,
+                        }}>{active ? '✓' : ''}</span>
+                        {opt}
+                      </div>
+                    );
+                  })}
+                </div>
+                {formData.drinkService.length > 0 && (
+                  <div style={{ marginBottom: 6, fontSize: 11, color: '#999' }}>Valittu: {formData.drinkService.join(', ')}</div>
+                )}
+                <div style={S.label}>Juomien lisätiedot</div>
+                <textarea value={formData.drinkNotes} onChange={e => handleInputChange('drinkNotes', e.target.value)} style={{ ...S.input, width: '100%', minHeight: 50, boxSizing: 'border-box', fontFamily: 'inherit' }} placeholder="Esim. drinkkilippujen määrä, erityistoiveet, alkoholittomat vaihtoehdot..." />
               </div>
 
               <div>

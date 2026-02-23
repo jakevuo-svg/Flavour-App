@@ -100,6 +100,19 @@ const EditableDriveLink = ({ url, label, onSave }) => {
   );
 };
 
+// Drink service options
+const DRINK_OPTIONS = [
+  'Open Bar', 'Viinit ruoan kanssa', 'Drinkkilippuja', 'Kuohuviini',
+  'Cocktails', 'Olutpaketti', 'Alkoholiton', 'Kahvi & tee',
+];
+
+// Parse drinkService field (stored as JSON string or array)
+const parseDrinkService = (val) => {
+  if (!val) return [];
+  if (Array.isArray(val)) return val;
+  try { return JSON.parse(val); } catch { return []; }
+};
+
 // Material types
 const MATERIAL_TYPES = [
   { key: 'seating', label: 'ISTUMAJÄRJESTYS' },
@@ -226,6 +239,7 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
     attentionNotes: 'Huomioitavaa', erv: 'ERV', schedule: 'Aikataulu',
     menu: 'Menu', decorations: 'Koristelu', logistics: 'Logistiikka',
     duringEvent: 'Tapahtuman aikana', feedback: 'Palaute',
+    drinkService: 'Juomatapa', drinkNotes: 'Juomien lisätiedot',
     food: 'Ruoka', foodPrice: 'Ruoan hinta', drinks: 'Juomat', drinksPrice: 'Juomien hinta',
     tech: 'Tekniikka', techPrice: 'Tekniikan hinta', program: 'Ohjelma', programPrice: 'Ohjelman hinta',
     orderNotes: 'Tilauksen muistiinpanot', notes: 'Muistiinpanot',
@@ -629,6 +643,57 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
             {EF({ label: "", field: "menu", textarea: true })}
             {EF({ label: "Menu Drive linkki", field: "menuLink", type: "url" })}
           </Section>}
+          {can('card_menu') && <Section title="JUOMAT" defaultOpen={parseDrinkService(formData.drinkService).length > 0 || !!formData.drinkNotes}>
+            {(() => {
+              const selected = parseDrinkService(formData.drinkService);
+              const toggleDrink = (opt) => {
+                const newList = selected.includes(opt)
+                  ? selected.filter(d => d !== opt)
+                  : [...selected, opt];
+                handleInputChange('drinkService', newList);
+              };
+              return (
+                <div>
+                  <div style={{ ...S.label, marginBottom: 6 }}>JUOMATAPA</div>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 8 }}>
+                    {DRINK_OPTIONS.map(opt => {
+                      const active = selected.includes(opt);
+                      return (
+                        <div key={opt} onClick={() => toggleDrink(opt)} style={{
+                          display: 'flex', alignItems: 'center', gap: 6,
+                          border: active ? '2px solid #ddd' : '1px solid #555',
+                          background: active ? '#ddd' : '#1e1e1e',
+                          color: active ? '#111' : '#999',
+                          padding: '4px 10px', cursor: 'pointer',
+                          fontSize: 11, fontWeight: 600, textTransform: 'uppercase',
+                          transition: 'all 0.15s',
+                        }}>
+                          <span style={{
+                            width: 14, height: 14,
+                            border: active ? '2px solid #111' : '2px solid #666',
+                            background: active ? '#111' : 'transparent',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            fontSize: 10, color: active ? '#ddd' : 'transparent', flexShrink: 0,
+                          }}>{active ? '✓' : ''}</span>
+                          {opt}
+                        </div>
+                      );
+                    })}
+                  </div>
+                  {selected.length > 0 && (
+                    <div style={{ marginBottom: 6, fontSize: 11, color: '#999' }}>Valittu: {selected.join(', ')}</div>
+                  )}
+                  <div style={{ ...S.label, marginBottom: 4 }}>JUOMIEN LISÄTIEDOT</div>
+                  <textarea
+                    value={formData.drinkNotes || ''}
+                    onChange={e => handleInputChange('drinkNotes', e.target.value)}
+                    style={{ ...S.input, width: '100%', minHeight: 50, boxSizing: 'border-box', fontFamily: 'inherit' }}
+                    placeholder="Esim. drinkkilippujen määrä, erityistoiveet, alkoholittomat vaihtoehdot..."
+                  />
+                </div>
+              );
+            })()}
+          </Section>}
           {can('card_decorations') && <Section title="DEKORAATIOT" defaultOpen={!!formData.decorations}>{EF({ label: "", field: "decorations", textarea: true })}</Section>}
           {can('card_logistics') && <Section title="LOGISTIIKKA" defaultOpen={!!formData.logistics}>{EF({ label: "", field: "logistics", textarea: true })}</Section>}
           {can('card_order') && <Section title="TILAUS" defaultOpen={!!formData.orderLink}>
@@ -883,6 +948,32 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
               />
               <input ref={menuFileRef} type="file" style={{ display: 'none' }} onChange={(e) => handleAttachmentUpload('menuAttachments', e)} accept="image/*,.pdf,.doc,.docx,.xls,.xlsx" />
             </div>
+          </Section>}
+
+          {/* JUOMAT — drink service options */}
+          {can('card_menu') && <Section title="JUOMAT" defaultOpen={parseDrinkService(event?.drinkService).length > 0 || !!event?.drinkNotes}>
+            {(() => {
+              const selected = parseDrinkService(event?.drinkService);
+              return (
+                <div>
+                  {selected.length > 0 ? (
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 8 }}>
+                      {selected.map(d => (
+                        <span key={d} style={{ border: '2px solid #ddd', background: '#ddd', color: '#111', padding: '4px 10px', fontSize: 11, fontWeight: 600, textTransform: 'uppercase' }}>{d}</span>
+                      ))}
+                    </div>
+                  ) : (
+                    <div style={{ color: '#666', fontSize: 12, marginBottom: 4 }}>Ei valittua juomatapaa</div>
+                  )}
+                  {event?.drinkNotes && (
+                    <div style={{ marginTop: 6, paddingTop: 6, borderTop: '1px solid #333' }}>
+                      <div style={{ ...S.label, marginBottom: 4 }}>LISÄTIEDOT</div>
+                      <TextBlock text={event.drinkNotes} />
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
           </Section>}
 
           {can('card_decorations') && <Section title="DEKORAATIOT" defaultOpen={!!event?.decorations}><TextBlock text={event?.decorations} /></Section>}
