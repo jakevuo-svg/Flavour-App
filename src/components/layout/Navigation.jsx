@@ -15,7 +15,7 @@ export default function Navigation({
 
   // Use dynamic permissions if provided, otherwise fallback to role-based defaults
   const tabs = allowedTabs || (isAdmin
-    ? ['PERSON', 'DATE', 'EVENTS', 'LOCATIONS', 'NOTES', 'ARCHIVE', 'ADMIN']
+    ? ['PERSON', 'DATE', 'EVENTS', 'INQUIRIES', 'LOCATIONS', 'NOTES', 'ARCHIVE', 'ADMIN']
     : ['DATE', 'EVENTS', 'NOTES', 'ARCHIVE']);
 
   return (

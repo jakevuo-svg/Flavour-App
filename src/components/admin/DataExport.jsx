@@ -65,7 +65,7 @@ export default function DataExport() {
 
   // Fetch all database data
   const fetchAllData = async () => {
-    const [eventsRes, personsRes, notesRes, tasksRes, locationsRes, assignmentsRes, usersRes, activityRes, locFilesRes] = await Promise.all([
+    const [eventsRes, personsRes, notesRes, tasksRes, locationsRes, assignmentsRes, usersRes, activityRes, locFilesRes, inquiriesRes] = await Promise.all([
       supabase.from('events').select('*').order('date', { ascending: false }),
       supabase.from('persons').select('*').order('first_name'),
       supabase.from('notes').select('*').order('created_at', { ascending: false }),
@@ -75,8 +75,9 @@ export default function DataExport() {
       supabase.from('users').select('*'),
       supabase.from('activity_log').select('*').order('created_at', { ascending: false }),
       supabase.from('location_files').select('*'),
+      supabase.from('inquiries').select('*').order('received_at', { ascending: false }),
     ]);
-    const errors = [eventsRes, personsRes, notesRes, tasksRes, locationsRes, assignmentsRes, usersRes, activityRes, locFilesRes]
+    const errors = [eventsRes, personsRes, notesRes, tasksRes, locationsRes, assignmentsRes, usersRes, activityRes, locFilesRes, inquiriesRes]
       .filter(r => r.error).map(r => r.error.message);
     if (errors.length > 0) throw new Error(errors.join(', '));
     return {
@@ -89,6 +90,7 @@ export default function DataExport() {
       users: usersRes.data || [],
       activity_log: activityRes.data || [],
       location_files: locFilesRes.data || [],
+      inquiries: inquiriesRes.data || [],
     };
   };
 

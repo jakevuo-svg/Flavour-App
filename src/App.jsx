@@ -10,6 +10,9 @@ import PersonList from './components/persons/PersonList';
 import PersonCard from './components/persons/PersonCard';
 import EventList from './components/events/EventList';
 import ArchiveList from './components/events/ArchiveList';
+import InquiryList from './components/inquiries/InquiryList';
+import InquiryCard from './components/inquiries/InquiryCard';
+import NewInquiryModal from './components/inquiries/NewInquiryModal';
 import EventCard from './components/events/EventCard';
 import NewPersonModal from './components/persons/NewPersonModal';
 import NewEventModal from './components/events/NewEventModal';
@@ -31,6 +34,7 @@ import { useNotes } from './hooks/useNotes';
 import { useLocations } from './hooks/useLocations';
 import { useTasks } from './hooks/useTasks';
 import { usePermissions } from './hooks/usePermissions';
+import { useInquiries } from './hooks/useInquiries';
 import { useNotifications } from './hooks/useNotifications';
 
 // Map Navigation uppercase tab names to internal view names
@@ -39,6 +43,7 @@ const TAB_TO_VIEW = {
   'DATE': 'date',
   'EVENTS': 'eventList',
   'ARCHIVE': 'archive',
+  'INQUIRIES': 'inquiryList',
   'LOCATIONS': 'locations',
   'NOTES': 'notes',
   'ADMIN': 'admin',
@@ -54,6 +59,7 @@ const AppContent = () => {
   const { notes, addNote, updateNote, deleteNote, removeNotesForEvent } = useNotes();
   const { locations, addLocation, updateLocation, deleteLocation, addFile: addLocationFile, removeFile: removeLocationFile, getFiles: getLocationFiles } = useLocations();
   const { tasks, addTask, updateTask, deleteTask } = useTasks();
+  const { inquiries, addInquiry, updateInquiry, deleteInquiry, convertToEvent, linkToEvent } = useInquiries();
   const { permissions, togglePermission, hasPermission, getTabsForRole, resetToDefaults } = usePermissions();
   const {
     notifications, unreadCount,
@@ -99,6 +105,8 @@ const AppContent = () => {
   const [newEventPrefilledDate, setNewEventPrefilledDate] = useState(null);
   const [toast, setToast] = useState(null);
   const [showChangePassword, setShowChangePassword] = useState(false);
+  const [showNewInquiry, setShowNewInquiry] = useState(false);
+  const [selectedInquiry, setSelectedInquiry] = useState(null);
   const [workerActivities, setWorkerActivities] = useState([]);
 
   // Keep selectedEvent in sync with the events array (so edits reflect immediately)
@@ -120,6 +128,14 @@ const AppContent = () => {
       }
     }
   }, [persons, selectedPerson]);
+
+  // Keep selectedInquiry in sync
+  useEffect(() => {
+    if (selectedInquiry) {
+      const updated = inquiries.find(i => i.id === selectedInquiry.id);
+      if (updated && updated !== selectedInquiry) setSelectedInquiry(updated);
+    }
+  }, [inquiries, selectedInquiry]);
 
   // Dynamic recent activity — built from real notes
   const recentActivity = useMemo(() => {
@@ -418,6 +434,39 @@ const AppContent = () => {
     }
   };
 
+  // --- Inquiry handlers ---
+  const handleInquiryClick = (inquiry) => {
+    setSelectedInquiry(inquiry);
+    setView('inquiryCard');
+    setActiveTab('INQUIRIES');
+  };
+
+  const handleAddInquiry = async (data) => {
+    try {
+      await addInquiry(data);
+      setShowNewInquiry(false);
+      showToast('Tiedustelu lisätty', 'success');
+    } catch (err) {
+      showToast('Tiedustelun lisäys epäonnistui', 'error');
+    }
+  };
+
+  const handleConvertInquiryToEvent = async (inquiry) => {
+    try {
+      const eventData = await convertToEvent(inquiry);
+      const ev = await addEvent(eventData);
+      if (ev?.id) {
+        await linkToEvent(inquiry.id, ev.id);
+        showToast('Tapahtuma luotu tiedustelusta', 'success');
+        // Auto-create person from inquiry contact
+        await autoCreatePerson(inquiry.contact_name, inquiry.company);
+      }
+    } catch (err) {
+      console.error('Failed to convert inquiry to event:', err);
+      showToast('Tapahtuman luonti epäonnistui', 'error');
+    }
+  };
+
   const handlePersonClick = (person) => {
     setSelectedPerson(person);
     setView('personCard');
@@ -558,6 +607,38 @@ const AppContent = () => {
           />
         ) : null;
 
+      case 'inquiryList':
+        return (
+          <InquiryList
+            inquiries={inquiries}
+            onInquiryClick={handleInquiryClick}
+            onAddClick={() => setShowNewInquiry(true)}
+            searchQuery={searchQuery}
+          />
+        );
+
+      case 'inquiryCard':
+        return selectedInquiry ? (
+          <InquiryCard
+            inquiry={selectedInquiry}
+            onBack={() => {
+              setSelectedInquiry(null);
+              setView('inquiryList');
+              setActiveTab('INQUIRIES');
+            }}
+            onUpdate={updateInquiry}
+            onDelete={async (id) => {
+              await deleteInquiry(id);
+              setSelectedInquiry(null);
+              setView('inquiryList');
+              setActiveTab('INQUIRIES');
+              showToast('Tiedustelu poistettu', 'success');
+            }}
+            onConvertToEvent={handleConvertInquiryToEvent}
+            allSystemUsers={persons.filter(p => p.type === 'TEAM' || p.role)}
+          />
+        ) : null;
+
       case 'locations':
         return (
           <LocationList
@@ -678,6 +759,15 @@ const AppContent = () => {
           onAdd={handleAddEvent}
           locations={locations}
           prefilledDate={newEventPrefilledDate}
+        />
+      )}
+
+      {showNewInquiry && (
+        <NewInquiryModal
+          isOpen={true}
+          onClose={() => setShowNewInquiry(false)}
+          onSubmit={handleAddInquiry}
+          allSystemUsers={persons.filter(p => p.type === 'TEAM' || p.role)}
         />
       )}
 
