@@ -58,7 +58,8 @@ const InquiryCard = ({ inquiry, onUpdate, onDelete, onBack, onConvertToEvent, on
     padding: '8px 10px',
     fontSize: 13,
     width: '100%',
-    boxSizing: 'border-box'
+    boxSizing: 'border-box',
+    colorScheme: 'dark',
   };
 
   const textareaStyle = {

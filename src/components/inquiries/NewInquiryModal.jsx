@@ -103,6 +103,7 @@ export default function NewInquiryModal({ isOpen, onClose, onSubmit, adminUsers,
     fontSize: 13,
     width: '100%',
     boxSizing: 'border-box',
+    colorScheme: 'dark',
   };
 
   const labelStyle = {
