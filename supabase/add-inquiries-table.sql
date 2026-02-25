@@ -12,6 +12,8 @@ CREATE TABLE IF NOT EXISTS inquiries (
   requested_date TEXT DEFAULT '',
   description TEXT DEFAULT '',
   guest_count INTEGER,
+  location_id UUID REFERENCES locations(id),
+  location_name TEXT DEFAULT '',
   source TEXT DEFAULT 'MANUAALINEN',  -- MANUAALINEN, LOMAKE, SÄHKÖPOSTI
 
   -- Sales pipeline

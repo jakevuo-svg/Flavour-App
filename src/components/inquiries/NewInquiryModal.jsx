@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import S from '../../styles/theme';
 
-export default function NewInquiryModal({ isOpen, onClose, onSubmit, allSystemUsers }) {
+export default function NewInquiryModal({ isOpen, onClose, onSubmit, adminUsers, locations }) {
   const [formData, setFormData] = useState({
     contact_name: '',
     email: '',
@@ -12,6 +12,8 @@ export default function NewInquiryModal({ isOpen, onClose, onSubmit, allSystemUs
     description: '',
     assigned_to: '',
     assigned_name: '',
+    location_id: '',
+    location_name: '',
     received_at: new Date().toISOString().split('T')[0],
     source: 'MANUAALINEN',
   });
@@ -25,11 +27,21 @@ export default function NewInquiryModal({ isOpen, onClose, onSubmit, allSystemUs
 
   const handleAssignedToChange = (e) => {
     const selectedId = e.target.value;
-    const selectedUser = allSystemUsers?.find(user => user.id === selectedId);
+    const selectedUser = adminUsers?.find(u => u.id === selectedId);
     setFormData(prev => ({
       ...prev,
       assigned_to: selectedId,
-      assigned_name: selectedUser?.name || '',
+      assigned_name: selectedUser ? `${selectedUser.first_name || ''} ${selectedUser.last_name || ''}`.trim() : '',
+    }));
+  };
+
+  const handleLocationChange = (e) => {
+    const selectedId = e.target.value;
+    const loc = locations?.find(l => l.id === selectedId);
+    setFormData(prev => ({
+      ...prev,
+      location_id: selectedId,
+      location_name: loc?.name || '',
     }));
   };
 
@@ -44,6 +56,8 @@ export default function NewInquiryModal({ isOpen, onClose, onSubmit, allSystemUs
       description: '',
       assigned_to: '',
       assigned_name: '',
+      location_id: '',
+      location_name: '',
       received_at: new Date().toISOString().split('T')[0],
       source: 'MANUAALINEN',
     });
@@ -195,6 +209,24 @@ export default function NewInquiryModal({ isOpen, onClose, onSubmit, allSystemUs
           />
         </div>
 
+        {/* Tapahtumapaikka */}
+        <div style={rowStyle}>
+          <div style={labelStyle}>Tapahtumapaikka</div>
+          <select
+            name="location_id"
+            value={formData.location_id}
+            onChange={handleLocationChange}
+            style={inputStyle}
+          >
+            <option value="">-- Valitse --</option>
+            {locations?.map(loc => (
+              <option key={loc.id} value={loc.id}>
+                {loc.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
         {/* Kuvaus/teema */}
         <div style={rowStyle}>
           <div style={labelStyle}>Kuvaus/teema</div>
@@ -216,9 +248,9 @@ export default function NewInquiryModal({ isOpen, onClose, onSubmit, allSystemUs
             style={inputStyle}
           >
             <option value="">-- Valitse --</option>
-            {allSystemUsers?.map(user => (
-              <option key={user.id} value={user.id}>
-                {user.name}
+            {adminUsers?.map(u => (
+              <option key={u.id} value={u.id}>
+                {`${u.first_name || ''} ${u.last_name || ''}`.trim() || u.email}
               </option>
             ))}
           </select>

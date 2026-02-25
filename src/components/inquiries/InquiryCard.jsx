@@ -22,7 +22,7 @@ const Row = ({ label, children }) => (
   </div>
 );
 
-const InquiryCard = ({ inquiry, onUpdate, onDelete, onBack, onConvertToEvent, allSystemUsers }) => {
+const InquiryCard = ({ inquiry, onUpdate, onDelete, onBack, onConvertToEvent, adminUsers, locations }) => {
   const [viewMode, setViewMode] = useState(true);
   const [formData, setFormData] = useState(inquiry);
 
@@ -154,6 +154,9 @@ const InquiryCard = ({ inquiry, onUpdate, onDelete, onBack, onConvertToEvent, al
             <Row label="Henkilömäärä">
               <div style={{ fontSize: 13, color: '#ddd' }}>{formData.guest_count || '-'}</div>
             </Row>
+            <Row label="Tapahtumapaikka">
+              <div style={{ fontSize: 13, color: '#ddd' }}>{formData.location_name || '-'}</div>
+            </Row>
             <Row label="Kuvaus/teema">
               <div style={{ fontSize: 13, color: '#ddd', whiteSpace: 'pre-wrap' }}>{formData.description || '-'}</div>
             </Row>
@@ -168,6 +171,19 @@ const InquiryCard = ({ inquiry, onUpdate, onDelete, onBack, onConvertToEvent, al
             </Row>
             <Row label="Henkilömäärä">
               <input type="number" value={formData.guest_count || ''} onChange={e => handleInputChange('guest_count', e.target.value ? parseInt(e.target.value) : null)} style={inputStyle} />
+            </Row>
+            <Row label="Tapahtumapaikka">
+              <select value={formData.location_id || ''} onChange={e => {
+                const selectedId = e.target.value;
+                const loc = locations?.find(l => l.id === selectedId);
+                handleInputChange('location_id', selectedId);
+                handleInputChange('location_name', loc?.name || '');
+              }} style={selectStyle}>
+                <option value="">-- Valitse --</option>
+                {locations?.map(loc => (
+                  <option key={loc.id} value={loc.id}>{loc.name}</option>
+                ))}
+              </select>
             </Row>
             <Row label="Kuvaus/teema">
               <textarea value={formData.description || ''} onChange={e => handleInputChange('description', e.target.value)} style={textareaStyle} />
@@ -239,10 +255,17 @@ const InquiryCard = ({ inquiry, onUpdate, onDelete, onBack, onConvertToEvent, al
               <input type="number" value={formData.price || ''} onChange={e => handleInputChange('price', e.target.value ? parseFloat(e.target.value) : null)} style={inputStyle} placeholder="€" />
             </Row>
             <Row label="Vastuuhenkilö">
-              <select value={formData.assigned_name || ''} onChange={e => handleInputChange('assigned_name', e.target.value)} style={selectStyle}>
+              <select value={formData.assigned_to || ''} onChange={e => {
+                const selectedId = e.target.value;
+                const u = adminUsers?.find(a => a.id === selectedId);
+                handleInputChange('assigned_to', selectedId);
+                handleInputChange('assigned_name', u ? `${u.first_name || ''} ${u.last_name || ''}`.trim() : '');
+              }} style={selectStyle}>
                 <option value="">Valitse...</option>
-                {allSystemUsers && allSystemUsers.map(user => (
-                  <option key={user.id} value={user.name}>{user.name}</option>
+                {adminUsers?.map(u => (
+                  <option key={u.id} value={u.id}>
+                    {`${u.first_name || ''} ${u.last_name || ''}`.trim() || u.email}
+                  </option>
                 ))}
               </select>
             </Row>
