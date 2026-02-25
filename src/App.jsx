@@ -647,7 +647,7 @@ const AppContent = () => {
               setView('inquiryList');
               setActiveTab('INQUIRIES');
             }}
-            onUpdate={updateInquiry}
+            onUpdate={(formData) => updateInquiry(formData.id, formData)}
             onDelete={async (id) => {
               await deleteInquiry(id);
               setSelectedInquiry(null);
@@ -674,7 +674,7 @@ const AppContent = () => {
                   email: email || '',
                   phone: phone || '',
                   company: company || '',
-                  type: 'ASIAKAS',
+                  type: 'Asiakas',
                 });
                 showToast(`${name} lisätty henkilöihin`, 'success');
               } catch (err) {
