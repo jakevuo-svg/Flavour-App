@@ -93,7 +93,7 @@ export default function InquiryList({ inquiries, onInquiryClick, onAddClick, sea
             { label: 'PIPELINE', val: `${pipelineTotal.toLocaleString('fi-FI')} €`, color: '#ddd' },
           ].map((s) => (
             <div key={s.label} style={{ flex: '1 1 60px', textAlign: 'center', padding: '10px 4px', borderRight: '1px solid #333', borderBottom: '1px solid #333' }}>
-              <div style={{ fontSize: 9, color: '#666', fontWeight: 700, letterSpacing: 0.5 }}>{s.label}</div>
+              <div style={{ fontSize: 9, color: '#888', fontWeight: 700, letterSpacing: 0.5 }}>{s.label}</div>
               <div style={{ fontSize: 16, fontWeight: 700, color: s.color }}>{s.val}</div>
             </div>
           ))}
@@ -108,7 +108,7 @@ export default function InquiryList({ inquiries, onInquiryClick, onAddClick, sea
       {/* Inquiry Rows */}
       <div style={{ ...S.border, ...S.bg, borderTop: 'none' }}>
         {sorted.length === 0 ? (
-          <div style={{ padding: 24, textAlign: 'center', color: '#666', fontSize: 12 }}>Ei tiedusteluja</div>
+          <div style={{ padding: 24, textAlign: 'center', color: '#888', fontSize: 12 }}>Ei tiedusteluja</div>
         ) : (
           sorted.map((inq) => {
             const today = new Date(); today.setHours(0,0,0,0);
@@ -137,7 +137,7 @@ export default function InquiryList({ inquiries, onInquiryClick, onAddClick, sea
                     </span>
                     <span style={statusBadge(inq.status)}>{inq.status}</span>
                   </div>
-                  <span style={{ fontSize: 11, color: '#666', flexShrink: 0 }}>{fmtDate(inq.received_at)}</span>
+                  <span style={{ fontSize: 11, color: '#999', flexShrink: 0 }}>{fmtDate(inq.received_at)}</span>
                 </div>
 
                 {/* Row 2: Company + Details */}
@@ -147,13 +147,13 @@ export default function InquiryList({ inquiries, onInquiryClick, onAddClick, sea
                       <span style={{ fontSize: 11, color: '#888' }}>{inq.company}</span>
                     )}
                     {inq.guest_count && (
-                      <span style={{ fontSize: 10, color: '#666' }}>{inq.guest_count} hlö</span>
+                      <span style={{ fontSize: 10, color: '#999' }}>{inq.guest_count} hlö</span>
                     )}
                     {inq.location_name && (
-                      <span style={{ fontSize: 10, color: '#555' }}>{inq.location_name}</span>
+                      <span style={{ fontSize: 10, color: '#999' }}>{inq.location_name}</span>
                     )}
                     {inq.assigned_name && (
-                      <span style={{ fontSize: 10, color: '#555' }}>→ {inq.assigned_name}</span>
+                      <span style={{ fontSize: 10, color: '#999' }}>→ {inq.assigned_name}</span>
                     )}
                   </div>
                   <div style={{ flexShrink: 0, textAlign: 'right' }}>
