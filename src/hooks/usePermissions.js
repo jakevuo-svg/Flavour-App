@@ -6,9 +6,9 @@ export const PERMISSION_FEATURES = [
   { key: 'tab_persons', label: 'Henkilöt-välilehti', group: 'NAVIGAATIO' },
   { key: 'tab_date', label: 'Kalenteri-välilehti', group: 'NAVIGAATIO' },
   { key: 'tab_events', label: 'Tapahtumat-välilehti', group: 'NAVIGAATIO' },
-  { key: 'tab_archive', label: 'Arkisto-välilehti', group: 'NAVIGAATIO' },
   { key: 'tab_locations', label: 'Sijainnit-välilehti', group: 'NAVIGAATIO' },
   { key: 'tab_notes', label: 'Muistiinpanot-välilehti', group: 'NAVIGAATIO' },
+  { key: 'tab_archive', label: 'Arkisto-välilehti', group: 'NAVIGAATIO' },
   { key: 'tab_admin', label: 'Hallinta-välilehti', group: 'NAVIGAATIO' },
   // EventCard sections
   { key: 'card_contacts', label: 'Yhteystiedot (varaaja, yritys, yhteystieto)', group: 'TAPAHTUMAKORTTI' },
@@ -46,9 +46,9 @@ export const TAB_KEY_TO_NAV = {
   tab_persons: 'PERSON',
   tab_date: 'DATE',
   tab_events: 'EVENTS',
-  tab_archive: 'ARCHIVE',
   tab_locations: 'LOCATIONS',
   tab_notes: 'NOTES',
+  tab_archive: 'ARCHIVE',
   tab_admin: 'ADMIN',
 };
 
