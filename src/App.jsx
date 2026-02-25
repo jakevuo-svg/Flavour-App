@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { supabase } from './services/supabaseClient';
 import { AuthProvider, useAuth } from './components/auth/AuthContext';
 import { useLanguage } from './contexts/LanguageContext';
 import LoginScreen from './components/auth/LoginScreen';
