@@ -45,10 +45,26 @@ const Dashboard = ({ events = [], persons = [], notes = [], recentActivity = [],
       });
   }, [tasks, events, profile?.id]);
 
-  const upcomingEvents = useMemo(() => {
-    const now = new Date();
+  const todaysEvents = useMemo(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
     return events
-      .filter(e => new Date(e.date) >= now)
+      .filter(e => {
+        const d = new Date(e.date);
+        d.setHours(0, 0, 0, 0);
+        return d >= today && d < tomorrow;
+      })
+      .sort((a, b) => (a.start_time || '').localeCompare(b.start_time || ''));
+  }, [events]);
+
+  const upcomingEvents = useMemo(() => {
+    const tomorrow = new Date();
+    tomorrow.setHours(0, 0, 0, 0);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    return events
+      .filter(e => new Date(e.date) >= tomorrow)
       .sort((a, b) => new Date(a.date) - new Date(b.date))
       .slice(0, 5);
   }, [events]);
@@ -361,6 +377,38 @@ const Dashboard = ({ events = [], persons = [], notes = [], recentActivity = [],
           })}
         </div>
       )}
+
+      {/* Today's events */}
+      <div style={{ ...S.border, ...S.bg, borderTop: "none" }}>
+        <div style={{ ...S.pad, borderBottom: "1px solid #444", background: todaysEvents.length > 0 ? '#1a2a1a' : 'transparent' }}>
+          <div style={{ ...S.label, display: 'flex', alignItems: 'center', gap: 8 }}>
+            TÄNÄÄN
+            <span style={{ fontSize: 10, color: todaysEvents.length > 0 ? '#8fd68f' : '#666', fontWeight: 700 }}>
+              {new Date().toLocaleDateString('fi-FI', { weekday: 'long', day: 'numeric', month: 'numeric' }).toUpperCase()}
+            </span>
+            {todaysEvents.length > 0 && (
+              <span style={{ fontSize: 11, color: '#8fd68f', fontWeight: 700 }}>({todaysEvents.length})</span>
+            )}
+          </div>
+        </div>
+        {todaysEvents.length === 0 ? (
+          <div style={{ padding: "12px", color: "#666", fontSize: 12 }}>Ei tapahtumia tänään</div>
+        ) : (
+          todaysEvents.map(event => (
+            <div
+              key={event.id}
+              style={{ ...S.row, cursor: 'pointer', background: '#0a1a0a' }}
+              onClick={() => onEventClick?.(event)}
+            >
+              <span style={{ ...S.col(2), fontWeight: 700, color: '#ddd' }}>{event.name}</span>
+              <span style={S.col(1)}>{event.start_time || ''}{event.end_time ? ` – ${event.end_time}` : ''}</span>
+              <span style={S.col(1)}>{event.location_name || ''}</span>
+              <span style={S.col(1)}>{event.guest_count ? `${event.guest_count} hlö` : ''}</span>
+              <span style={{ fontSize: 10, padding: '1px 6px', border: '1px solid #555', color: '#999' }}>{event.status || ''}</span>
+            </div>
+          ))
+        )}
+      </div>
 
       {/* Upcoming events table */}
       <div style={{ ...S.border, ...S.bg, borderTop: "none" }}>
