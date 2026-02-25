@@ -26,6 +26,9 @@ CREATE TABLE IF NOT EXISTS inquiries (
   outcome TEXT DEFAULT '',
   notes TEXT DEFAULT '',
 
+  -- Deadline
+  respond_by DATE,
+
   -- Assignment
   assigned_to UUID REFERENCES auth.users(id),
   assigned_name TEXT DEFAULT '',

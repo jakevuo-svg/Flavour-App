@@ -251,6 +251,23 @@ const InquiryCard = ({ inquiry, onUpdate, onDelete, onBack, onConvertToEvent, on
             <Row label="Vastuuhenkilö">
               <div style={{ fontSize: 13, color: '#ddd' }}>{formData.assigned_name || '-'}</div>
             </Row>
+            <Row label="Vastaa viimeistään">
+              {formData.respond_by ? (() => {
+                const today = new Date(); today.setHours(0,0,0,0);
+                const deadline = new Date(formData.respond_by); deadline.setHours(0,0,0,0);
+                const isOverdue = deadline < today && !['VASTATTU','TARJOTTU','VAHVISTETTU','LASKUTETTU','MAKSETTU'].includes(formData.status);
+                const isToday = deadline.getTime() === today.getTime();
+                return (
+                  <div style={{
+                    fontSize: 13,
+                    fontWeight: (isOverdue || isToday) ? 700 : 400,
+                    color: isOverdue ? '#ff6666' : isToday ? '#ffaa44' : '#ddd',
+                  }}>
+                    {isOverdue ? '! MYÖHÄSSÄ — ' : isToday ? '! TÄNÄÄN — ' : ''}{formatDate(formData.respond_by)}
+                  </div>
+                );
+              })() : <div style={{ fontSize: 13, color: '#ddd' }}>-</div>}
+            </Row>
             <Row label="Tullut">
               <div style={{ fontSize: 13, color: '#ddd' }}>{formatDate(formData.received_at)}</div>
             </Row>
@@ -288,6 +305,9 @@ const InquiryCard = ({ inquiry, onUpdate, onDelete, onBack, onConvertToEvent, on
                   </option>
                 ))}
               </select>
+            </Row>
+            <Row label="Vastaa viimeistään">
+              <input type="date" value={formData.respond_by ? formData.respond_by.split('T')[0] : ''} onChange={e => handleInputChange('respond_by', e.target.value)} style={inputStyle} />
             </Row>
             <Row label="Tullut">
               <input type="date" value={formData.received_at ? formData.received_at.split('T')[0] : ''} onChange={e => handleInputChange('received_at', e.target.value)} style={inputStyle} />

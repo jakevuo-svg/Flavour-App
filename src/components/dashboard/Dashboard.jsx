@@ -17,7 +17,7 @@ const FILTERS = [
   { key: 'PERSON', label: 'HENKILÖT' },
 ];
 
-const Dashboard = ({ events = [], persons = [], notes = [], recentActivity = [], tasks = [], onEventClick, onPersonClick, onNoteClick, onTaskStatusChange }) => {
+const Dashboard = ({ events = [], persons = [], notes = [], recentActivity = [], tasks = [], inquiries = [], onEventClick, onPersonClick, onNoteClick, onTaskStatusChange, onInquiryClick }) => {
   const { user, profile } = useAuth();
   const [recentFilter, setRecentFilter] = useState('ALL');
   const [expandedGroups, setExpandedGroups] = useState({});
@@ -119,6 +119,22 @@ const Dashboard = ({ events = [], persons = [], notes = [], recentActivity = [],
     tasks.filter(t => t.status !== 'DONE' && t.due_date && new Date(t.due_date) < new Date()),
     [tasks]
   );
+
+  // Inquiry reminders: due today or overdue, assigned to current user
+  const inquiryReminders = useMemo(() => {
+    if (!profile?.id) return [];
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    const answeredStatuses = ['VASTATTU', 'TARJOTTU', 'VAHVISTETTU', 'LASKUTETTU', 'MAKSETTU', 'HÄVITTY'];
+    return inquiries
+      .filter(inq => {
+        if (!inq.respond_by) return false;
+        if (answeredStatuses.includes(inq.status)) return false;
+        if (inq.assigned_to && inq.assigned_to !== profile.id) return false;
+        const deadline = new Date(inq.respond_by); deadline.setHours(0, 0, 0, 0);
+        return deadline <= today;
+      })
+      .sort((a, b) => new Date(a.respond_by) - new Date(b.respond_by));
+  }, [inquiries, profile?.id]);
 
   return (
     <div>
@@ -244,6 +260,54 @@ const Dashboard = ({ events = [], persons = [], notes = [], recentActivity = [],
                       </div>
                     </div>
                   )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Inquiry reminders */}
+      {inquiryReminders.length > 0 && (
+        <div style={{ ...S.border, ...S.bg, borderTop: "none" }}>
+          <div style={{ ...S.pad, borderBottom: "1px solid #444", background: '#2a1a0a' }}>
+            <div style={{ ...S.label, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{ fontSize: 16, color: '#ffaa44' }}>!</span>
+              TIEDUSTELUMUISTUTUKSET ({inquiryReminders.length})
+            </div>
+          </div>
+          {inquiryReminders.map(inq => {
+            const today = new Date(); today.setHours(0,0,0,0);
+            const deadline = new Date(inq.respond_by); deadline.setHours(0,0,0,0);
+            const isToday = deadline.getTime() === today.getTime();
+            const isOverdue = deadline < today;
+            return (
+              <div
+                key={inq.id}
+                style={{
+                  padding: '10px 12px', borderBottom: '1px solid #333',
+                  background: isOverdue ? '#2a1a1a' : '#1a1a0a',
+                  cursor: 'pointer',
+                }}
+                onClick={() => onInquiryClick?.(inq)}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontWeight: 700, fontSize: 13, color: '#ddd', marginBottom: 3 }}>
+                      {inq.contact_name || inq.company || 'Nimetön tiedustelu'}
+                    </div>
+                    <div style={{ fontSize: 11, color: '#888' }}>
+                      {inq.company && inq.contact_name ? inq.company + ' — ' : ''}{inq.description?.slice(0, 60) || ''}
+                    </div>
+                  </div>
+                  <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: isOverdue ? '#ff6666' : '#ffaa44' }}>
+                      {isOverdue ? 'MYÖHÄSSÄ' : 'TÄNÄÄN'}
+                    </div>
+                    <div style={{ fontSize: 12, color: isOverdue ? '#ff6666' : '#ffaa44' }}>
+                      {new Date(inq.respond_by).toLocaleDateString('fi-FI', { day: 'numeric', month: 'numeric' })}
+                    </div>
+                  </div>
                 </div>
               </div>
             );

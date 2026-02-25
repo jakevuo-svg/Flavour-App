@@ -532,11 +532,13 @@ const AppContent = () => {
             persons={persons}
             notes={notes}
             tasks={tasks}
+            inquiries={inquiries}
             recentActivity={recentActivity}
             onEventClick={handleEventClick}
             onPersonClick={handlePersonClick}
             onNoteClick={handleNoteClick}
             onTaskStatusChange={handleUpdateTask}
+            onInquiryClick={handleInquiryClick}
           />
         );
 
@@ -750,11 +752,13 @@ const AppContent = () => {
             persons={persons}
             notes={notes}
             tasks={tasks}
+            inquiries={inquiries}
             recentActivity={recentActivity}
             onEventClick={handleEventClick}
             onPersonClick={handlePersonClick}
             onNoteClick={handleNoteClick}
             onTaskStatusChange={handleUpdateTask}
+            onInquiryClick={handleInquiryClick}
           />
         );
     }

@@ -14,6 +14,7 @@ export default function NewInquiryModal({ isOpen, onClose, onSubmit, adminUsers,
     assigned_name: '',
     location_id: '',
     location_name: '',
+    respond_by: '',
     received_at: new Date().toISOString().split('T')[0],
     source: 'MANUAALINEN',
   });
@@ -253,6 +254,18 @@ export default function NewInquiryModal({ isOpen, onClose, onSubmit, adminUsers,
               </option>
             ))}
           </select>
+        </div>
+
+        {/* Vastaa viimeistään */}
+        <div style={rowStyle}>
+          <div style={labelStyle}>Vastaa viimeistään</div>
+          <input
+            type="date"
+            name="respond_by"
+            value={formData.respond_by}
+            onChange={handleInputChange}
+            style={inputStyle}
+          />
         </div>
 
         {/* Tullut */}
