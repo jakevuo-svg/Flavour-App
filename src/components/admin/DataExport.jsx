@@ -22,8 +22,8 @@ const collectAttachments = (events, locations, locationFiles) => {
 
   // Event attachments (may be base64 fileData or URL)
   (events || []).forEach(e => {
-    ['menuAttachments', 'orderAttachments'].forEach(field => {
-      const subfolder = field === 'menuAttachments' ? 'menu' : 'orders';
+    const fieldMap = { menuAttachments: 'menu', orderAttachments: 'orders', materials: 'materials' };
+    Object.entries(fieldMap).forEach(([field, subfolder]) => {
       (e[field] || []).forEach(att => {
         const name = att.name || att.path?.split('/').pop() || 'file';
         if (att.fileData && att.fileData.startsWith('data:')) {
