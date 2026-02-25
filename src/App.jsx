@@ -89,6 +89,26 @@ const AppContent = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Only on mount
 
+  // Fetch admin/team users for dropdowns (inquiry assignment etc.)
+  const [adminUsers, setAdminUsers] = useState([]);
+  useEffect(() => {
+    if (!profile) return;
+    const fetchAdminUsers = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('users')
+          .select('id, first_name, last_name, email, role')
+          .eq('is_active', true)
+          .order('first_name');
+        if (error) throw error;
+        setAdminUsers(data || []);
+      } catch (err) {
+        console.error('Failed to fetch admin users:', err);
+      }
+    };
+    fetchAdminUsers();
+  }, [profile]);
+
   // Compute allowed tabs for current user's role
   const userRole = profile?.role || 'worker';
   const allowedTabs = getTabsForRole(userRole);
@@ -635,7 +655,8 @@ const AppContent = () => {
               showToast('Tiedustelu poistettu', 'success');
             }}
             onConvertToEvent={handleConvertInquiryToEvent}
-            allSystemUsers={persons.filter(p => p.type === 'TEAM' || p.role)}
+            adminUsers={adminUsers}
+            locations={locations}
           />
         ) : null;
 
@@ -767,7 +788,8 @@ const AppContent = () => {
           isOpen={true}
           onClose={() => setShowNewInquiry(false)}
           onSubmit={handleAddInquiry}
-          allSystemUsers={persons.filter(p => p.type === 'TEAM' || p.role)}
+          adminUsers={adminUsers}
+          locations={locations}
         />
       )}
 
