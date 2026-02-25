@@ -9,6 +9,7 @@ import Dashboard from './components/dashboard/Dashboard';
 import PersonList from './components/persons/PersonList';
 import PersonCard from './components/persons/PersonCard';
 import EventList from './components/events/EventList';
+import ArchiveList from './components/events/ArchiveList';
 import EventCard from './components/events/EventCard';
 import NewPersonModal from './components/persons/NewPersonModal';
 import NewEventModal from './components/events/NewEventModal';
@@ -36,6 +37,7 @@ const TAB_TO_VIEW = {
   'PERSON': 'personList',
   'DATE': 'date',
   'EVENTS': 'eventList',
+  'ARCHIVE': 'archive',
   'LOCATIONS': 'locations',
   'NOTES': 'notes',
   'ADMIN': 'admin',
@@ -47,7 +49,7 @@ const AppContent = () => {
 
   // Data hooks
   const { persons, addPerson, deletePerson, updatePerson } = usePersons();
-  const { events, addEvent, deleteEvent, updateEvent, assignWorker, removeWorkerAssignment, getEventAssignments } = useEvents();
+  const { events, addEvent, deleteEvent, updateEvent, archiveEvent, assignWorker, removeWorkerAssignment, getEventAssignments } = useEvents();
   const { notes, addNote, updateNote, deleteNote, removeNotesForEvent } = useNotes();
   const { locations, addLocation, updateLocation, deleteLocation, addFile: addLocationFile, removeFile: removeLocationFile, getFiles: getLocationFiles } = useLocations();
   const { tasks, addTask, updateTask, deleteTask } = useTasks();
@@ -503,10 +505,21 @@ const AppContent = () => {
       case 'eventList':
         return (
           <EventList
-            events={events}
+            events={events.filter(e => !e.is_archived)}
             locations={locations}
             onEventClick={handleEventClick}
             searchQuery={searchQuery}
+          />
+        );
+
+      case 'archive':
+        return (
+          <ArchiveList
+            events={events.filter(e => e.is_archived)}
+            onEventClick={(event) => {
+              setSelectedEvent(event);
+              setView('eventCard');
+            }}
           />
         );
 
@@ -519,11 +532,18 @@ const AppContent = () => {
             can={can}
             onBack={() => {
               setSelectedEvent(null);
-              setView('eventList');
-              setActiveTab('EVENTS');
+              // Return to archive if event is archived, otherwise to event list
+              if (selectedEvent?.is_archived) {
+                setView('archive');
+                setActiveTab('ARCHIVE');
+              } else {
+                setView('eventList');
+                setActiveTab('EVENTS');
+              }
             }}
             onUpdate={handleUpdateEvent}
             onDelete={handleDeleteEvent}
+            onArchive={archiveEvent}
             tasks={tasks}
             onAddTask={handleAddTask}
             onUpdateTask={handleUpdateTask}

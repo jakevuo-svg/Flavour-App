@@ -15,8 +15,8 @@ export default function Navigation({
 
   // Use dynamic permissions if provided, otherwise fallback to role-based defaults
   const tabs = allowedTabs || (isAdmin
-    ? ['PERSON', 'DATE', 'EVENTS', 'LOCATIONS', 'NOTES', 'ADMIN']
-    : ['DATE', 'EVENTS', 'NOTES']);
+    ? ['PERSON', 'DATE', 'EVENTS', 'ARCHIVE', 'LOCATIONS', 'NOTES', 'ADMIN']
+    : ['DATE', 'EVENTS', 'ARCHIVE', 'NOTES']);
 
   return (
     <div style={{ ...S.border, ...S.bg, borderTop: "none" }}>

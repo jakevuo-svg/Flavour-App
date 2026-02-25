@@ -216,7 +216,7 @@ const AttachmentSection = ({ attachments = [], onAdd, onRemove, onUpload, fileIn
   );
 };
 
-export default function EventCard({ event, onUpdate, onDelete, onBack, locations = [], persons = [], tasks = [], onAddTask, onUpdateTask, onDeleteTask, notes = [], onAddNote, onUpdateNote, onDeleteNote, can = () => true, onAssignWorker, onRemoveWorker }) {
+export default function EventCard({ event, onUpdate, onDelete, onBack, onArchive, locations = [], persons = [], tasks = [], onAddTask, onUpdateTask, onDeleteTask, notes = [], onAddNote, onUpdateNote, onDeleteNote, can = () => true, onAssignWorker, onRemoveWorker }) {
   // Sort locations by preferred order (uses includes for flexible matching)
   const sortedLocations = [...locations].sort((a, b) => {
     const aName = (a.name || '').toLowerCase();
@@ -547,6 +547,16 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
 
   return (
     <div style={{ ...S.border, ...S.bg, borderTop: "none" }}>
+      {/* Archived banner */}
+      {event?.is_archived && (
+        <div style={{ background: '#2a2a1a', borderBottom: '2px solid #665', padding: '8px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: 11, fontWeight: 700, color: '#aa8', letterSpacing: 1 }}>ARKISTOITU</span>
+          <button onClick={() => onArchive?.(event.id, false).then(() => onBack?.())} style={{
+            background: 'transparent', color: '#4a9', border: '1px solid #4a9',
+            padding: '3px 10px', fontSize: 10, fontWeight: 700, cursor: 'pointer',
+          }}>↩ PALAUTA AKTIIVISEKSI</button>
+        </div>
+      )}
       {/* Back + Header */}
       <div style={{ padding: '12px 16px' }}>
         <button onClick={onBack} style={{ ...S.btnSmall, marginBottom: 12 }}>← TAKAISIN</button>
@@ -567,6 +577,17 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, locations
             {!isEditing ? (
               <>
                 <button onClick={() => setIsEditing(true)} style={S.btnWire}>MUOKKAA</button>
+                {event?.is_archived ? (
+                  <button onClick={() => onArchive?.(event.id, false).then(() => onBack?.())} style={{
+                    background: 'transparent', color: '#4a9', border: '1px solid #4a9',
+                    padding: '6px 14px', fontSize: 11, fontWeight: 700, cursor: 'pointer', letterSpacing: 0.5,
+                  }}>↩ PALAUTA</button>
+                ) : (
+                  <button onClick={() => onArchive?.(event.id, true).then(() => onBack?.())} style={{
+                    background: 'transparent', color: '#888', border: '1px solid #555',
+                    padding: '6px 14px', fontSize: 11, fontWeight: 700, cursor: 'pointer', letterSpacing: 0.5,
+                  }}>ARKISTOI</button>
+                )}
                 <button onClick={() => setShowDeleteConfirm(true)} style={S.btnDanger}>POISTA</button>
               </>
             ) : (

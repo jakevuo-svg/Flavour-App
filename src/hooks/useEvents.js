@@ -260,6 +260,25 @@ export function useEvents() {
     }
   }, []);
 
+  const archiveEvent = useCallback(async (id, archive = true) => {
+    try {
+      setError(null);
+      const { data: updated, error: err } = await supabase
+        .from('events')
+        .update({ is_archived: archive, modified_at: new Date().toISOString() })
+        .eq('id', id)
+        .select()
+        .single();
+      if (err) throw err;
+      setEvents(prev => prev.map(e => e.id === id ? updated : e));
+      return updated;
+    } catch (err) {
+      console.error('Failed to archive event:', err);
+      setError(err.message);
+      throw err;
+    }
+  }, []);
+
   return {
     events,
     loading,
@@ -267,6 +286,7 @@ export function useEvents() {
     addEvent,
     updateEvent,
     deleteEvent,
+    archiveEvent,
     assignWorker,
     removeWorkerAssignment,
     getEventAssignments,
