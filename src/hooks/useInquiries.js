@@ -88,6 +88,10 @@ export function useInquiries() {
       delete updateData.id;
       delete updateData.created_at;
       delete updateData.created_by;
+      // Convert empty date strings to null for Postgres
+      ['received_at', 'requested_date', 'respond_by', 'event_date'].forEach(f => {
+        if (updateData[f] === '') updateData[f] = null;
+      });
       const { data: updated, error: err } = await supabase
         .from('inquiries')
         .update(updateData)
