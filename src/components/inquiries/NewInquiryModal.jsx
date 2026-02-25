@@ -188,9 +188,8 @@ export default function NewInquiryModal({ isOpen, onClose, onSubmit, adminUsers,
         <div style={rowStyle}>
           <div style={labelStyle}>Toivottu ajankohta</div>
           <input
-            type="text"
+            type="date"
             name="requested_date"
-            placeholder="27.2. tai 3.4.2025"
             value={formData.requested_date}
             onChange={handleInputChange}
             style={inputStyle}

@@ -22,7 +22,7 @@ const Row = ({ label, children }) => (
   </div>
 );
 
-const InquiryCard = ({ inquiry, onUpdate, onDelete, onBack, onConvertToEvent, adminUsers, locations }) => {
+const InquiryCard = ({ inquiry, onUpdate, onDelete, onBack, onConvertToEvent, onAddPerson, adminUsers, locations }) => {
   const [viewMode, setViewMode] = useState(true);
   const [formData, setFormData] = useState(inquiry);
 
@@ -106,7 +106,27 @@ const InquiryCard = ({ inquiry, onUpdate, onDelete, onBack, onConvertToEvent, ad
         {viewMode ? (
           <>
             <Row label="Yhteyshenkilö">
-              <div style={{ fontSize: 13, color: '#ddd' }}>{formData.contact_name || '-'}</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div style={{ fontSize: 13, color: '#ddd' }}>{formData.contact_name || '-'}</div>
+                {formData.contact_name && onAddPerson && (
+                  <button
+                    onClick={() => onAddPerson({
+                      name: formData.contact_name,
+                      email: formData.email,
+                      phone: formData.phone,
+                      company: formData.company,
+                    })}
+                    style={{
+                      ...S.btnWire,
+                      fontSize: 10,
+                      padding: '2px 8px',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    + LISÄÄ HENKILÖIHIN
+                  </button>
+                )}
+              </div>
             </Row>
             <Row label="Sähköposti">
               {formData.email ? (
@@ -167,7 +187,7 @@ const InquiryCard = ({ inquiry, onUpdate, onDelete, onBack, onConvertToEvent, ad
         ) : (
           <>
             <Row label="Toivottu ajankohta">
-              <input type="text" value={formData.requested_date || ''} onChange={e => handleInputChange('requested_date', e.target.value)} style={inputStyle} />
+              <input type="date" value={formData.requested_date ? formData.requested_date.split('T')[0] : ''} onChange={e => handleInputChange('requested_date', e.target.value)} style={inputStyle} />
             </Row>
             <Row label="Henkilömäärä">
               <input type="number" value={formData.guest_count || ''} onChange={e => handleInputChange('guest_count', e.target.value ? parseInt(e.target.value) : null)} style={inputStyle} />
@@ -270,7 +290,7 @@ const InquiryCard = ({ inquiry, onUpdate, onDelete, onBack, onConvertToEvent, ad
               </select>
             </Row>
             <Row label="Tullut">
-              <div style={{ fontSize: 13, color: '#aaa' }}>{formatDate(formData.received_at)}</div>
+              <input type="date" value={formData.received_at ? formData.received_at.split('T')[0] : ''} onChange={e => handleInputChange('received_at', e.target.value)} style={inputStyle} />
             </Row>
             <Row label="Vastattu">
               <input type="date" value={formData.responded_at ? formData.responded_at.split('T')[0] : ''} onChange={e => handleInputChange('responded_at', e.target.value)} style={inputStyle} />

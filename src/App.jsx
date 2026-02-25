@@ -656,6 +656,31 @@ const AppContent = () => {
               showToast('Tiedustelu poistettu', 'success');
             }}
             onConvertToEvent={handleConvertInquiryToEvent}
+            onAddPerson={async ({ name, email, phone, company }) => {
+              const parts = (name || '').trim().split(/\s+/);
+              const firstName = parts[0] || '';
+              const lastName = parts.slice(1).join(' ') || '';
+              const exists = persons.some(p =>
+                `${p.first_name} ${p.last_name}`.toLowerCase().trim() === name.toLowerCase().trim()
+              );
+              if (exists) {
+                showToast('Henkilö on jo lisätty', 'info');
+                return;
+              }
+              try {
+                await addPerson({
+                  first_name: firstName,
+                  last_name: lastName,
+                  email: email || '',
+                  phone: phone || '',
+                  company: company || '',
+                  type: 'ASIAKAS',
+                });
+                showToast(`${name} lisätty henkilöihin`, 'success');
+              } catch (err) {
+                showToast('Henkilön lisääminen epäonnistui', 'error');
+              }
+            }}
             adminUsers={adminUsers}
             locations={locations}
           />
