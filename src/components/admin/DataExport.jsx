@@ -14,32 +14,46 @@ const downloadBlob = (blob, filename) => {
   URL.revokeObjectURL(url);
 };
 
-// Collect all attachment URLs from events and locations
-const collectAttachmentUrls = (events, locations) => {
-  const files = [];
+// Collect all attachments from events, locations and location_files
+// Returns: { urlFiles: [{url, folder, name}], base64Files: [{data, folder, name}] }
+const collectAttachments = (events, locations, locationFiles) => {
+  const urlFiles = [];
+  const base64Files = [];
+
+  // Event attachments (may be base64 fileData or URL)
   (events || []).forEach(e => {
-    (e.menuAttachments || []).forEach(att => {
-      if (att.publicUrl || att.url) {
-        files.push({ url: att.publicUrl || att.url, folder: `events/${e.id}/menu`, name: att.name || att.path?.split('/').pop() || 'file' });
-      }
-    });
-    (e.orderAttachments || []).forEach(att => {
-      if (att.publicUrl || att.url) {
-        files.push({ url: att.publicUrl || att.url, folder: `events/${e.id}/orders`, name: att.name || att.path?.split('/').pop() || 'file' });
-      }
+    ['menuAttachments', 'orderAttachments'].forEach(field => {
+      const subfolder = field === 'menuAttachments' ? 'menu' : 'orders';
+      (e[field] || []).forEach(att => {
+        const name = att.name || att.path?.split('/').pop() || 'file';
+        if (att.fileData && att.fileData.startsWith('data:')) {
+          base64Files.push({ data: att.fileData, folder: `events/${e.id}/${subfolder}`, name });
+        } else if (att.publicUrl || att.url) {
+          urlFiles.push({ url: att.publicUrl || att.url, folder: `events/${e.id}/${subfolder}`, name });
+        }
+      });
     });
   });
+
+  // Location logos
   (locations || []).forEach(loc => {
     if (loc.logo_url) {
-      files.push({ url: loc.logo_url, folder: `locations/${loc.id}`, name: `logo.${loc.logo_url.split('.').pop()?.split('?')[0] || 'png'}` });
+      urlFiles.push({ url: loc.logo_url, folder: `locations/${loc.id}`, name: `logo.${loc.logo_url.split('.').pop()?.split('?')[0] || 'png'}` });
     }
-    (loc.files || []).forEach(f => {
-      if (f.publicUrl || f.url) {
-        files.push({ url: f.publicUrl || f.url, folder: `locations/${loc.id}/files`, name: f.name || f.path?.split('/').pop() || 'file' });
-      }
-    });
   });
-  return files;
+
+  // Location files from location_files table (file_path is a public URL)
+  (locationFiles || []).forEach(lf => {
+    if (lf.file_path) {
+      urlFiles.push({
+        url: lf.file_path,
+        folder: `locations/${lf.location_id}/files`,
+        name: lf.file_name || lf.file_path.split('/').pop() || 'file',
+      });
+    }
+  });
+
+  return { urlFiles, base64Files };
 };
 
 export default function DataExport() {
@@ -187,12 +201,14 @@ export default function DataExport() {
       zip.file('data.json', JSON.stringify(exportData, null, 2));
 
       // Collect and download attachments
-      const attachments = collectAttachmentUrls(data.events, data.locations);
+      const { urlFiles, base64Files } = collectAttachments(data.events, data.locations, data.location_files);
+      const totalFiles = urlFiles.length + base64Files.length;
       let downloaded = 0;
       let failed = 0;
 
-      for (const att of attachments) {
-        setProgress(`Ladataan liitteitä... (${downloaded + 1}/${attachments.length})`);
+      // Download URL-based files (location files from Storage, logos)
+      for (const att of urlFiles) {
+        setProgress(`Ladataan liitteitä... (${downloaded + 1}/${totalFiles})`);
         try {
           const response = await fetch(att.url);
           if (response.ok) {
@@ -207,6 +223,25 @@ export default function DataExport() {
         }
       }
 
+      // Add base64-embedded files (menu PDFs etc.)
+      for (const att of base64Files) {
+        setProgress(`Ladataan liitteitä... (${downloaded + 1}/${totalFiles})`);
+        try {
+          const response = await fetch(att.data);
+          const blob = await response.blob();
+          // Detect extension from mime type if name has none
+          let name = att.name;
+          if (!name.includes('.')) {
+            const ext = blob.type.split('/')[1]?.split(';')[0] || 'bin';
+            name = `${name}.${ext}`;
+          }
+          zip.file(`attachments/${att.folder}/${name}`, blob);
+          downloaded++;
+        } catch {
+          failed++;
+        }
+      }
+
       setProgress('Pakataan ZIP-tiedostoa...');
       const zipBlob = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE', compressionOptions: { level: 6 } });
 
@@ -214,7 +249,7 @@ export default function DataExport() {
       const filename = `typedwn-full-backup-${date}.zip`;
       downloadBlob(zipBlob, filename);
 
-      const totalAttachments = attachments.length;
+      const totalAttachments = totalFiles;
       setLastExport({
         date: new Date().toLocaleString('fi-FI'),
         filename,
