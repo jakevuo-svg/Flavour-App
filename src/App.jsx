@@ -19,6 +19,7 @@ import DateView from './components/DateView';
 import UserManagement from './components/admin/UserManagement';
 import ActivityLog from './components/admin/ActivityLog';
 import RolePermissions from './components/admin/RolePermissions';
+import DataExport from './components/admin/DataExport';
 import Toast from './components/common/Toast';
 import ChangePassword from './components/auth/ChangePassword';
 import S from './styles/theme';
@@ -605,6 +606,7 @@ const AppContent = () => {
               onToggle={togglePermission}
               onReset={resetToDefaults}
             />
+            <DataExport />
             <ActivityLog />
           </div>
         ) : (
