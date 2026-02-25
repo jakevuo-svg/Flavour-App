@@ -5,13 +5,12 @@ import { INQUIRY_STATUSES, INQUIRY_STATUS_COLORS } from '../../hooks/useInquirie
 const fmtDate = (d) => {
   if (!d) return '-';
   const dt = new Date(d);
-  return `${dt.getDate()}.${dt.getMonth() + 1}.${dt.getFullYear()}`;
+  return `${dt.getDate()}.${dt.getMonth() + 1}.`;
 };
 
 export default function InquiryList({ inquiries, onInquiryClick, onAddClick, searchQuery }) {
   const [statusFilter, setStatusFilter] = useState('');
 
-  // Filter by search query
   const searchFiltered = (inquiries || []).filter((inq) => {
     if (!searchQuery) return true;
     const q = searchQuery.toLowerCase();
@@ -24,20 +23,17 @@ export default function InquiryList({ inquiries, onInquiryClick, onAddClick, sea
     );
   });
 
-  // Filter by status
   const filtered = searchFiltered.filter((inq) => {
     if (!statusFilter) return true;
     return inq.status === statusFilter;
   });
 
-  // Sort by received_at descending (newest first)
   const sorted = [...filtered].sort((a, b) => {
     const dateA = new Date(a.received_at || 0).getTime();
     const dateB = new Date(b.received_at || 0).getTime();
     return dateB - dateA;
   });
 
-  // Calculate stats
   const totalCount = searchFiltered.length;
   const counts = {
     UUSI: searchFiltered.filter((i) => i.status === 'UUSI').length,
@@ -49,204 +45,133 @@ export default function InquiryList({ inquiries, onInquiryClick, onAddClick, sea
     .filter((i) => i.status !== 'HÄVITTY')
     .reduce((sum, i) => sum + (i.price || 0), 0);
 
-  const statusBadgeStyle = (status) => ({
+  const statusBadge = (status) => ({
     display: 'inline-block',
     padding: '2px 8px',
     fontSize: 10,
     fontWeight: 700,
-    background: INQUIRY_STATUS_COLORS[status] + '22',
-    color: INQUIRY_STATUS_COLORS[status],
-    border: `1px solid ${INQUIRY_STATUS_COLORS[status]}`,
+    background: (INQUIRY_STATUS_COLORS[status] || '#666') + '22',
+    color: INQUIRY_STATUS_COLORS[status] || '#666',
+    border: `1px solid ${INQUIRY_STATUS_COLORS[status] || '#666'}`,
   });
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-      {/* Status Filter Bar */}
-      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
-        <button
-          onClick={() => setStatusFilter('')}
-          style={{
-            ...S.btnBlack,
-            background: statusFilter === '' ? '#444' : '#222',
-            border: statusFilter === '' ? '2px solid #aaa' : '1px solid #444',
-            padding: '6px 12px',
-            cursor: 'pointer',
-            fontSize: 11,
-            fontWeight: 700,
-            transition: 'all 0.2s',
-          }}
-        >
-          KAIKKI
-        </button>
-        {INQUIRY_STATUSES.map((status) => (
-          <button
-            key={status}
-            onClick={() => setStatusFilter(status)}
-            style={{
-              ...statusBadgeStyle(status),
-              cursor: 'pointer',
-              transition: 'all 0.2s',
-              background:
-                statusFilter === status
-                  ? INQUIRY_STATUS_COLORS[status] + '44'
-                  : INQUIRY_STATUS_COLORS[status] + '22',
-              border:
-                statusFilter === status
-                  ? `2px solid ${INQUIRY_STATUS_COLORS[status]}`
-                  : `1px solid ${INQUIRY_STATUS_COLORS[status]}`,
-              padding: statusFilter === status ? '2px 8px' : '2px 8px',
-            }}
+    <div>
+      {/* Status Filter */}
+      <div style={{ ...S.border, ...S.bg, borderTop: 'none' }}>
+        <div style={{ ...S.pad, display: 'flex', gap: 6, flexWrap: 'wrap', borderBottom: '1px solid #333' }}>
+          <span
+            onClick={() => setStatusFilter('')}
+            style={{ ...S.tag(!statusFilter), cursor: 'pointer', fontSize: 10 }}
           >
-            {status}
-          </button>
-        ))}
-      </div>
-
-      {/* Stats Row */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
-          gap: '12px',
-          padding: '12px',
-          background: '#1a1a1a',
-          border: '1px solid #333',
-        }}
-      >
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-          <div style={{ fontSize: 10, color: '#666', fontWeight: 700 }}>YHTEENSÄ</div>
-          <div style={{ fontSize: 18, fontWeight: 700, color: '#fff' }}>{totalCount}</div>
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-          <div style={{ fontSize: 10, color: '#666', fontWeight: 700 }}>UUSI</div>
-          <div style={{ fontSize: 18, fontWeight: 700, color: INQUIRY_STATUS_COLORS.UUSI }}>
-            {counts.UUSI}
-          </div>
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-          <div style={{ fontSize: 10, color: '#666', fontWeight: 700 }}>VASTATTU</div>
-          <div
-            style={{ fontSize: 18, fontWeight: 700, color: INQUIRY_STATUS_COLORS.VASTATTU }}
-          >
-            {counts.VASTATTU}
-          </div>
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-          <div style={{ fontSize: 10, color: '#666', fontWeight: 700 }}>TARJOTTU</div>
-          <div
-            style={{ fontSize: 18, fontWeight: 700, color: INQUIRY_STATUS_COLORS.TARJOTTU }}
-          >
-            {counts.TARJOTTU}
-          </div>
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-          <div style={{ fontSize: 10, color: '#666', fontWeight: 700 }}>VAHVISTETTU</div>
-          <div
-            style={{
-              fontSize: 18,
-              fontWeight: 700,
-              color: INQUIRY_STATUS_COLORS.VAHVISTETTU,
-            }}
-          >
-            {counts.VAHVISTETTU}
-          </div>
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-          <div style={{ fontSize: 10, color: '#666', fontWeight: 700 }}>PIPELINE €</div>
-          <div style={{ fontSize: 18, fontWeight: 700, color: '#fff' }}>
-            {pipelineTotal.toLocaleString('fi-FI')}
-          </div>
-        </div>
-      </div>
-
-      {/* ADD Button */}
-      <div>
-        <button onClick={onAddClick} style={{ ...S.btnBlack, cursor: 'pointer' }}>
-          + UUSI TIEDUSTELU
-        </button>
-      </div>
-
-      {/* Table Header */}
-      <div
-        style={{
-          display: 'flex',
-          gap: '0',
-          padding: '12px 8px',
-          borderBottom: '1px solid #333',
-          background: '#1a1a1a',
-          fontWeight: 700,
-          fontSize: 11,
-          color: '#888',
-          textTransform: 'uppercase',
-          letterSpacing: '0.5px',
-        }}
-      >
-        <div style={{ flex: '0 0 60px' }}>PVM</div>
-        <div style={{ flex: '0 0 120px' }}>YRITYS</div>
-        <div style={{ flex: '1' }}>YHTEYSHENKILÖ</div>
-        <div style={{ flex: '0 0 50px' }}>PAX</div>
-        <div style={{ flex: '0 0 90px' }}>STATUS</div>
-        <div style={{ flex: '0 0 80px', textAlign: 'right' }}>HINTA</div>
-        <div style={{ flex: '0 0 100px' }}>VASTUUHENKILÖ</div>
-      </div>
-
-      {/* Table Rows */}
-      <div style={{ display: 'flex', flexDirection: 'column' }}>
-        {sorted.length > 0 ? (
-          sorted.map((inquiry) => (
-            <div
-              key={inquiry.id}
-              onClick={() => onInquiryClick(inquiry)}
+            KAIKKI ({totalCount})
+          </span>
+          {INQUIRY_STATUSES.map((st) => (
+            <span
+              key={st}
+              onClick={() => setStatusFilter(statusFilter === st ? '' : st)}
               style={{
-                display: 'flex',
-                gap: '0',
-                padding: '8px',
-                borderBottom: '1px solid #333',
+                ...statusBadge(st),
                 cursor: 'pointer',
-                transition: 'background-color 0.2s',
-                background: '#0a0a0a',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = '#1a1a1a';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = '#0a0a0a';
+                opacity: statusFilter && statusFilter !== st ? 0.4 : 1,
               }}
             >
-              <div style={{ flex: '0 0 60px', padding: '8px', fontSize: 12 }}>
-                {fmtDate(inquiry.received_at)}
-              </div>
-              <div style={{ flex: '0 0 120px', padding: '8px', fontSize: 12 }}>
-                {inquiry.company || '-'}
-              </div>
-              <div style={{ flex: '1', padding: '8px', fontSize: 12 }}>
-                {inquiry.contact_name || '-'}
-              </div>
-              <div style={{ flex: '0 0 50px', padding: '8px', fontSize: 12, textAlign: 'center' }}>
-                {inquiry.guest_count || '-'}
-              </div>
-              <div style={{ flex: '0 0 90px', padding: '8px', fontSize: 12 }}>
-                <span style={statusBadgeStyle(inquiry.status)}>{inquiry.status}</span>
-              </div>
-              <div style={{ flex: '0 0 80px', padding: '8px', fontSize: 12, textAlign: 'right' }}>
-                {inquiry.price ? `${inquiry.price.toLocaleString('fi-FI')} €` : '-'}
-              </div>
-              <div style={{ flex: '0 0 100px', padding: '8px', fontSize: 12 }}>
-                {inquiry.assigned_name || '-'}
-              </div>
+              {st} {counts[st] !== undefined ? `(${counts[st]})` : ''}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      {/* Stats */}
+      <div style={{ ...S.border, ...S.bg, borderTop: 'none' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+          {[
+            { label: 'UUSI', val: counts.UUSI, color: INQUIRY_STATUS_COLORS.UUSI },
+            { label: 'VASTATTU', val: counts.VASTATTU, color: INQUIRY_STATUS_COLORS.VASTATTU },
+            { label: 'TARJOTTU', val: counts.TARJOTTU, color: INQUIRY_STATUS_COLORS.TARJOTTU },
+            { label: 'VAHVISTETTU', val: counts.VAHVISTETTU, color: INQUIRY_STATUS_COLORS.VAHVISTETTU },
+            { label: 'PIPELINE', val: `${pipelineTotal.toLocaleString('fi-FI')} €`, color: '#ddd' },
+          ].map((s) => (
+            <div key={s.label} style={{ flex: '1 1 60px', textAlign: 'center', padding: '10px 4px', borderRight: '1px solid #333', borderBottom: '1px solid #333' }}>
+              <div style={{ fontSize: 9, color: '#666', fontWeight: 700, letterSpacing: 0.5 }}>{s.label}</div>
+              <div style={{ fontSize: 16, fontWeight: 700, color: s.color }}>{s.val}</div>
             </div>
-          ))
+          ))}
+        </div>
+      </div>
+
+      {/* Add Button */}
+      <div style={{ ...S.border, ...S.bg, borderTop: 'none', ...S.pad }}>
+        <button onClick={onAddClick} style={{ ...S.btnBlack, width: '100%' }}>+ UUSI TIEDUSTELU</button>
+      </div>
+
+      {/* Inquiry Rows */}
+      <div style={{ ...S.border, ...S.bg, borderTop: 'none' }}>
+        {sorted.length === 0 ? (
+          <div style={{ padding: 24, textAlign: 'center', color: '#666', fontSize: 12 }}>Ei tiedusteluja</div>
         ) : (
-          <div
-            style={{
-              padding: '32px',
-              textAlign: 'center',
-              color: '#666',
-              fontSize: 12,
-            }}
-          >
-            Ei tiedusteluja
-          </div>
+          sorted.map((inq) => {
+            const today = new Date(); today.setHours(0,0,0,0);
+            const hasDeadline = inq.respond_by && !['VASTATTU','TARJOTTU','VAHVISTETTU','LASKUTETTU','MAKSETTU','HÄVITTY'].includes(inq.status);
+            const deadline = hasDeadline ? new Date(inq.respond_by) : null;
+            if (deadline) deadline.setHours(0,0,0,0);
+            const isOverdue = deadline && deadline < today;
+            const isDueToday = deadline && deadline.getTime() === today.getTime();
+
+            return (
+              <div
+                key={inq.id}
+                onClick={() => onInquiryClick(inq)}
+                style={{
+                  padding: '10px 12px',
+                  borderBottom: '1px solid #333',
+                  cursor: 'pointer',
+                  background: isOverdue ? '#1a0a0a' : 'transparent',
+                }}
+              >
+                {/* Row 1: Name + Status + Date */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                  <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <span style={{ fontWeight: 700, fontSize: 13, color: '#ddd', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {inq.contact_name || inq.company || 'Nimetön'}
+                    </span>
+                    <span style={statusBadge(inq.status)}>{inq.status}</span>
+                  </div>
+                  <span style={{ fontSize: 11, color: '#666', flexShrink: 0 }}>{fmtDate(inq.received_at)}</span>
+                </div>
+
+                {/* Row 2: Company + Details */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
+                  <div style={{ flex: 1, minWidth: 0, display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+                    {inq.company && inq.contact_name && (
+                      <span style={{ fontSize: 11, color: '#888' }}>{inq.company}</span>
+                    )}
+                    {inq.guest_count && (
+                      <span style={{ fontSize: 10, color: '#666' }}>{inq.guest_count} hlö</span>
+                    )}
+                    {inq.location_name && (
+                      <span style={{ fontSize: 10, color: '#555' }}>{inq.location_name}</span>
+                    )}
+                    {inq.assigned_name && (
+                      <span style={{ fontSize: 10, color: '#555' }}>→ {inq.assigned_name}</span>
+                    )}
+                  </div>
+                  <div style={{ flexShrink: 0, textAlign: 'right' }}>
+                    {inq.price ? (
+                      <span style={{ fontSize: 12, fontWeight: 700, color: '#ddd' }}>{inq.price.toLocaleString('fi-FI')} €</span>
+                    ) : null}
+                  </div>
+                </div>
+
+                {/* Row 3: Deadline warning */}
+                {(isOverdue || isDueToday) && (
+                  <div style={{ marginTop: 4, fontSize: 10, fontWeight: 700, color: isOverdue ? '#ff6666' : '#ffaa44' }}>
+                    {isOverdue ? '! VASTAUS MYÖHÄSSÄ' : '! VASTAA TÄNÄÄN'} — {fmtDate(inq.respond_by)}
+                  </div>
+                )}
+              </div>
+            );
+          })
         )}
       </div>
     </div>
