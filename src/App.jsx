@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { supabase } from './services/supabaseClient';
 import { AuthProvider, useAuth } from './components/auth/AuthContext';
 import { useLanguage } from './contexts/LanguageContext';
@@ -71,6 +71,50 @@ const AppContent = () => {
   const { inquiries, addInquiry, updateInquiry, deleteInquiry, convertToEvent, linkToEvent } = useInquiries();
   const { recipes, addRecipe, updateRecipe, deleteRecipe } = useRecipes();
   const { menus, addMenu, updateMenu, deleteMenu, addRecipeToMenu, removeRecipeFromMenu } = useMenus();
+
+  // Event-recipe linking
+  const [eventRecipes, setEventRecipes] = useState({}); // { eventId: [{ id, recipe_id, notes, servings, recipes: {...} }] }
+
+  const fetchEventRecipes = useCallback(async (eventId) => {
+    try {
+      const { data, error } = await supabase
+        .from('event_recipes')
+        .select('*, recipes(id, name, category, description, allergens)')
+        .eq('event_id', eventId);
+      if (error) throw error;
+      setEventRecipes(prev => ({ ...prev, [eventId]: data || [] }));
+    } catch (err) {
+      console.error('Failed to fetch event recipes:', err);
+    }
+  }, []);
+
+  const addEventRecipe = useCallback(async (eventId, recipeId, notes = '') => {
+    try {
+      const { error } = await supabase
+        .from('event_recipes')
+        .insert({ event_id: eventId, recipe_id: recipeId, notes });
+      if (error) throw error;
+      await fetchEventRecipes(eventId);
+    } catch (err) {
+      console.error('Failed to add event recipe:', err);
+      throw err;
+    }
+  }, [fetchEventRecipes]);
+
+  const removeEventRecipe = useCallback(async (eventId, recipeId) => {
+    try {
+      const { error } = await supabase
+        .from('event_recipes')
+        .delete()
+        .eq('event_id', eventId)
+        .eq('recipe_id', recipeId);
+      if (error) throw error;
+      await fetchEventRecipes(eventId);
+    } catch (err) {
+      console.error('Failed to remove event recipe:', err);
+      throw err;
+    }
+  }, [fetchEventRecipes]);
   const { permissions, togglePermission, hasPermission, getTabsForRole, resetToDefaults } = usePermissions();
   const {
     notifications, unreadCount,
@@ -690,6 +734,11 @@ const AppContent = () => {
             onDeleteNote={handleDeleteNote}
             onAssignWorker={handleAssignWorker}
             onRemoveWorker={removeWorkerAssignment}
+            recipes={recipes}
+            eventRecipes={eventRecipes[selectedEvent?.id] || []}
+            onFetchEventRecipes={fetchEventRecipes}
+            onAddEventRecipe={addEventRecipe}
+            onRemoveEventRecipe={removeEventRecipe}
           />
         ) : null;
 

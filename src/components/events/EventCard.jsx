@@ -216,7 +216,13 @@ const AttachmentSection = ({ attachments = [], onAdd, onRemove, onUpload, fileIn
   );
 };
 
-export default function EventCard({ event, onUpdate, onDelete, onBack, onArchive, locations = [], persons = [], tasks = [], onAddTask, onUpdateTask, onDeleteTask, notes = [], onAddNote, onUpdateNote, onDeleteNote, can = () => true, onAssignWorker, onRemoveWorker }) {
+const RECIPE_CATEGORY_COLORS = {
+  alkuruoka: '#27ae60', pääruoka: '#e67e22', jälkiruoka: '#9b59b6',
+  salaatti: '#2ecc71', keitto: '#f39c12', välipala: '#1abc9c',
+  cocktailpala: '#e74c3c', leipä: '#d4a574', juoma: '#3498db', muu: '#666',
+};
+
+export default function EventCard({ event, onUpdate, onDelete, onBack, onArchive, locations = [], persons = [], tasks = [], onAddTask, onUpdateTask, onDeleteTask, notes = [], onAddNote, onUpdateNote, onDeleteNote, can = () => true, onAssignWorker, onRemoveWorker, recipes = [], eventRecipes = [], onFetchEventRecipes, onAddEventRecipe, onRemoveEventRecipe }) {
   // Sort locations by preferred order (uses includes for flexible matching)
   const sortedLocations = [...locations].sort((a, b) => {
     const aName = (a.name || '').toLowerCase();
@@ -240,9 +246,18 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, onArchive
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [editingNoteId, setEditingNoteId] = useState(null);
   const [editingNoteText, setEditingNoteText] = useState('');
+  const [showRecipePicker, setShowRecipePicker] = useState(false);
+  const [recipeSearch, setRecipeSearch] = useState('');
   const fileInputRef = useRef(null);
   const menuFileRef = useRef(null);
   const orderFileRef = useRef(null);
+
+  // Fetch event recipes when card opens
+  useEffect(() => {
+    if (event?.id && onFetchEventRecipes) {
+      onFetchEventRecipes(event.id);
+    }
+  }, [event?.id, onFetchEventRecipes]);
 
   const handleInputChange = (field, value) => setFormData({ ...formData, [field]: value });
 
@@ -758,9 +773,54 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, onArchive
             })()}
           </Section>}
           {can('card_schedule') && <Section title="AIKATAULU" defaultOpen={!!formData.schedule}>{EF({ label: "", field: "schedule", textarea: true })}</Section>}
-          {can('card_menu') && <Section title="MENU" defaultOpen={!!formData.menu}>
+          {can('card_menu') && <Section title="MENU" defaultOpen={!!formData.menu || eventRecipes.length > 0}>
             {EF({ label: "", field: "menu", textarea: true })}
             {EF({ label: "Menu Drive linkki", field: "menuLink", type: "url" })}
+            {/* Linked recipes */}
+            <div style={{ marginTop: 12, paddingTop: 8, borderTop: '1px solid #333' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+                <div style={{ ...S.label, fontSize: 10 }}>RUOKALAJIT ({eventRecipes.length})</div>
+                <button onClick={() => setShowRecipePicker(!showRecipePicker)} style={{
+                  padding: '3px 10px', fontSize: 10, fontWeight: 700, border: '1px solid #333',
+                  background: showRecipePicker ? '#333' : 'transparent', color: showRecipePicker ? '#ddd' : '#888', cursor: 'pointer',
+                }}>{showRecipePicker ? 'SULJE' : '+ LISÄÄ RUOKALAJI'}</button>
+              </div>
+              {showRecipePicker && (
+                <div style={{ marginBottom: 8, padding: 6, border: '1px solid #333', background: '#111' }}>
+                  <input style={{ ...S.input, width: '100%', marginBottom: 6, boxSizing: 'border-box' }} value={recipeSearch} onChange={e => setRecipeSearch(e.target.value)} placeholder="Hae reseptiä..." autoFocus />
+                  <div style={{ maxHeight: 160, overflow: 'auto' }}>
+                    {(() => {
+                      const linkedIds = new Set(eventRecipes.map(er => er.recipe_id));
+                      const available = recipes.filter(r => !linkedIds.has(r.id) && (!recipeSearch || r.name.toLowerCase().includes(recipeSearch.toLowerCase()) || r.category?.toLowerCase().includes(recipeSearch.toLowerCase())));
+                      return available.length === 0 ? (
+                        <div style={{ padding: 6, color: '#666', fontSize: 11, textAlign: 'center' }}>Ei tuloksia</div>
+                      ) : available.slice(0, 15).map(r => {
+                        const cc = RECIPE_CATEGORY_COLORS[r.category] || '#666';
+                        return (
+                          <div key={r.id} onClick={async () => { try { await onAddEventRecipe(event.id, r.id); setShowRecipePicker(false); setRecipeSearch(''); } catch(e){} }} style={{
+                            padding: '5px 6px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, borderBottom: '1px solid #1a1a1a',
+                          }}>
+                            <span style={{ fontSize: 11, color: '#ddd', flex: 1 }}>{r.name}</span>
+                            <span style={{ fontSize: 9, padding: '1px 4px', background: cc + '22', color: cc }}>{r.category}</span>
+                          </div>
+                        );
+                      });
+                    })()}
+                  </div>
+                </div>
+              )}
+              {eventRecipes.map(er => {
+                const r = er.recipes || {};
+                const cc = RECIPE_CATEGORY_COLORS[r.category] || '#666';
+                return (
+                  <div key={er.id} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 0', borderBottom: '1px solid #1a1a1a' }}>
+                    <span style={{ fontSize: 12, color: '#ddd', flex: 1 }}>{r.name || '?'}</span>
+                    <span style={{ fontSize: 9, padding: '1px 4px', background: cc + '22', color: cc }}>{r.category}</span>
+                    <button onClick={() => onRemoveEventRecipe(event.id, er.recipe_id)} style={{ background: 'none', border: 'none', color: '#c0392b', cursor: 'pointer', fontSize: 14, padding: '0 2px' }}>×</button>
+                  </div>
+                );
+              })}
+            </div>
           </Section>}
           {can('card_menu') && <Section title="JUOMAT" defaultOpen={parseDrinkService(formData.drinkService).length > 0 || !!formData.drinkNotes}>
             {(() => {
@@ -1103,9 +1163,59 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, onArchive
           </Section>}
           {can('card_schedule') && <Section title="AIKATAULU" defaultOpen={!!event?.schedule}><TextBlock text={event?.schedule} /></Section>}
 
-          {/* MENU — with editable link + attachments */}
-          {can('card_menu') && <Section title="MENU" defaultOpen={!!event?.menu || menuAttachments.length > 0}>
+          {/* MENU — with editable link + attachments + recipes */}
+          {can('card_menu') && <Section title="MENU" defaultOpen={!!event?.menu || menuAttachments.length > 0 || eventRecipes.length > 0}>
             <TextBlock text={event?.menu} />
+
+            {/* Linked recipes */}
+            {eventRecipes.length > 0 && (
+              <div style={{ marginTop: 10, paddingTop: 8, borderTop: '1px solid #333' }}>
+                <div style={{ ...S.label, fontSize: 10, marginBottom: 6 }}>RUOKALAJIT</div>
+                {eventRecipes.map(er => {
+                  const r = er.recipes || {};
+                  const cc = RECIPE_CATEGORY_COLORS[r.category] || '#666';
+                  return (
+                    <div key={er.id} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 0', borderBottom: '1px solid #1a1a1a' }}>
+                      <span style={{ fontSize: 12, color: '#ddd', flex: 1 }}>{r.name || '?'}</span>
+                      <span style={{ fontSize: 9, padding: '1px 4px', background: cc + '22', color: cc }}>{r.category}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Add recipe button (view mode) */}
+            <div style={{ marginTop: 8 }}>
+              <button onClick={() => setShowRecipePicker(!showRecipePicker)} style={{
+                padding: '4px 10px', fontSize: 10, fontWeight: 700, border: '1px solid #333',
+                background: showRecipePicker ? '#333' : 'transparent', color: showRecipePicker ? '#ddd' : '#888', cursor: 'pointer',
+              }}>{showRecipePicker ? 'SULJE' : '+ LISÄÄ RUOKALAJI'}</button>
+              {showRecipePicker && (
+                <div style={{ marginTop: 6, padding: 6, border: '1px solid #333', background: '#111' }}>
+                  <input style={{ ...S.input, width: '100%', marginBottom: 6, boxSizing: 'border-box' }} value={recipeSearch} onChange={e => setRecipeSearch(e.target.value)} placeholder="Hae reseptiä..." autoFocus />
+                  <div style={{ maxHeight: 160, overflow: 'auto' }}>
+                    {(() => {
+                      const linkedIds = new Set(eventRecipes.map(er => er.recipe_id));
+                      const available = recipes.filter(r => !linkedIds.has(r.id) && (!recipeSearch || r.name.toLowerCase().includes(recipeSearch.toLowerCase()) || r.category?.toLowerCase().includes(recipeSearch.toLowerCase())));
+                      return available.length === 0 ? (
+                        <div style={{ padding: 6, color: '#666', fontSize: 11, textAlign: 'center' }}>Ei tuloksia</div>
+                      ) : available.slice(0, 15).map(r => {
+                        const cc = RECIPE_CATEGORY_COLORS[r.category] || '#666';
+                        return (
+                          <div key={r.id} onClick={async () => { try { await onAddEventRecipe(event.id, r.id); setShowRecipePicker(false); setRecipeSearch(''); } catch(e){} }} style={{
+                            padding: '5px 6px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, borderBottom: '1px solid #1a1a1a',
+                          }}>
+                            <span style={{ fontSize: 11, color: '#ddd', flex: 1 }}>{r.name}</span>
+                            <span style={{ fontSize: 9, padding: '1px 4px', background: cc + '22', color: cc }}>{r.category}</span>
+                          </div>
+                        );
+                      });
+                    })()}
+                  </div>
+                </div>
+              )}
+            </div>
+
             <div style={{ marginTop: 10, paddingTop: 8, borderTop: '1px solid #333' }}>
               <div style={{ ...S.label, marginBottom: 4 }}>DRIVE-LINKKI</div>
               <EditableDriveLink url={formData.menuLink} label="Menu Drive →" onSave={(val) => saveField('menuLink', val)} />
