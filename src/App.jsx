@@ -24,6 +24,11 @@ import UserManagement from './components/admin/UserManagement';
 import ActivityLog from './components/admin/ActivityLog';
 import RolePermissions from './components/admin/RolePermissions';
 import DataExport from './components/admin/DataExport';
+import MenusView from './components/menus/MenusView';
+import MenuCard from './components/menus/MenuCard';
+import RecipeCard from './components/menus/RecipeCard';
+import NewMenuModal from './components/menus/NewMenuModal';
+import NewRecipeModal from './components/menus/NewRecipeModal';
 import Toast from './components/common/Toast';
 import ChangePassword from './components/auth/ChangePassword';
 import S from './styles/theme';
@@ -36,6 +41,8 @@ import { useLocations } from './hooks/useLocations';
 import { useTasks } from './hooks/useTasks';
 import { usePermissions } from './hooks/usePermissions';
 import { useInquiries } from './hooks/useInquiries';
+import { useRecipes } from './hooks/useRecipes';
+import { useMenus } from './hooks/useMenus';
 import { useNotifications } from './hooks/useNotifications';
 
 // Map Navigation uppercase tab names to internal view names
@@ -47,6 +54,7 @@ const TAB_TO_VIEW = {
   'INQUIRIES': 'inquiryList',
   'LOCATIONS': 'locations',
   'NOTES': 'notes',
+  'MENUS': 'menusView',
   'ADMIN': 'admin',
 };
 
@@ -61,6 +69,8 @@ const AppContent = () => {
   const { locations, addLocation, updateLocation, deleteLocation, addFile: addLocationFile, removeFile: removeLocationFile, getFiles: getLocationFiles } = useLocations();
   const { tasks, addTask, updateTask, deleteTask } = useTasks();
   const { inquiries, addInquiry, updateInquiry, deleteInquiry, convertToEvent, linkToEvent } = useInquiries();
+  const { recipes, addRecipe, updateRecipe, deleteRecipe } = useRecipes();
+  const { menus, addMenu, updateMenu, deleteMenu, addRecipeToMenu, removeRecipeFromMenu } = useMenus();
   const { permissions, togglePermission, hasPermission, getTabsForRole, resetToDefaults } = usePermissions();
   const {
     notifications, unreadCount,
@@ -128,6 +138,10 @@ const AppContent = () => {
   const [showChangePassword, setShowChangePassword] = useState(false);
   const [showNewInquiry, setShowNewInquiry] = useState(false);
   const [selectedInquiry, setSelectedInquiry] = useState(null);
+  const [showNewMenu, setShowNewMenu] = useState(false);
+  const [showNewRecipe, setShowNewRecipe] = useState(false);
+  const [selectedMenu, setSelectedMenu] = useState(null);
+  const [selectedRecipe, setSelectedRecipe] = useState(null);
   const [workerActivities, setWorkerActivities] = useState([]);
 
   // Keep selectedEvent in sync with the events array (so edits reflect immediately)
@@ -157,6 +171,22 @@ const AppContent = () => {
       if (updated && updated !== selectedInquiry) setSelectedInquiry(updated);
     }
   }, [inquiries, selectedInquiry]);
+
+  // Keep selectedMenu in sync
+  useEffect(() => {
+    if (selectedMenu) {
+      const updated = menus.find(m => m.id === selectedMenu.id);
+      if (updated && updated !== selectedMenu) setSelectedMenu(updated);
+    }
+  }, [menus, selectedMenu]);
+
+  // Keep selectedRecipe in sync
+  useEffect(() => {
+    if (selectedRecipe) {
+      const updated = recipes.find(r => r.id === selectedRecipe.id);
+      if (updated && updated !== selectedRecipe) setSelectedRecipe(updated);
+    }
+  }, [recipes, selectedRecipe]);
 
   // Dynamic recent activity — built from real notes
   const recentActivity = useMemo(() => {
@@ -500,6 +530,39 @@ const AppContent = () => {
     setActiveTab('EVENTS');
   };
 
+  // --- Menu / Recipe handlers ---
+  const handleMenuClick = (menu) => {
+    setSelectedMenu(menu);
+    setView('menuCard');
+    setActiveTab('MENUS');
+  };
+
+  const handleRecipeClick = (recipe) => {
+    setSelectedRecipe(recipe);
+    setView('recipeCard');
+    setActiveTab('MENUS');
+  };
+
+  const handleAddMenu = async (data) => {
+    try {
+      await addMenu(data);
+      setShowNewMenu(false);
+      showToast('Menu lisätty', 'success');
+    } catch (err) {
+      showToast('Menun lisäys epäonnistui', 'error');
+    }
+  };
+
+  const handleAddRecipe = async (data) => {
+    try {
+      await addRecipe(data);
+      setShowNewRecipe(false);
+      showToast('Resepti lisätty', 'success');
+    } catch (err) {
+      showToast('Reseptin lisäys epäonnistui', 'error');
+    }
+  };
+
   // Navigation sends uppercase tab names — map to internal view names
   const handleTabChange = (tab) => {
     const mappedView = TAB_TO_VIEW[tab] || 'home';
@@ -688,6 +751,42 @@ const AppContent = () => {
           />
         ) : null;
 
+      case 'menusView':
+        return (
+          <MenusView
+            recipes={recipes}
+            menus={menus}
+            onRecipeClick={handleRecipeClick}
+            onMenuClick={handleMenuClick}
+            searchQuery={searchQuery}
+            onNewRecipe={() => setShowNewRecipe(true)}
+            onNewMenu={() => setShowNewMenu(true)}
+          />
+        );
+
+      case 'menuCard':
+        return selectedMenu ? (
+          <MenuCard
+            menu={selectedMenu}
+            onBack={() => { setSelectedMenu(null); setView('menusView'); setActiveTab('MENUS'); }}
+            onUpdate={updateMenu}
+            onDelete={deleteMenu}
+            recipes={recipes}
+            onAddRecipeToMenu={addRecipeToMenu}
+            onRemoveRecipeFromMenu={removeRecipeFromMenu}
+          />
+        ) : null;
+
+      case 'recipeCard':
+        return selectedRecipe ? (
+          <RecipeCard
+            recipe={selectedRecipe}
+            onBack={() => { setSelectedRecipe(null); setView('menusView'); setActiveTab('MENUS'); }}
+            onUpdate={updateRecipe}
+            onDelete={deleteRecipe}
+          />
+        ) : null;
+
       case 'locations':
         return (
           <LocationList
@@ -821,6 +920,14 @@ const AppContent = () => {
           adminUsers={adminUsers}
           locations={locations}
         />
+      )}
+
+      {showNewMenu && (
+        <NewMenuModal isOpen={true} onClose={() => setShowNewMenu(false)} onSubmit={handleAddMenu} />
+      )}
+
+      {showNewRecipe && (
+        <NewRecipeModal isOpen={true} onClose={() => setShowNewRecipe(false)} onSubmit={handleAddRecipe} />
       )}
 
       {showChangePassword && (
