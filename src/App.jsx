@@ -164,10 +164,11 @@ const AppContent = () => {
     fetchAdminUsers();
   }, [profile]);
 
-  // Compute allowed tabs for current user's role
+  // Compute allowed tabs for current user's role (with per-user overrides)
   const userRole = profile?.role || 'worker';
-  const allowedTabs = getTabsForRole(userRole);
-  const can = (feature) => hasPermission(userRole, feature);
+  const userSpecialPerms = profile?.special_permissions || {};
+  const allowedTabs = getTabsForRole(userRole, userSpecialPerms);
+  const can = (feature) => hasPermission(userRole, feature, userSpecialPerms);
 
   // State management
   const [view, setView] = useState('home');
@@ -880,6 +881,13 @@ const AppContent = () => {
               events={events}
               assignWorker={handleAssignWorker}
               removeWorkerAssignment={removeWorkerAssignment}
+              onUpdateSpecialPermissions={(userId, perms) => {
+                // If updating own permissions, refresh profile
+                if (userId === profile?.id) {
+                  // Force re-render with updated special_permissions
+                  window.location.reload();
+                }
+              }}
             />
             <RolePermissions
               permissions={permissions}

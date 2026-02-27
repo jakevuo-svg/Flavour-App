@@ -5,7 +5,7 @@ import { useLanguage } from '../../contexts/LanguageContext';
 import WorkerAccessModal from './WorkerAccessModal';
 import S from '../../styles/theme';
 
-const UserManagement = ({ events = [], assignWorker, removeWorkerAssignment }) => {
+const UserManagement = ({ events = [], assignWorker, removeWorkerAssignment, onUpdateSpecialPermissions }) => {
   const { profile } = useAuth();
   const { t } = useLanguage();
   const [users, setUsers] = useState([]);
@@ -370,6 +370,11 @@ const UserManagement = ({ events = [], assignWorker, removeWorkerAssignment }) =
           assignWorker={assignWorker}
           removeWorkerAssignment={removeWorkerAssignment}
           onClose={() => setAccessWorker(null)}
+          onUpdateSpecialPermissions={(userId, perms) => {
+            // Update local user list + propagate up
+            setUsers(prev => prev.map(u => u.id === userId ? { ...u, special_permissions: perms } : u));
+            onUpdateSpecialPermissions?.(userId, perms);
+          }}
         />
       )}
     </div>

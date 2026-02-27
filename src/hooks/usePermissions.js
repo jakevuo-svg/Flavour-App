@@ -35,6 +35,11 @@ export const PERMISSION_FEATURES = [
   { key: 'action_edit', label: 'Muokkaa tietoja', group: 'TOIMINNOT' },
   { key: 'action_delete', label: 'Poista tietoja', group: 'TOIMINNOT' },
   { key: 'action_add_notes', label: 'Lisää muistiinpanoja', group: 'TOIMINNOT' },
+  // Menus/Recipes specific
+  { key: 'action_create_recipe', label: 'Luo resepti', group: 'MENUT' },
+  { key: 'action_edit_recipe', label: 'Muokkaa reseptejä', group: 'MENUT' },
+  { key: 'action_create_menu', label: 'Luo menu', group: 'MENUT' },
+  { key: 'action_edit_menu', label: 'Muokkaa menuja', group: 'MENUT' },
 ];
 
 export const ROLES = [
@@ -64,6 +69,7 @@ const DEFAULT_PERMISSIONS = {
     card_schedule: true, card_menu: true, card_decorations: true, card_logistics: true, card_order: true,
     card_materials: true, card_during: true, card_pricing: true, card_feedback: true, card_tasks: true, card_notes: true,
     action_create_event: true, action_create_person: true, action_edit: true, action_delete: true, action_add_notes: true,
+    action_create_recipe: true, action_edit_recipe: true, action_create_menu: true, action_edit_menu: true,
   },
   worker: {
     tab_persons: false, tab_date: true, tab_events: true, tab_inquiries: false, tab_menus: true, tab_archive: true, tab_locations: true, tab_notes: true, tab_admin: false,
@@ -71,6 +77,7 @@ const DEFAULT_PERMISSIONS = {
     card_schedule: true, card_menu: true, card_decorations: true, card_logistics: true, card_order: false,
     card_materials: true, card_during: true, card_pricing: false, card_feedback: false, card_tasks: true, card_notes: true,
     action_create_event: false, action_create_person: false, action_edit: false, action_delete: false, action_add_notes: true,
+    action_create_recipe: false, action_edit_recipe: false, action_create_menu: false, action_edit_menu: false,
   },
   temporary: {
     tab_persons: false, tab_date: true, tab_events: true, tab_inquiries: false, tab_menus: false, tab_archive: false, tab_locations: false, tab_notes: true, tab_admin: false,
@@ -78,6 +85,7 @@ const DEFAULT_PERMISSIONS = {
     card_schedule: true, card_menu: true, card_decorations: false, card_logistics: false, card_order: false,
     card_materials: false, card_during: true, card_pricing: false, card_feedback: false, card_tasks: true, card_notes: false,
     action_create_event: false, action_create_person: false, action_edit: false, action_delete: false, action_add_notes: true,
+    action_create_recipe: false, action_edit_recipe: false, action_create_menu: false, action_edit_menu: false,
   },
 };
 
@@ -97,15 +105,28 @@ export function usePermissions() {
     }));
   }, []);
 
-  const hasPermission = useCallback((role, featureKey) => {
+  // Check permission: first check user's special_permissions, then fall back to role default
+  const hasPermission = useCallback((role, featureKey, specialPermissions) => {
+    // If user has a per-user override, use that
+    if (specialPermissions && specialPermissions[featureKey] !== undefined) {
+      return !!specialPermissions[featureKey];
+    }
+    // Otherwise use role default
     if (!role || !permissions[role]) return false;
     return !!permissions[role][featureKey];
   }, [permissions]);
 
-  const getTabsForRole = useCallback((role) => {
+  // Get allowed tabs considering per-user overrides
+  const getTabsForRole = useCallback((role, specialPermissions) => {
     if (!role || !permissions[role]) return [];
     return Object.entries(TAB_KEY_TO_NAV)
-      .filter(([key]) => permissions[role][key])
+      .filter(([key]) => {
+        // Per-user override takes precedence
+        if (specialPermissions && specialPermissions[key] !== undefined) {
+          return !!specialPermissions[key];
+        }
+        return permissions[role][key];
+      })
       .map(([, navTab]) => navTab);
   }, [permissions]);
 
