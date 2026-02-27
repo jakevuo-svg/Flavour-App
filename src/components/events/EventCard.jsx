@@ -222,7 +222,20 @@ const RECIPE_CATEGORY_COLORS = {
   cocktailpala: '#e74c3c', leipä: '#d4a574', juoma: '#3498db', muu: '#666',
 };
 
-export default function EventCard({ event, onUpdate, onDelete, onBack, onArchive, locations = [], persons = [], tasks = [], onAddTask, onUpdateTask, onDeleteTask, notes = [], onAddNote, onUpdateNote, onDeleteNote, can = () => true, onAssignWorker, onRemoveWorker, recipes = [], eventRecipes = [], onFetchEventRecipes, onAddEventRecipe, onRemoveEventRecipe }) {
+const RECIPE_CATEGORIES = [
+  { value: 'alkuruoka', label: 'Alkuruoka' },
+  { value: 'pääruoka', label: 'Pääruoka' },
+  { value: 'jälkiruoka', label: 'Jälkiruoka' },
+  { value: 'salaatti', label: 'Salaatti' },
+  { value: 'keitto', label: 'Keitto' },
+  { value: 'välipala', label: 'Välipala' },
+  { value: 'cocktailpala', label: 'Cocktailpala' },
+  { value: 'leipä', label: 'Leipä' },
+  { value: 'juoma', label: 'Juoma' },
+  { value: 'muu', label: 'Muu' },
+];
+
+export default function EventCard({ event, onUpdate, onDelete, onBack, onArchive, locations = [], persons = [], tasks = [], onAddTask, onUpdateTask, onDeleteTask, notes = [], onAddNote, onUpdateNote, onDeleteNote, can = () => true, onAssignWorker, onRemoveWorker, recipes = [], eventRecipes = [], onFetchEventRecipes, onAddEventRecipe, onRemoveEventRecipe, onCreateRecipe }) {
   // Sort locations by preferred order (uses includes for flexible matching)
   const sortedLocations = [...locations].sort((a, b) => {
     const aName = (a.name || '').toLowerCase();
@@ -248,6 +261,9 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, onArchive
   const [editingNoteText, setEditingNoteText] = useState('');
   const [showRecipePicker, setShowRecipePicker] = useState(false);
   const [recipeSearch, setRecipeSearch] = useState('');
+  const [newRecipeName, setNewRecipeName] = useState('');
+  const [newRecipeCategory, setNewRecipeCategory] = useState('muu');
+  const [newRecipeDesc, setNewRecipeDesc] = useState('');
   const fileInputRef = useRef(null);
   const menuFileRef = useRef(null);
   const orderFileRef = useRef(null);
@@ -787,8 +803,32 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, onArchive
               </div>
               {showRecipePicker && (
                 <div style={{ marginBottom: 8, padding: 6, border: '1px solid #333', background: '#111' }}>
-                  <input style={{ ...S.input, width: '100%', marginBottom: 6, boxSizing: 'border-box' }} value={recipeSearch} onChange={e => setRecipeSearch(e.target.value)} placeholder="Hae reseptiä..." autoFocus />
-                  <div style={{ maxHeight: 160, overflow: 'auto' }}>
+                  {/* Quick create */}
+                  <div style={{ marginBottom: 8, paddingBottom: 8, borderBottom: '1px solid #333' }}>
+                    <div style={{ ...S.label, fontSize: 9, marginBottom: 4 }}>LUO UUSI ANNOS</div>
+                    <div style={{ display: 'flex', gap: 4, marginBottom: 4 }}>
+                      <input style={{ ...S.input, flex: 1, boxSizing: 'border-box' }} value={newRecipeName} onChange={e => setNewRecipeName(e.target.value)} placeholder="Annoksen nimi" autoFocus />
+                      <select style={{ ...S.input, width: 'auto', minWidth: 90 }} value={newRecipeCategory} onChange={e => setNewRecipeCategory(e.target.value)}>
+                        {RECIPE_CATEGORIES.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
+                      </select>
+                    </div>
+                    <input style={{ ...S.input, width: '100%', boxSizing: 'border-box', marginBottom: 4 }} value={newRecipeDesc} onChange={e => setNewRecipeDesc(e.target.value)} placeholder="Kuvaus (vapaaehtoinen)" />
+                    <button onClick={async () => {
+                      if (!newRecipeName.trim() || !onCreateRecipe) return;
+                      try {
+                        const created = await onCreateRecipe({ name: newRecipeName.trim(), category: newRecipeCategory, description: newRecipeDesc.trim() });
+                        if (created?.id) await onAddEventRecipe(event.id, created.id);
+                        setNewRecipeName(''); setNewRecipeCategory('muu'); setNewRecipeDesc('');
+                      } catch(e) { console.error(e); }
+                    }} disabled={!newRecipeName.trim()} style={{
+                      padding: '5px 10px', fontSize: 10, fontWeight: 700, border: 'none', cursor: 'pointer',
+                      background: newRecipeName.trim() ? '#ddd' : '#333', color: newRecipeName.trim() ? '#111' : '#666',
+                    }}>LISÄÄ</button>
+                  </div>
+                  {/* Search existing */}
+                  <div style={{ ...S.label, fontSize: 9, marginBottom: 4 }}>TAI VALITSE OLEMASSA OLEVA</div>
+                  <input style={{ ...S.input, width: '100%', marginBottom: 6, boxSizing: 'border-box' }} value={recipeSearch} onChange={e => setRecipeSearch(e.target.value)} placeholder="Hae reseptiä..." />
+                  <div style={{ maxHeight: 140, overflow: 'auto' }}>
                     {(() => {
                       const linkedIds = new Set(eventRecipes.map(er => er.recipe_id));
                       const available = recipes.filter(r => !linkedIds.has(r.id) && (!recipeSearch || r.name.toLowerCase().includes(recipeSearch.toLowerCase()) || r.category?.toLowerCase().includes(recipeSearch.toLowerCase())));
@@ -1192,8 +1232,32 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, onArchive
               }}>{showRecipePicker ? 'SULJE' : '+ LISÄÄ RUOKALAJI'}</button>
               {showRecipePicker && (
                 <div style={{ marginTop: 6, padding: 6, border: '1px solid #333', background: '#111' }}>
-                  <input style={{ ...S.input, width: '100%', marginBottom: 6, boxSizing: 'border-box' }} value={recipeSearch} onChange={e => setRecipeSearch(e.target.value)} placeholder="Hae reseptiä..." autoFocus />
-                  <div style={{ maxHeight: 160, overflow: 'auto' }}>
+                  {/* Quick create */}
+                  <div style={{ marginBottom: 8, paddingBottom: 8, borderBottom: '1px solid #333' }}>
+                    <div style={{ ...S.label, fontSize: 9, marginBottom: 4 }}>LUO UUSI ANNOS</div>
+                    <div style={{ display: 'flex', gap: 4, marginBottom: 4 }}>
+                      <input style={{ ...S.input, flex: 1, boxSizing: 'border-box' }} value={newRecipeName} onChange={e => setNewRecipeName(e.target.value)} placeholder="Annoksen nimi" autoFocus />
+                      <select style={{ ...S.input, width: 'auto', minWidth: 90 }} value={newRecipeCategory} onChange={e => setNewRecipeCategory(e.target.value)}>
+                        {RECIPE_CATEGORIES.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
+                      </select>
+                    </div>
+                    <input style={{ ...S.input, width: '100%', boxSizing: 'border-box', marginBottom: 4 }} value={newRecipeDesc} onChange={e => setNewRecipeDesc(e.target.value)} placeholder="Kuvaus (vapaaehtoinen)" />
+                    <button onClick={async () => {
+                      if (!newRecipeName.trim() || !onCreateRecipe) return;
+                      try {
+                        const created = await onCreateRecipe({ name: newRecipeName.trim(), category: newRecipeCategory, description: newRecipeDesc.trim() });
+                        if (created?.id) await onAddEventRecipe(event.id, created.id);
+                        setNewRecipeName(''); setNewRecipeCategory('muu'); setNewRecipeDesc('');
+                      } catch(e) { console.error(e); }
+                    }} disabled={!newRecipeName.trim()} style={{
+                      padding: '5px 10px', fontSize: 10, fontWeight: 700, border: 'none', cursor: 'pointer',
+                      background: newRecipeName.trim() ? '#ddd' : '#333', color: newRecipeName.trim() ? '#111' : '#666',
+                    }}>LISÄÄ</button>
+                  </div>
+                  {/* Search existing */}
+                  <div style={{ ...S.label, fontSize: 9, marginBottom: 4 }}>TAI VALITSE OLEMASSA OLEVA</div>
+                  <input style={{ ...S.input, width: '100%', marginBottom: 6, boxSizing: 'border-box' }} value={recipeSearch} onChange={e => setRecipeSearch(e.target.value)} placeholder="Hae reseptiä..." />
+                  <div style={{ maxHeight: 140, overflow: 'auto' }}>
                     {(() => {
                       const linkedIds = new Set(eventRecipes.map(er => er.recipe_id));
                       const available = recipes.filter(r => !linkedIds.has(r.id) && (!recipeSearch || r.name.toLowerCase().includes(recipeSearch.toLowerCase()) || r.category?.toLowerCase().includes(recipeSearch.toLowerCase())));

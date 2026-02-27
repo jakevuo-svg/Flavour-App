@@ -739,6 +739,7 @@ const AppContent = () => {
             onFetchEventRecipes={fetchEventRecipes}
             onAddEventRecipe={addEventRecipe}
             onRemoveEventRecipe={removeEventRecipe}
+            onCreateRecipe={addRecipe}
           />
         ) : null;
 
@@ -823,6 +824,7 @@ const AppContent = () => {
             recipes={recipes}
             onAddRecipeToMenu={addRecipeToMenu}
             onRemoveRecipeFromMenu={removeRecipeFromMenu}
+            onCreateRecipe={addRecipe}
           />
         ) : null;
 

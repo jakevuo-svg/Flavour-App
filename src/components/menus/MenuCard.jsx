@@ -21,11 +21,27 @@ const TYPE_COLORS = {
   lounas: '#3498db', aamupala: '#f1c40f', snacks: '#1abc9c', muu: '#666',
 };
 
-export default function MenuCard({ menu, onUpdate, onDelete, onBack, recipes = [], onAddRecipeToMenu, onRemoveRecipeFromMenu }) {
+const RECIPE_CATEGORIES = [
+  { value: 'alkuruoka', label: 'Alkuruoka' },
+  { value: 'pääruoka', label: 'Pääruoka' },
+  { value: 'jälkiruoka', label: 'Jälkiruoka' },
+  { value: 'salaatti', label: 'Salaatti' },
+  { value: 'keitto', label: 'Keitto' },
+  { value: 'välipala', label: 'Välipala' },
+  { value: 'cocktailpala', label: 'Cocktailpala' },
+  { value: 'leipä', label: 'Leipä' },
+  { value: 'juoma', label: 'Juoma' },
+  { value: 'muu', label: 'Muu' },
+];
+
+export default function MenuCard({ menu, onUpdate, onDelete, onBack, recipes = [], onAddRecipeToMenu, onRemoveRecipeFromMenu, onCreateRecipe }) {
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState({ name: menu.name, description: menu.description, menu_type: menu.menu_type, tags: menu.tags || [] });
   const [showAddRecipe, setShowAddRecipe] = useState(false);
   const [recipeSearch, setRecipeSearch] = useState('');
+  const [newRecipeName, setNewRecipeName] = useState('');
+  const [newRecipeCategory, setNewRecipeCategory] = useState('muu');
+  const [newRecipeDesc, setNewRecipeDesc] = useState('');
 
   const inputStyle = {
     width: '100%', padding: '8px 10px', background: '#1a1a1a',
@@ -158,17 +174,58 @@ export default function MenuCard({ menu, onUpdate, onDelete, onBack, recipes = [
           </button>
         </div>
 
-        {/* Add recipe picker */}
+        {/* Add recipe: create new OR pick existing */}
         {showAddRecipe && (
           <div style={{ marginBottom: 12, padding: 8, border: '1px solid #333', background: '#111' }}>
+            {/* Quick create new recipe */}
+            <div style={{ marginBottom: 10, paddingBottom: 10, borderBottom: '1px solid #333' }}>
+              <div style={{ ...labelStyle, marginBottom: 6 }}>LUO UUSI ANNOS</div>
+              <div style={{ display: 'flex', gap: 4, marginBottom: 4 }}>
+                <input
+                  style={{ ...inputStyle, flex: 1 }}
+                  value={newRecipeName}
+                  onChange={e => setNewRecipeName(e.target.value)}
+                  placeholder="Annoksen nimi"
+                  autoFocus
+                />
+                <select style={{ ...inputStyle, width: 'auto', minWidth: 100 }} value={newRecipeCategory} onChange={e => setNewRecipeCategory(e.target.value)}>
+                  {RECIPE_CATEGORIES.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
+                </select>
+              </div>
+              <input
+                style={{ ...inputStyle, marginBottom: 4 }}
+                value={newRecipeDesc}
+                onChange={e => setNewRecipeDesc(e.target.value)}
+                placeholder="Kuvaus (vapaaehtoinen)"
+              />
+              <button
+                onClick={async () => {
+                  if (!newRecipeName.trim()) return;
+                  try {
+                    const created = await onCreateRecipe({ name: newRecipeName.trim(), category: newRecipeCategory, description: newRecipeDesc.trim() });
+                    if (created?.id) {
+                      await onAddRecipeToMenu(menu.id, created.id, menuRecipes.length);
+                    }
+                    setNewRecipeName(''); setNewRecipeCategory('muu'); setNewRecipeDesc('');
+                  } catch(e) { console.error(e); }
+                }}
+                disabled={!newRecipeName.trim()}
+                style={{
+                  padding: '6px 12px', fontSize: 10, fontWeight: 700, border: 'none', cursor: 'pointer',
+                  background: newRecipeName.trim() ? '#ddd' : '#333', color: newRecipeName.trim() ? '#111' : '#666',
+                }}
+              >LISÄÄ MENUUN</button>
+            </div>
+
+            {/* Or search existing */}
+            <div style={{ ...labelStyle, marginBottom: 4 }}>TAI VALITSE OLEMASSA OLEVA</div>
             <input
               style={{ ...inputStyle, marginBottom: 8 }}
               value={recipeSearch}
               onChange={e => setRecipeSearch(e.target.value)}
               placeholder="Hae reseptiä nimellä..."
-              autoFocus
             />
-            <div style={{ maxHeight: 200, overflow: 'auto' }}>
+            <div style={{ maxHeight: 160, overflow: 'auto' }}>
               {filteredAvailable.length === 0 ? (
                 <div style={{ padding: 8, color: '#666', fontSize: 11, textAlign: 'center' }}>
                   {availableRecipes.length === 0 ? 'Kaikki reseptit jo menussa' : 'Ei tuloksia'}
