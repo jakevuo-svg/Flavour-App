@@ -103,18 +103,17 @@ export function useAutoRefresh(refetchers = {}, options = {}) {
   useEffect(() => {
     if (!enableRealtime) return;
 
-    const tables = ['events', 'persons', 'notes', 'locations', 'tasks', 'inquiries', 'recipes', 'menus'];
-
     const channel = supabase
       .channel('auto-refresh')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'events' }, () => refetchTable('events'))
       .on('postgres_changes', { event: '*', schema: 'public', table: 'persons' }, () => refetchTable('persons'))
       .on('postgres_changes', { event: '*', schema: 'public', table: 'notes' }, () => refetchTable('notes'))
       .on('postgres_changes', { event: '*', schema: 'public', table: 'locations' }, () => refetchTable('locations'))
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'tasks' }, () => refetchTable('tasks'))
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'event_tasks' }, () => refetchTable('tasks'))
       .on('postgres_changes', { event: '*', schema: 'public', table: 'inquiries' }, () => refetchTable('inquiries'))
       .on('postgres_changes', { event: '*', schema: 'public', table: 'recipes' }, () => refetchTable('recipes'))
       .on('postgres_changes', { event: '*', schema: 'public', table: 'menus' }, () => refetchTable('menus'))
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'event_assignments' }, () => refetchTable('events'))
       .subscribe((status) => {
         console.log('[AutoRefresh] Realtime status:', status);
       });
