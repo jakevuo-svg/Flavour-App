@@ -29,6 +29,8 @@ export const PERMISSION_FEATURES = [
   { key: 'card_feedback', label: 'Palaute', group: 'TAPAHTUMAKORTTI' },
   { key: 'card_tasks', label: 'Tehtävät', group: 'TAPAHTUMAKORTTI' },
   { key: 'card_notes', label: 'Muistiinpanot', group: 'TAPAHTUMAKORTTI' },
+  // Access
+  { key: 'access_all_events', label: 'Pääsy kaikkiin tapahtumiin', group: 'PÄÄSY' },
   // Actions
   { key: 'action_create_event', label: 'Luo tapahtuma', group: 'TOIMINNOT' },
   { key: 'action_create_person', label: 'Luo henkilö', group: 'TOIMINNOT' },
@@ -62,12 +64,13 @@ export const TAB_KEY_TO_NAV = {
 };
 
 // Default permissions per role
-const DEFAULT_PERMISSIONS = {
+export const DEFAULT_PERMISSIONS = {
   admin: {
     tab_persons: true, tab_date: true, tab_events: true, tab_inquiries: true, tab_menus: true, tab_archive: true, tab_locations: true, tab_notes: true, tab_admin: true,
     card_contacts: true, card_workers: true, card_goal: true, card_attention: true, card_erv: true,
     card_schedule: true, card_menu: true, card_decorations: true, card_logistics: true, card_order: true,
     card_materials: true, card_during: true, card_pricing: true, card_feedback: true, card_tasks: true, card_notes: true,
+    access_all_events: true,
     action_create_event: true, action_create_person: true, action_edit: true, action_delete: true, action_add_notes: true,
     action_create_recipe: true, action_edit_recipe: true, action_create_menu: true, action_edit_menu: true,
   },
@@ -76,6 +79,7 @@ const DEFAULT_PERMISSIONS = {
     card_contacts: false, card_workers: true, card_goal: true, card_attention: true, card_erv: true,
     card_schedule: true, card_menu: true, card_decorations: true, card_logistics: true, card_order: false,
     card_materials: true, card_during: true, card_pricing: false, card_feedback: false, card_tasks: true, card_notes: true,
+    access_all_events: false,
     action_create_event: false, action_create_person: false, action_edit: false, action_delete: false, action_add_notes: true,
     action_create_recipe: false, action_edit_recipe: false, action_create_menu: false, action_edit_menu: false,
   },
@@ -84,6 +88,7 @@ const DEFAULT_PERMISSIONS = {
     card_contacts: false, card_workers: false, card_goal: false, card_attention: true, card_erv: true,
     card_schedule: true, card_menu: true, card_decorations: false, card_logistics: false, card_order: false,
     card_materials: false, card_during: true, card_pricing: false, card_feedback: false, card_tasks: true, card_notes: false,
+    access_all_events: false,
     action_create_event: false, action_create_person: false, action_edit: false, action_delete: false, action_add_notes: true,
     action_create_recipe: false, action_edit_recipe: false, action_create_menu: false, action_edit_menu: false,
   },
