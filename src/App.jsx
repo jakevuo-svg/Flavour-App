@@ -44,6 +44,7 @@ import { useInquiries } from './hooks/useInquiries';
 import { useRecipes } from './hooks/useRecipes';
 import { useMenus } from './hooks/useMenus';
 import { useNotifications } from './hooks/useNotifications';
+import { useAutoRefresh } from './hooks/useAutoRefresh';
 
 // Map Navigation uppercase tab names to internal view names
 const TAB_TO_VIEW = {
@@ -63,14 +64,26 @@ const AppContent = () => {
   const { t } = useLanguage();
 
   // Data hooks
-  const { persons, addPerson, deletePerson, updatePerson } = usePersons();
-  const { events, addEvent, deleteEvent, updateEvent, archiveEvent, assignWorker, removeWorkerAssignment, getEventAssignments } = useEvents();
-  const { notes, addNote, updateNote, deleteNote, removeNotesForEvent } = useNotes();
-  const { locations, addLocation, updateLocation, deleteLocation, addFile: addLocationFile, removeFile: removeLocationFile, getFiles: getLocationFiles } = useLocations();
-  const { tasks, addTask, updateTask, deleteTask } = useTasks();
-  const { inquiries, addInquiry, updateInquiry, deleteInquiry, convertToEvent, linkToEvent } = useInquiries();
-  const { recipes, addRecipe, updateRecipe, deleteRecipe } = useRecipes();
-  const { menus, addMenu, updateMenu, deleteMenu, addRecipeToMenu, removeRecipeFromMenu } = useMenus();
+  const { persons, addPerson, deletePerson, updatePerson, refetch: refetchPersons } = usePersons();
+  const { events, addEvent, deleteEvent, updateEvent, archiveEvent, assignWorker, removeWorkerAssignment, getEventAssignments, refetch: refetchEvents } = useEvents();
+  const { notes, addNote, updateNote, deleteNote, removeNotesForEvent, refetch: refetchNotes } = useNotes();
+  const { locations, addLocation, updateLocation, deleteLocation, addFile: addLocationFile, removeFile: removeLocationFile, getFiles: getLocationFiles, refetch: refetchLocations } = useLocations();
+  const { tasks, addTask, updateTask, deleteTask, refetch: refetchTasks } = useTasks();
+  const { inquiries, addInquiry, updateInquiry, deleteInquiry, convertToEvent, linkToEvent, refetch: refetchInquiries } = useInquiries();
+  const { recipes, addRecipe, updateRecipe, deleteRecipe, refetch: refetchRecipes } = useRecipes();
+  const { menus, addMenu, updateMenu, deleteMenu, addRecipeToMenu, removeRecipeFromMenu, refetch: refetchMenus } = useMenus();
+
+  // Automaattinen datan päivitys (visibility, polling 3min, Supabase realtime)
+  useAutoRefresh({
+    events: refetchEvents,
+    persons: refetchPersons,
+    notes: refetchNotes,
+    locations: refetchLocations,
+    tasks: refetchTasks,
+    inquiries: refetchInquiries,
+    recipes: refetchRecipes,
+    menus: refetchMenus,
+  });
 
   // Event-recipe linking
   const [eventRecipes, setEventRecipes] = useState({}); // { eventId: [{ id, recipe_id, notes, servings, recipes: {...} }] }
