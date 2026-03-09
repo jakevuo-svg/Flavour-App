@@ -56,10 +56,10 @@ export default function ArchiveList({ events = [], onEventClick, onRestore }) {
       {/* Archive header */}
       <div style={{ padding: '16px 16px 0', marginBottom: 12 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-          <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1, color: '#888', textTransform: 'uppercase' }}>
+          <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1, color: 'var(--c-text-muted)', textTransform: 'uppercase' }}>
             ARKISTO
           </span>
-          <span style={{ fontSize: 11, color: '#555' }}>
+          <span style={{ fontSize: 11, color: 'var(--c-text-muted)' }}>
             {filtered.length} tapahtumaa
           </span>
         </div>
@@ -90,17 +90,17 @@ export default function ArchiveList({ events = [], onEventClick, onRestore }) {
           onClick={() => onEventClick?.(event)}
         >
           <span style={{ ...S.col(2.5), fontWeight: 600 }}>{event.name}</span>
-          <span style={{ ...S.col(1), color: '#999', fontSize: 12 }}>
+          <span style={{ ...S.col(1), color: 'var(--c-text-muted)', fontSize: 12 }}>
             {event.date ? new Date(event.date).toLocaleDateString('fi-FI') : ''}
           </span>
-          <span style={{ ...S.col(1.5), color: '#999', fontSize: 12 }}>{event.company || ''}</span>
-          <span style={{ ...S.col(1.2), color: '#999', fontSize: 12 }}>{event.location_name || ''}</span>
-          <span style={{ ...S.col(0.6), color: '#999', fontSize: 12 }}>{event.guest_count || ''}</span>
+          <span style={{ ...S.col(1.5), color: 'var(--c-text-muted)', fontSize: 12 }}>{event.company || ''}</span>
+          <span style={{ ...S.col(1.2), color: 'var(--c-text-muted)', fontSize: 12 }}>{event.location_name || ''}</span>
+          <span style={{ ...S.col(0.6), color: 'var(--c-text-muted)', fontSize: 12 }}>{event.guest_count || ''}</span>
         </div>
       ))}
 
       {sorted.length === 0 && (
-        <div style={{ padding: 16, color: '#555', fontSize: 12, textAlign: 'center' }}>
+        <div style={{ padding: 16, color: 'var(--c-text-muted)', fontSize: 12, textAlign: 'center' }}>
           {searchQuery ? 'Ei hakutuloksia arkistosta' : 'Arkisto on tyhjä'}
         </div>
       )}

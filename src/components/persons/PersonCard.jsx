@@ -73,7 +73,7 @@ export default function PersonCard({ person, onUpdate, onDelete, onBack, events 
           style={{
             cursor: readOnly ? 'default' : 'pointer',
             fontSize: 18,
-            color: star <= value ? '#ddd' : '#444',
+            color: star <= value ? 'var(--c-text)' : 'var(--c-border-row)',
           }}
         >
           ★
@@ -162,7 +162,7 @@ export default function PersonCard({ person, onUpdate, onDelete, onBack, events 
       )}
 
       {/* Tabs */}
-      <div style={{ ...S.flex, borderBottom: '2px solid #ddd', marginTop: 20, marginBottom: 16 }}>
+      <div style={{ ...S.flex, borderBottom: '2px solid var(--c-border)', marginTop: 20, marginBottom: 16 }}>
         {[
           { key: 'NOTES', label: 'MUISTIINPANOT', count: personNotes.length },
           { key: 'TAPAHTUMAT', label: 'TAPAHTUMAT', count: personEvents.length },
@@ -177,11 +177,11 @@ export default function PersonCard({ person, onUpdate, onDelete, onBack, events 
               fontSize: 11,
               letterSpacing: 1,
               cursor: 'pointer',
-              borderBottom: activeTab === tab.key ? '2px solid #ddd' : '2px solid transparent',
-              color: activeTab === tab.key ? '#ddd' : '#666',
+              borderBottom: activeTab === tab.key ? '2px solid var(--c-border)' : '2px solid transparent',
+              color: activeTab === tab.key ? 'var(--c-text)' : 'var(--c-text-muted)',
             }}
           >
-            {tab.label} {tab.count > 0 && <span style={{ color: '#666', fontWeight: 400 }}>({tab.count})</span>}
+            {tab.label} {tab.count > 0 && <span style={{ color: 'var(--c-text-muted)', fontWeight: 400 }}>({tab.count})</span>}
           </div>
         ))}
       </div>
@@ -190,19 +190,19 @@ export default function PersonCard({ person, onUpdate, onDelete, onBack, events 
       {activeTab === 'NOTES' && (
         <div>
           {personNotes.length === 0 && !showAddNote && (
-            <div style={{ color: '#666', fontSize: 12, marginBottom: 8 }}>Ei muistiinpanoja</div>
+            <div style={{ color: 'var(--c-text-muted)', fontSize: 12, marginBottom: 8 }}>Ei muistiinpanoja</div>
           )}
           {personNotes.map(note => (
-            <div key={note.id} style={{ border: '1px solid #333', padding: 10, marginBottom: 6, background: '#1a1a1a' }}>
+            <div key={note.id} style={{ border: '1px solid var(--c-border-row)', padding: 10, marginBottom: 6, background: 'var(--c-bg)' }}>
               <div style={{ ...S.flexBetween, marginBottom: 4 }}>
-                <span style={{ fontSize: 10, color: '#666' }}>
+                <span style={{ fontSize: 10, color: 'var(--c-text-muted)' }}>
                   {note.author && <span style={{ marginRight: 8 }}>{note.author}</span>}
                   {note.created_at && new Date(note.created_at).toLocaleDateString('fi-FI')} {note.created_at && new Date(note.created_at).toLocaleTimeString('fi-FI', { hour: '2-digit', minute: '2-digit' })}
-                  {note.modified_at && note.modified_at !== note.created_at && <span style={{ marginLeft: 6, color: '#555', fontStyle: 'italic' }}>(muokattu)</span>}
+                  {note.modified_at && note.modified_at !== note.created_at && <span style={{ marginLeft: 6, color: 'var(--c-text-muted)', fontStyle: 'italic' }}>(muokattu)</span>}
                 </span>
                 <div style={{ display: 'flex', gap: 6 }}>
-                  <button onClick={() => { setEditingNoteId(note.id); setEditingNoteText(note.content); }} style={{ background: 'none', border: 'none', color: '#666', cursor: 'pointer', fontSize: 11 }}>✎</button>
-                  <button onClick={() => onDeleteNote?.(note.id)} style={{ background: 'none', border: 'none', color: '#555', cursor: 'pointer', fontSize: 11 }}>✕</button>
+                  <button onClick={() => { setEditingNoteId(note.id); setEditingNoteText(note.content); }} style={{ background: 'none', border: 'none', color: 'var(--c-text-muted)', cursor: 'pointer', fontSize: 11 }}>✎</button>
+                  <button onClick={() => onDeleteNote?.(note.id)} style={{ background: 'none', border: 'none', color: 'var(--c-text-muted)', cursor: 'pointer', fontSize: 11 }}>✕</button>
                 </div>
               </div>
               {note.title && <div style={{ fontWeight: 600, marginBottom: 4, fontSize: 13 }}>{note.title}</div>}
@@ -220,13 +220,13 @@ export default function PersonCard({ person, onUpdate, onDelete, onBack, events 
                   </div>
                 </div>
               ) : (
-                <div style={{ fontSize: 13, color: '#bbb', whiteSpace: 'pre-wrap', lineHeight: 1.5 }}>{note.content}</div>
+                <div style={{ fontSize: 13, color: 'var(--c-text)', whiteSpace: 'pre-wrap', lineHeight: 1.5 }}>{note.content}</div>
               )}
             </div>
           ))}
 
           {showAddNote ? (
-            <div style={{ border: '1px solid #444', padding: 12, marginTop: 8, background: '#1a1a1a' }}>
+            <div style={{ border: '1px solid var(--c-border-soft)', padding: 12, marginTop: 8, background: 'var(--c-bg)' }}>
               <textarea
                 value={newNoteText}
                 onChange={e => setNewNoteText(e.target.value)}
@@ -249,7 +249,7 @@ export default function PersonCard({ person, onUpdate, onDelete, onBack, events 
       {activeTab === 'TAPAHTUMAT' && (
         <div>
           {personEvents.length === 0 ? (
-            <div style={{ color: '#666', fontSize: 12 }}>Ei tapahtumia</div>
+            <div style={{ color: 'var(--c-text-muted)', fontSize: 12 }}>Ei tapahtumia</div>
           ) : (
             <>
               <div style={S.rowHeader}>
@@ -261,7 +261,7 @@ export default function PersonCard({ person, onUpdate, onDelete, onBack, events 
               {personEvents.map(event => (
                 <div key={event.id} onClick={() => onEventClick?.(event)} style={{ ...S.row, cursor: 'pointer' }}>
                   <span style={{ ...S.col(2), fontWeight: 600 }}>{event.name}</span>
-                  <span style={{ ...S.col(1), color: '#999', fontSize: 12 }}>{event.date ? new Date(event.date).toLocaleDateString('fi-FI') : ''}</span>
+                  <span style={{ ...S.col(1), color: 'var(--c-text-muted)', fontSize: 12 }}>{event.date ? new Date(event.date).toLocaleDateString('fi-FI') : ''}</span>
                   <span style={{ ...S.col(1), fontSize: 11 }}>{event.type || ''}</span>
                   <span style={S.col(1)}>
                     <span style={{ ...S.tag(false), fontSize: 9, padding: '1px 6px' }}>{event.status || ''}</span>
@@ -277,29 +277,29 @@ export default function PersonCard({ person, onUpdate, onDelete, onBack, events 
       {activeTab === 'FEEDBACK' && (
         <div>
           {feedbackList.length === 0 && !showAddFeedback && (
-            <div style={{ color: '#666', fontSize: 12, marginBottom: 8 }}>Ei palautetta</div>
+            <div style={{ color: 'var(--c-text-muted)', fontSize: 12, marginBottom: 8 }}>Ei palautetta</div>
           )}
 
           {feedbackList.map(fb => (
-            <div key={fb.id} style={{ border: '1px solid #333', padding: 12, marginBottom: 6, background: '#1a1a1a' }}>
+            <div key={fb.id} style={{ border: '1px solid var(--c-border-row)', padding: 12, marginBottom: 6, background: 'var(--c-bg)' }}>
               <div style={{ ...S.flexBetween, marginBottom: 6 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                   <StarRating value={fb.rating} readOnly />
-                  {fb.eventName && <span style={{ fontSize: 11, color: '#666', textTransform: 'uppercase' }}>{fb.eventName}</span>}
+                  {fb.eventName && <span style={{ fontSize: 11, color: 'var(--c-text-muted)', textTransform: 'uppercase' }}>{fb.eventName}</span>}
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <span style={{ fontSize: 10, color: '#555' }}>
+                  <span style={{ fontSize: 10, color: 'var(--c-text-muted)' }}>
                     {new Date(fb.createdAt).toLocaleDateString('fi-FI')}
                   </span>
-                  <button onClick={() => removeFeedback(fb.id)} style={{ background: 'none', border: 'none', color: '#555', cursor: 'pointer', fontSize: 11 }}>✕</button>
+                  <button onClick={() => removeFeedback(fb.id)} style={{ background: 'none', border: 'none', color: 'var(--c-text-muted)', cursor: 'pointer', fontSize: 11 }}>✕</button>
                 </div>
               </div>
-              <div style={{ fontSize: 13, color: '#bbb', whiteSpace: 'pre-wrap', lineHeight: 1.5 }}>{fb.text}</div>
+              <div style={{ fontSize: 13, color: 'var(--c-text)', whiteSpace: 'pre-wrap', lineHeight: 1.5 }}>{fb.text}</div>
             </div>
           ))}
 
           {showAddFeedback ? (
-            <div style={{ border: '1px solid #444', padding: 12, marginTop: 8, background: '#1a1a1a' }}>
+            <div style={{ border: '1px solid var(--c-border-soft)', padding: 12, marginTop: 8, background: 'var(--c-bg)' }}>
               <div style={{ marginBottom: 10 }}>
                 <div style={{ ...S.label, marginBottom: 4 }}>ARVOSANA</div>
                 <StarRating value={newFeedback.rating} onChange={(val) => setNewFeedback({ ...newFeedback, rating: val })} />
@@ -342,22 +342,22 @@ export default function PersonCard({ person, onUpdate, onDelete, onBack, events 
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }} onClick={() => setShowDeleteConfirm(false)}>
           <div style={{
-            background: '#111', border: '2px solid #ff4444', padding: 24,
+            background: 'var(--c-bg)', border: '2px solid #ff4444', padding: 24,
             maxWidth: 400, width: '90%',
           }} onClick={e => e.stopPropagation()}>
-            <div style={{ fontSize: 16, fontWeight: 700, color: '#ff4444', marginBottom: 12 }}>
+            <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--c-danger)', marginBottom: 12 }}>
               POISTA HENKILÖ?
             </div>
-            <div style={{ fontSize: 13, color: '#ccc', marginBottom: 8 }}>
+            <div style={{ fontSize: 13, color: 'var(--c-text)', marginBottom: 8 }}>
               Oletko varma, että haluat poistaa henkilön:
             </div>
-            <div style={{ fontSize: 15, fontWeight: 700, color: '#fff', marginBottom: 4 }}>
+            <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--c-text-inverse)', marginBottom: 4 }}>
               {person?.first_name} {person?.last_name}
             </div>
-            {person?.company && <div style={{ fontSize: 12, color: '#888', marginBottom: 16 }}>{person.company}</div>}
+            {person?.company && <div style={{ fontSize: 12, color: 'var(--c-text-muted)', marginBottom: 16 }}>{person.company}</div>}
             <div style={{
-              fontSize: 11, color: '#ff6666', marginBottom: 16, padding: '8px 10px',
-              background: '#2a1111', border: '1px solid #4a1c1c',
+              fontSize: 11, color: 'var(--c-danger)', marginBottom: 16, padding: '8px 10px',
+              background: 'var(--c-danger-bg)', border: '1px solid var(--c-error-border)',
             }}>
               Tätä toimintoa ei voi peruuttaa.
             </div>
@@ -365,7 +365,7 @@ export default function PersonCard({ person, onUpdate, onDelete, onBack, events 
               <button
                 onClick={() => { setShowDeleteConfirm(false); onDelete?.(person.id); }}
                 style={{
-                  background: '#ff4444', color: '#fff', border: 'none',
+                  background: 'var(--c-danger)', color: 'var(--c-text-inverse)', border: 'none',
                   padding: '8px 20px', fontSize: 12, fontWeight: 700,
                   cursor: 'pointer', letterSpacing: 1,
                 }}
@@ -375,7 +375,7 @@ export default function PersonCard({ person, onUpdate, onDelete, onBack, events 
               <button
                 onClick={() => setShowDeleteConfirm(false)}
                 style={{
-                  background: 'transparent', color: '#ccc', border: '1px solid #555',
+                  background: 'transparent', color: 'var(--c-text)', border: '1px solid var(--c-border-soft)',
                   padding: '8px 20px', fontSize: 12, fontWeight: 700,
                   cursor: 'pointer',
                 }}

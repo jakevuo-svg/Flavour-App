@@ -4,9 +4,9 @@ import S from '../../styles/theme';
 
 // Priority label + color for "my tasks" section
 const PRIO_STYLE = {
-  KORKEA: { bg: '#4a1c1c', border: '#ff4444', color: '#ff6666' },
-  NORMAALI: { bg: '#1a1a1a', border: '#555', color: '#ddd' },
-  MATALA: { bg: '#1a1a1a', border: '#333', color: '#888' },
+  KORKEA: { bg: '#4a1c1c', border: 'var(--c-danger)', color: 'var(--c-danger)' },
+  NORMAALI: { bg: 'var(--c-menu-bg)', border: 'var(--c-border-soft)', color: 'var(--c-text)' },
+  MATALA: { bg: 'var(--c-menu-bg)', border: 'var(--c-border-row)', color: 'var(--c-text-muted)' },
 };
 
 const FILTERS = [
@@ -140,7 +140,7 @@ const Dashboard = ({ events = [], persons = [], notes = [], recentActivity = [],
     <div>
       {/* Recent Activity / Category filters */}
       <div style={{ ...S.border, ...S.bg, borderTop: "none" }}>
-        <div style={{ ...S.pad, borderBottom: "1px solid #444" }}>
+        <div style={{ ...S.pad, borderBottom: "1px solid var(--c-border-soft)" }}>
           <div style={{ ...S.label, marginBottom: 8 }}>VIIMEAIKAISET:</div>
           <div style={S.flexWrap}>
             {FILTERS.map(f => (
@@ -155,13 +155,13 @@ const Dashboard = ({ events = [], persons = [], notes = [], recentActivity = [],
           </div>
         </div>
         <div style={S.pad}>
-          <div style={{ display: 'flex', padding: "4px 0", borderBottom: "1px solid #444", marginBottom: 4, gap: 4 }}>
+          <div style={{ display: 'flex', padding: "4px 0", borderBottom: "1px solid var(--c-border-soft)", marginBottom: 4, gap: 4 }}>
             <span style={{ ...S.label, flex: '0 0 70px' }}>TYYPPI</span>
             <span style={{ ...S.label, flex: '1 1 0', minWidth: 0 }}>INFO</span>
             <span style={{ ...S.label, flex: '0 0 40px', textAlign: "right" }}>AIKA</span>
           </div>
           {filteredActivity.length === 0 ? (
-            <div style={{ padding: "8px 0", color: "#666", fontSize: 12 }}>Ei viimeaikaisia aktiviteetteja</div>
+            <div style={{ padding: "8px 0", color: "var(--c-text-muted)", fontSize: 12 }}>Ei viimeaikaisia aktiviteetteja</div>
           ) : (
             filteredActivity.map(a => {
               const handleClick = () => {
@@ -182,12 +182,12 @@ const Dashboard = ({ events = [], persons = [], notes = [], recentActivity = [],
               return (
                 <div
                   key={a.id}
-                  style={{ display: 'flex', padding: "6px 0", borderBottom: "1px solid #333", fontSize: 12, cursor: isClickable ? 'pointer' : 'default', gap: 4, alignItems: 'center' }}
+                  style={{ display: 'flex', padding: "6px 0", borderBottom: "1px solid var(--c-border-row)", fontSize: 12, cursor: isClickable ? 'pointer' : 'default', gap: 4, alignItems: 'center' }}
                   onClick={handleClick}
                 >
-                  <span style={{ flex: '0 0 70px', color: "#999", fontSize: 10, textTransform: "uppercase", overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.action?.replace(/_/g, ' ') || 'UPDATE'}</span>
+                  <span style={{ flex: '0 0 70px', color: "var(--c-text-muted)", fontSize: 10, textTransform: "uppercase", overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.action?.replace(/_/g, ' ') || 'UPDATE'}</span>
                   <span style={{ flex: '1 1 0', minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.action_description}</span>
-                  <span style={{ flex: '0 0 40px', textAlign: "right", color: "#999", fontSize: 11 }}>
+                  <span style={{ flex: '0 0 40px', textAlign: "right", color: "var(--c-text-muted)", fontSize: 11 }}>
                     {new Date(a.timestamp).toLocaleTimeString('fi-FI', { hour: '2-digit', minute: '2-digit' })}
                   </span>
                 </div>
@@ -200,7 +200,7 @@ const Dashboard = ({ events = [], persons = [], notes = [], recentActivity = [],
       {/* MY TASKS — prominent reminder for assigned tasks */}
       {myTasks.length > 0 && (
         <div style={{ ...S.border, ...S.bg, borderTop: "none" }}>
-          <div style={{ ...S.pad, borderBottom: "1px solid #444", background: '#1a1a1a' }}>
+          <div style={{ ...S.pad, borderBottom: "1px solid var(--c-border-soft)", background: 'var(--c-bg)' }}>
             <div style={{ ...S.flexBetween }}>
               <div style={{ ...S.label, display: 'flex', alignItems: 'center', gap: 8 }}>
                 <span style={{ fontSize: 16 }}>!</span>
@@ -215,8 +215,8 @@ const Dashboard = ({ events = [], persons = [], notes = [], recentActivity = [],
               <div
                 key={task.id}
                 style={{
-                  padding: '10px 12px', borderBottom: '1px solid #333',
-                  background: isOverdue ? '#2a1a1a' : pStyle.bg,
+                  padding: '10px 12px', borderBottom: '1px solid var(--c-border-row)',
+                  background: isOverdue ? 'var(--c-danger-row-bg)' : pStyle.bg,
                   cursor: task.event ? 'pointer' : 'default',
                 }}
                 onClick={() => task.event && onEventClick?.(task.event)}
@@ -229,10 +229,10 @@ const Dashboard = ({ events = [], persons = [], notes = [], recentActivity = [],
                         style={{
                           width: 18, height: 18,
                           border: `2px solid ${pStyle.border}`,
-                          background: task.status === 'IN_PROGRESS' ? '#333' : 'transparent',
+                          background: task.status === 'IN_PROGRESS' ? 'var(--c-accent-bg)' : 'transparent',
                           cursor: 'pointer', flexShrink: 0,
                           display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          fontSize: 11, color: '#ddd',
+                          fontSize: 11, color: 'var(--c-text)',
                         }}
                       >
                         {task.status === 'IN_PROGRESS' ? '◐' : ''}
@@ -240,22 +240,22 @@ const Dashboard = ({ events = [], persons = [], notes = [], recentActivity = [],
                       <span style={{ fontWeight: 700, fontSize: 13, color: pStyle.color }}>{task.title}</span>
                     </div>
                     {task.description && (
-                      <div style={{ fontSize: 11, color: '#888', marginLeft: 26, marginBottom: 2 }}>{task.description}</div>
+                      <div style={{ fontSize: 11, color: 'var(--c-text-muted)', marginLeft: 26, marginBottom: 2 }}>{task.description}</div>
                     )}
                     <div style={{ display: 'flex', gap: 8, marginLeft: 26, flexWrap: 'wrap', alignItems: 'center' }}>
                       {task.eventName && (
-                        <span style={{ fontSize: 10, color: '#666', textTransform: 'uppercase' }}>{task.eventName}</span>
+                        <span style={{ fontSize: 10, color: 'var(--c-text-muted)', textTransform: 'uppercase' }}>{task.eventName}</span>
                       )}
                       <span style={{ fontSize: 10, padding: '1px 6px', border: `1px solid ${pStyle.border}`, color: pStyle.color }}>{task.priority}</span>
-                      <span style={{ fontSize: 10, padding: '1px 6px', border: '1px solid #555', color: '#999' }}>{task.status === 'IN_PROGRESS' ? 'KESKEN' : 'TODO'}</span>
+                      <span style={{ fontSize: 10, padding: '1px 6px', border: '1px solid var(--c-border-soft)', color: 'var(--c-text-muted)' }}>{task.status === 'IN_PROGRESS' ? 'KESKEN' : 'TODO'}</span>
                     </div>
                   </div>
                   {task.due_date && (
                     <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                      <div style={{ fontSize: 11, color: isOverdue ? '#ff6666' : '#888', fontWeight: isOverdue ? 700 : 400 }}>
+                      <div style={{ fontSize: 11, color: isOverdue ? 'var(--c-danger-subtle)' : 'var(--c-text-muted)', fontWeight: isOverdue ? 700 : 400 }}>
                         {isOverdue ? 'MYÖHÄSSÄ' : 'DL'}
                       </div>
-                      <div style={{ fontSize: 12, color: isOverdue ? '#ff6666' : '#999' }}>
+                      <div style={{ fontSize: 12, color: isOverdue ? 'var(--c-danger-subtle)' : 'var(--c-text-muted)' }}>
                         {new Date(task.due_date).toLocaleDateString('fi-FI', { day: 'numeric', month: 'numeric' })}
                       </div>
                     </div>
@@ -270,9 +270,9 @@ const Dashboard = ({ events = [], persons = [], notes = [], recentActivity = [],
       {/* Inquiry reminders */}
       {inquiryReminders.length > 0 && (
         <div style={{ ...S.border, ...S.bg, borderTop: "none" }}>
-          <div style={{ ...S.pad, borderBottom: "1px solid #444", background: '#2a1a0a' }}>
+          <div style={{ ...S.pad, borderBottom: "1px solid var(--c-border-soft)", background: '#2a1a0a' }}>
             <div style={{ ...S.label, display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ fontSize: 16, color: '#ffaa44' }}>!</span>
+              <span style={{ fontSize: 16, color: 'var(--c-warning)' }}>!</span>
               TIEDUSTELUMUISTUTUKSET ({inquiryReminders.length})
             </div>
           </div>
@@ -285,26 +285,26 @@ const Dashboard = ({ events = [], persons = [], notes = [], recentActivity = [],
               <div
                 key={inq.id}
                 style={{
-                  padding: '10px 12px', borderBottom: '1px solid #333',
-                  background: isOverdue ? '#2a1a1a' : '#1a1a0a',
+                  padding: '10px 12px', borderBottom: '1px solid var(--c-border-row)',
+                  background: isOverdue ? 'var(--c-danger-row-bg)' : 'var(--c-success-bg)',
                   cursor: 'pointer',
                 }}
                 onClick={() => onInquiryClick?.(inq)}
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontWeight: 700, fontSize: 13, color: '#ddd', marginBottom: 3 }}>
+                    <div style={{ fontWeight: 700, fontSize: 13, color: 'var(--c-text)', marginBottom: 3 }}>
                       {inq.contact_name || inq.company || 'Nimetön tiedustelu'}
                     </div>
-                    <div style={{ fontSize: 11, color: '#888' }}>
+                    <div style={{ fontSize: 11, color: 'var(--c-text-muted)' }}>
                       {inq.company && inq.contact_name ? inq.company + ' — ' : ''}{inq.description?.slice(0, 60) || ''}
                     </div>
                   </div>
                   <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                    <div style={{ fontSize: 11, fontWeight: 700, color: isOverdue ? '#ff6666' : '#ffaa44' }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: isOverdue ? 'var(--c-danger-subtle)' : 'var(--c-warning)' }}>
                       {isOverdue ? 'MYÖHÄSSÄ' : 'TÄNÄÄN'}
                     </div>
-                    <div style={{ fontSize: 12, color: isOverdue ? '#ff6666' : '#ffaa44' }}>
+                    <div style={{ fontSize: 12, color: isOverdue ? 'var(--c-danger-subtle)' : 'var(--c-warning)' }}>
                       {new Date(inq.respond_by).toLocaleDateString('fi-FI', { day: 'numeric', month: 'numeric' })}
                     </div>
                   </div>
@@ -319,19 +319,19 @@ const Dashboard = ({ events = [], persons = [], notes = [], recentActivity = [],
       {!isWorker && (
         <div style={{ ...S.border, ...S.bg, borderTop: "none" }}>
           <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-            <div style={{ flex: '1 1 80px', textAlign: "center", padding: "12px 4px", borderRight: "1px solid #444", borderBottom: "1px solid #444" }}>
+            <div style={{ flex: '1 1 80px', textAlign: "center", padding: "12px 4px", borderRight: "1px solid var(--c-border-soft)", borderBottom: "1px solid var(--c-border-soft)" }}>
               <div style={{ ...S.label, fontSize: 9 }}>TAPAHTUMIA</div>
               <div style={{ fontSize: 20, fontWeight: 700 }}>{events.length}</div>
             </div>
-            <div style={{ flex: '1 1 80px', textAlign: "center", padding: "12px 4px", borderRight: "1px solid #444", borderBottom: "1px solid #444" }}>
+            <div style={{ flex: '1 1 80px', textAlign: "center", padding: "12px 4px", borderRight: "1px solid var(--c-border-soft)", borderBottom: "1px solid var(--c-border-soft)" }}>
               <div style={{ ...S.label, fontSize: 9 }}>HENKILÖITÄ</div>
               <div style={{ fontSize: 20, fontWeight: 700 }}>{persons.length}</div>
             </div>
-            <div style={{ flex: '1 1 80px', textAlign: "center", padding: "12px 4px", borderRight: "1px solid #444", borderBottom: "1px solid #444" }}>
+            <div style={{ flex: '1 1 80px', textAlign: "center", padding: "12px 4px", borderRight: "1px solid var(--c-border-soft)", borderBottom: "1px solid var(--c-border-soft)" }}>
               <div style={{ ...S.label, fontSize: 9 }}>MUISTIINPANOJA</div>
               <div style={{ fontSize: 20, fontWeight: 700 }}>{notes.length}</div>
             </div>
-            <div style={{ flex: '1 1 80px', textAlign: "center", padding: "12px 4px", borderBottom: "1px solid #444" }}>
+            <div style={{ flex: '1 1 80px', textAlign: "center", padding: "12px 4px", borderBottom: "1px solid var(--c-border-soft)" }}>
               <div style={{ ...S.label, fontSize: 9 }}>TULEVIA</div>
               <div style={{ fontSize: 20, fontWeight: 700 }}>{upcomingEvents.length}</div>
             </div>
@@ -342,7 +342,7 @@ const Dashboard = ({ events = [], persons = [], notes = [], recentActivity = [],
       {/* Recently Modified Events */}
       {recentlyModified.length > 0 && (
         <div style={{ ...S.border, ...S.bg, borderTop: "none" }}>
-          <div style={{ ...S.pad, borderBottom: "1px solid #444" }}>
+          <div style={{ ...S.pad, borderBottom: "1px solid var(--c-border-soft)" }}>
             <div style={S.label}>VIIMEKSI MUOKATUT</div>
           </div>
           {recentlyModified.map(event => (
@@ -353,14 +353,14 @@ const Dashboard = ({ events = [], persons = [], notes = [], recentActivity = [],
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ fontWeight: 600, flex: 2 }}>{event.name}</span>
-                <span style={{ flex: 1, fontSize: 11, color: '#999' }}>{event.status || ''}</span>
-                <span style={{ fontSize: 10, color: '#666', textAlign: 'right' }}>
+                <span style={{ flex: 1, fontSize: 11, color: 'var(--c-text-muted)' }}>{event.status || ''}</span>
+                <span style={{ fontSize: 10, color: 'var(--c-text-muted)', textAlign: 'right' }}>
                   {new Date(event.modified_at).toLocaleDateString('fi-FI')}{' '}
                   {new Date(event.modified_at).toLocaleTimeString('fi-FI', { hour: '2-digit', minute: '2-digit' })}
                 </span>
               </div>
               {event.last_change && (
-                <div style={{ fontSize: 11, color: '#888', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <div style={{ fontSize: 11, color: 'var(--c-text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {event.last_change}
                 </div>
               )}
@@ -372,11 +372,11 @@ const Dashboard = ({ events = [], persons = [], notes = [], recentActivity = [],
       {/* Open Tasks — grouped by event */}
       {openTasks.length > 0 && (
         <div style={{ ...S.border, ...S.bg, borderTop: "none" }}>
-          <div style={{ ...S.pad, borderBottom: "1px solid #444" }}>
+          <div style={{ ...S.pad, borderBottom: "1px solid var(--c-border-soft)" }}>
             <div style={{ ...S.flexBetween }}>
               <div style={S.label}>AVOIMET TEHTÄVÄT ({openTasks.length})</div>
               {overdueTasks.length > 0 && (
-                <span style={{ fontSize: 11, color: '#999', fontWeight: 600 }}>! {overdueTasks.length} MYÖHÄSSÄ</span>
+                <span style={{ fontSize: 11, color: 'var(--c-text-muted)', fontWeight: 600 }}>! {overdueTasks.length} MYÖHÄSSÄ</span>
               )}
             </div>
           </div>
@@ -386,17 +386,17 @@ const Dashboard = ({ events = [], persons = [], notes = [], recentActivity = [],
               <div key={eventName}>
                 {/* Collapsible event header */}
                 <div
-                  style={{ ...S.flexBetween, padding: '8px 12px', borderBottom: '1px solid #333', background: '#1a1a1a', cursor: 'pointer' }}
+                  style={{ ...S.flexBetween, padding: '8px 12px', borderBottom: '1px solid var(--c-border-row)', background: 'var(--c-bg)', cursor: 'pointer' }}
                   onClick={() => toggleGroup(eventName)}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <span style={{ fontSize: 10, color: '#666' }}>{isOpen ? '▼' : '▶'}</span>
-                    <span style={{ fontSize: 12, fontWeight: 700, textTransform: 'uppercase', color: '#ddd' }}>{eventName}</span>
-                    <span style={{ fontSize: 10, color: '#666' }}>({eventTasks.length})</span>
+                    <span style={{ fontSize: 10, color: 'var(--c-text-muted)' }}>{isOpen ? '▼' : '▶'}</span>
+                    <span style={{ fontSize: 12, fontWeight: 700, textTransform: 'uppercase', color: 'var(--c-text)' }}>{eventName}</span>
+                    <span style={{ fontSize: 10, color: 'var(--c-text-muted)' }}>({eventTasks.length})</span>
                   </div>
                   {event && (
                     <span
-                      style={{ fontSize: 10, color: '#666', textTransform: 'uppercase' }}
+                      style={{ fontSize: 10, color: 'var(--c-text-muted)', textTransform: 'uppercase' }}
                       onClick={(e) => { e.stopPropagation(); onEventClick?.(event); }}
                     >
                       AVAA →
@@ -412,11 +412,11 @@ const Dashboard = ({ events = [], persons = [], notes = [], recentActivity = [],
                         onClick={() => onTaskStatusChange?.(task.id, { status: task.status === 'TODO' ? 'IN_PROGRESS' : 'DONE' })}
                         style={{
                           width: 16, height: 16,
-                          border: '2px solid #ddd',
-                          background: task.status === 'IN_PROGRESS' ? '#333' : 'transparent',
+                          border: '2px solid var(--c-border)',
+                          background: task.status === 'IN_PROGRESS' ? 'var(--c-accent-bg)' : 'transparent',
                           cursor: 'pointer', flexShrink: 0, marginRight: 8,
                           display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          fontSize: 10, color: '#ddd',
+                          fontSize: 10, color: 'var(--c-text)',
                         }}
                       >
                         {task.status === 'IN_PROGRESS' ? '◐' : ''}
@@ -424,12 +424,12 @@ const Dashboard = ({ events = [], persons = [], notes = [], recentActivity = [],
                       <span style={S.col(3)}>{task.title}</span>
                       <span style={{
                         fontSize: 10, padding: "1px 6px",
-                        border: '1px solid #ddd',
-                        color: '#ddd',
+                        border: '1px solid var(--c-border)',
+                        color: 'var(--c-text)',
                         background: 'transparent',
                       }}>{task.priority}</span>
                       {task.due_date && (
-                        <span style={{ fontSize: 11, color: isOverdue ? '#999' : '#666', marginLeft: 8, width: 50, textAlign: "right" }}>
+                        <span style={{ fontSize: 11, color: isOverdue ? 'var(--c-text-muted)' : 'var(--c-text-muted)', marginLeft: 8, width: 50, textAlign: "right" }}>
                           {isOverdue ? '! ' : ''}{new Date(task.due_date).toLocaleDateString('fi-FI', { day: 'numeric', month: 'numeric' })}
                         </span>
                       )}
@@ -444,31 +444,31 @@ const Dashboard = ({ events = [], persons = [], notes = [], recentActivity = [],
 
       {/* Today's events */}
       <div style={{ ...S.border, ...S.bg, borderTop: "none" }}>
-        <div style={{ ...S.pad, borderBottom: "1px solid #444", background: todaysEvents.length > 0 ? '#1a2a1a' : 'transparent' }}>
+        <div style={{ ...S.pad, borderBottom: "1px solid var(--c-border-soft)", background: todaysEvents.length > 0 ? 'var(--c-success-bg)' : 'transparent' }}>
           <div style={{ ...S.label, display: 'flex', alignItems: 'center', gap: 8 }}>
             TÄNÄÄN
-            <span style={{ fontSize: 10, color: todaysEvents.length > 0 ? '#8fd68f' : '#666', fontWeight: 700 }}>
+            <span style={{ fontSize: 10, color: todaysEvents.length > 0 ? '#8fd68f' : 'var(--c-text-muted)', fontWeight: 700 }}>
               {new Date().toLocaleDateString('fi-FI', { weekday: 'long', day: 'numeric', month: 'numeric' }).toUpperCase()}
             </span>
             {todaysEvents.length > 0 && (
-              <span style={{ fontSize: 11, color: '#8fd68f', fontWeight: 700 }}>({todaysEvents.length})</span>
+              <span style={{ fontSize: 11, color: 'var(--c-success)', fontWeight: 700 }}>({todaysEvents.length})</span>
             )}
           </div>
         </div>
         {todaysEvents.length === 0 ? (
-          <div style={{ padding: "12px", color: "#666", fontSize: 12 }}>Ei tapahtumia tänään</div>
+          <div style={{ padding: "12px", color: "var(--c-text-muted)", fontSize: 12 }}>Ei tapahtumia tänään</div>
         ) : (
           todaysEvents.map(event => (
             <div
               key={event.id}
-              style={{ ...S.row, cursor: 'pointer', background: '#0a1a0a' }}
+              style={{ ...S.row, cursor: 'pointer', background: 'var(--c-success-bg)' }}
               onClick={() => onEventClick?.(event)}
             >
-              <span style={{ ...S.col(2), fontWeight: 700, color: '#ddd' }}>{event.name}</span>
+              <span style={{ ...S.col(2), fontWeight: 700, color: 'var(--c-text)' }}>{event.name}</span>
               <span style={S.col(1)}>{event.start_time || ''}{event.end_time ? ` – ${event.end_time}` : ''}</span>
               <span style={S.col(1)}>{event.location_name || ''}</span>
               <span style={S.col(1)}>{event.guest_count ? `${event.guest_count} hlö` : ''}</span>
-              <span style={{ fontSize: 10, padding: '1px 6px', border: '1px solid #555', color: '#999' }}>{event.status || ''}</span>
+              <span style={{ fontSize: 10, padding: '1px 6px', border: '1px solid var(--c-border-soft)', color: 'var(--c-text-muted)' }}>{event.status || ''}</span>
             </div>
           ))
         )}
@@ -476,7 +476,7 @@ const Dashboard = ({ events = [], persons = [], notes = [], recentActivity = [],
 
       {/* Upcoming events table */}
       <div style={{ ...S.border, ...S.bg, borderTop: "none" }}>
-        <div style={{ ...S.pad, borderBottom: "1px solid #444" }}>
+        <div style={{ ...S.pad, borderBottom: "1px solid var(--c-border-soft)" }}>
           <div style={S.label}>{isWorker ? 'OMAT TAPAHTUMAT' : 'TULEVAT TAPAHTUMAT'}</div>
         </div>
         <div style={S.rowHeader}>
@@ -487,7 +487,7 @@ const Dashboard = ({ events = [], persons = [], notes = [], recentActivity = [],
           <span style={S.col(1)}>VIERAAT</span>
         </div>
         {upcomingEvents.length === 0 ? (
-          <div style={{ padding: "12px", color: "#666", fontSize: 12 }}>Ei tulevia tapahtumia</div>
+          <div style={{ padding: "12px", color: "var(--c-text-muted)", fontSize: 12 }}>Ei tulevia tapahtumia</div>
         ) : (
           upcomingEvents.map(event => (
             <div

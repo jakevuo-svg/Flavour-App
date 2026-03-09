@@ -17,7 +17,7 @@ const CATEGORIES = [
 const CATEGORY_COLORS = {
   alkuruoka: '#27ae60', pääruoka: '#e67e22', jälkiruoka: '#9b59b6',
   salaatti: '#2ecc71', keitto: '#f39c12', välipala: '#1abc9c',
-  cocktailpala: '#e74c3c', leipä: '#d4a574', juoma: '#3498db', muu: '#666',
+  cocktailpala: '#e74c3c', leipä: '#d4a574', juoma: '#3498db', muu: 'var(--c-text-muted)',
 };
 
 export default function RecipeList({ recipes = [], onRecipeClick, searchQuery = '' }) {
@@ -53,13 +53,13 @@ export default function RecipeList({ recipes = [], onRecipeClick, searchQuery = 
           const count = cat.value === 'all' ? recipes.length : (counts[cat.value] || 0);
           if (cat.value !== 'all' && count === 0) return null;
           const active = catFilter === cat.value;
-          const color = cat.value === 'all' ? '#ddd' : (CATEGORY_COLORS[cat.value] || '#666');
+          const color = cat.value === 'all' ? 'var(--c-text)' : (CATEGORY_COLORS[cat.value] || 'var(--c-text-muted)');
           return (
             <button key={cat.value} onClick={() => setCatFilter(cat.value)} style={{
               padding: '4px 10px', fontSize: 10, fontWeight: 700, border: '1px solid',
-              borderColor: active ? color : '#333', cursor: 'pointer',
+              borderColor: active ? color : 'var(--c-accent-bg)', cursor: 'pointer',
               background: active ? color + '22' : 'transparent',
-              color: active ? color : '#666', letterSpacing: 0.5,
+              color: active ? color : 'var(--c-text-muted)', letterSpacing: 0.5,
             }}>
               {cat.label} ({count})
             </button>
@@ -69,24 +69,24 @@ export default function RecipeList({ recipes = [], onRecipeClick, searchQuery = 
 
       {/* Recipe list */}
       {filtered.length === 0 ? (
-        <div style={{ padding: 24, textAlign: 'center', color: '#888', fontSize: 12 }}>Ei reseptejä</div>
+        <div style={{ padding: 24, textAlign: 'center', color: 'var(--c-text-muted)', fontSize: 12 }}>Ei reseptejä</div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           {filtered.map(r => {
-            const catColor = CATEGORY_COLORS[r.category] || '#666';
+            const catColor = CATEGORY_COLORS[r.category] || 'var(--c-text-muted)';
             const catLabel = CATEGORIES.find(c => c.value === r.category)?.label || r.category;
             return (
               <div key={r.id} onClick={() => onRecipeClick(r)} style={{
-                padding: '10px 12px', background: '#111', border: '1px solid #1a1a1a',
+                padding: '10px 12px', background: 'var(--c-bg)', border: '1px solid var(--c-border-row)',
                 cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: 4,
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <span style={{ fontWeight: 700, fontSize: 13, color: '#ddd', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.name}</span>
+                  <span style={{ fontWeight: 700, fontSize: 13, color: 'var(--c-text)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.name}</span>
                   <span style={{ fontSize: 9, padding: '1px 6px', background: catColor + '22', color: catColor, border: `1px solid ${catColor}44`, flexShrink: 0 }}>{catLabel}</span>
                 </div>
                 {(r.description || r.allergens?.length > 0 || r.tags?.length > 0) && (
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
-                    {r.description && <span style={{ fontSize: 11, color: '#888', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '60%' }}>{r.description}</span>}
+                    {r.description && <span style={{ fontSize: 11, color: 'var(--c-text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '60%' }}>{r.description}</span>}
                     {r.allergens?.map(a => (
                       <span key={a} style={{ fontSize: 9, padding: '1px 4px', background: '#c0392b22', color: '#e74c3c' }}>{a}</span>
                     ))}

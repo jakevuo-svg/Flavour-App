@@ -22,7 +22,7 @@ const LocationLogo = ({ name, size = 64, logo_url }) => {
           width: size,
           height: size,
           borderRadius: '50%',
-          border: '2px solid #ddd',
+          border: '2px solid var(--c-border)',
           objectFit: 'cover',
         }}
       />
@@ -35,14 +35,14 @@ const LocationLogo = ({ name, size = 64, logo_url }) => {
         width: size,
         height: size,
         borderRadius: '50%',
-        border: '2px solid #ddd',
+        border: '2px solid var(--c-border)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#2a2a2a',
+        backgroundColor: 'var(--c-bg-hover)',
         fontSize: Math.max(16, size / 2),
         fontWeight: 'bold',
-        color: '#ddd',
+        color: 'var(--c-text)',
       }}
     >
       {abbr}

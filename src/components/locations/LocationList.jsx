@@ -17,15 +17,15 @@ const FILE_TYPES = [
 const Section = ({ title, children, defaultOpen = false, count }) => {
   const [open, setOpen] = useState(defaultOpen);
   return (
-    <div style={{ borderBottom: '1px solid #444' }}>
+    <div style={{ borderBottom: '1px solid var(--c-border-soft)' }}>
       <div
-        style={{ ...S.flexBetween, padding: '8px 12px', cursor: 'pointer', background: '#1a1a1a' }}
+        style={{ ...S.flexBetween, padding: '8px 12px', cursor: 'pointer', background: 'var(--c-bg)' }}
         onClick={() => setOpen(!open)}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ fontSize: 10, color: '#666' }}>{open ? '▼' : '▶'}</span>
+          <span style={{ fontSize: 10, color: 'var(--c-text-muted)' }}>{open ? '▼' : '▶'}</span>
           <span style={{ ...S.label, marginBottom: 0 }}>{title}</span>
-          {count !== undefined && <span style={{ fontSize: 10, color: '#666' }}>({count})</span>}
+          {count !== undefined && <span style={{ fontSize: 10, color: 'var(--c-text-muted)' }}>({count})</span>}
         </div>
       </div>
       {open && <div style={{ padding: '12px' }}>{children}</div>}
@@ -36,7 +36,7 @@ const Section = ({ title, children, defaultOpen = false, count }) => {
 const DriveLink = ({ url, label }) => {
   if (!url) return null;
   return (
-    <a href={url} target="_blank" rel="noopener noreferrer" style={{ color: '#ddd', fontSize: 12, textDecoration: 'underline', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+    <a href={url} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--c-text)', fontSize: 12, textDecoration: 'underline', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
       ↗ {label || 'AVAA'}
     </a>
   );
@@ -64,7 +64,7 @@ const EditableDriveLink = ({ url, label, onSave }) => {
           onKeyDown={e => e.key === 'Enter' && save()}
         />
         <button onClick={save} style={{ ...S.btnSmall, fontSize: 10, padding: '3px 8px' }}>OK</button>
-        <button onClick={() => { setValue(url || ''); setEditMode(false); }} style={{ ...S.btnSmall, fontSize: 10, padding: '3px 8px', borderColor: '#666', color: '#666' }}>✕</button>
+        <button onClick={() => { setValue(url || ''); setEditMode(false); }} style={{ ...S.btnSmall, fontSize: 10, padding: '3px 8px', borderColor: 'var(--c-text-muted)', color: 'var(--c-text-muted)' }}>✕</button>
       </div>
     );
   }
@@ -72,13 +72,13 @@ const EditableDriveLink = ({ url, label, onSave }) => {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
       {url ? (
-        <a href={url} target="_blank" rel="noopener noreferrer" style={{ color: '#ddd', fontSize: 12, textDecoration: 'underline', wordBreak: 'break-all' }}>
+        <a href={url} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--c-text)', fontSize: 12, textDecoration: 'underline', wordBreak: 'break-all' }}>
           {label || 'AVAA →'}
         </a>
       ) : (
-        <span style={{ color: '#555', fontSize: 12 }}>Ei linkkiä</span>
+        <span style={{ color: 'var(--c-text-muted)', fontSize: 12 }}>Ei linkkiä</span>
       )}
-      <button onClick={() => setEditMode(true)} style={{ background: 'none', border: 'none', color: '#666', cursor: 'pointer', fontSize: 11, padding: '2px 4px' }}>
+      <button onClick={() => setEditMode(true)} style={{ background: 'none', border: 'none', color: 'var(--c-text-muted)', cursor: 'pointer', fontSize: 11, padding: '2px 4px' }}>
         {url ? '✎' : '+ LINKKI'}
       </button>
     </div>
@@ -212,7 +212,7 @@ const LocationList = ({ locations = [], events = [], onEventClick, onUpdateLocat
 
   return (
     <div style={{ ...S.border, ...S.bg, borderTop: "none" }}>
-      <div style={{ ...S.pad, ...S.flexBetween, borderBottom: "1px solid #444" }}>
+      <div style={{ ...S.pad, ...S.flexBetween, borderBottom: "1px solid var(--c-border-soft)" }}>
         <div style={S.label}>SIJAINNIT ({locations.length})</div>
         {isAdmin && onAddLocation && (
           <button onClick={() => setShowNewLocation(true)} style={S.btnSmall}>+ UUSI SIJAINTI</button>
@@ -234,8 +234,8 @@ const LocationList = ({ locations = [], events = [], onEventClick, onUpdateLocat
             key={location.id}
             onClick={() => handleExpand(location.id)}
             style={{
-              border: expandedId === location.id ? '2px solid #ddd' : '2px solid #444',
-              background: expandedId === location.id ? '#2a2a2a' : '#1e1e1e',
+              border: expandedId === location.id ? '2px solid var(--c-border)' : '2px solid var(--c-border-row)',
+              background: expandedId === location.id ? 'var(--c-bg-hover)' : 'var(--c-bg-card)',
               padding: 20,
               cursor: 'pointer',
               textAlign: 'center',
@@ -243,14 +243,14 @@ const LocationList = ({ locations = [], events = [], onEventClick, onUpdateLocat
           >
             <div style={{
               width: 60, height: 60, margin: '0 auto 12px',
-              border: '2px solid #444', display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 24, fontWeight: 700, color: '#666',
+              border: '2px solid var(--c-border-soft)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: 24, fontWeight: 700, color: 'var(--c-text-muted)',
             }}>
               {(location.name || '?')[0]}
             </div>
             <div style={{ fontWeight: 700, fontSize: 13 }}>{location.name}</div>
-            <div style={{ color: '#999', fontSize: 11, marginTop: 4 }}>{location.type}</div>
-            <div style={{ color: '#666', fontSize: 11, marginTop: 2 }}>
+            <div style={{ color: 'var(--c-text-muted)', fontSize: 11, marginTop: 4 }}>{location.type}</div>
+            <div style={{ color: 'var(--c-text-muted)', fontSize: 11, marginTop: 2 }}>
               Kapasiteetti: {location.capacity || 'N/A'}
             </div>
           </div>
@@ -259,12 +259,12 @@ const LocationList = ({ locations = [], events = [], onEventClick, onUpdateLocat
 
       {/* Full-width expansion panel BELOW the grid */}
       {expandedLocation && (
-        <div style={{ borderTop: '2px solid #ddd', background: '#1e1e1e' }}>
+        <div style={{ borderTop: '2px solid var(--c-border)', background: 'var(--c-bg-card)' }}>
           {/* Location header */}
-          <div style={{ ...S.flexBetween, padding: '12px 16px', borderBottom: '1px solid #444', background: '#2a2a2a' }}>
+          <div style={{ ...S.flexBetween, padding: '12px 16px', borderBottom: '1px solid var(--c-border-soft)', background: 'var(--c-bg-hover)' }}>
             <div>
               <div style={{ fontWeight: 700, fontSize: 16, textTransform: 'uppercase', letterSpacing: 1 }}>{expandedLocation.name}</div>
-              <div style={{ color: '#999', fontSize: 11, marginTop: 2 }}>{expandedLocation.type} — Kapasiteetti: {expandedLocation.capacity || 'N/A'}</div>
+              <div style={{ color: 'var(--c-text-muted)', fontSize: 11, marginTop: 2 }}>{expandedLocation.type} — Kapasiteetti: {expandedLocation.capacity || 'N/A'}</div>
             </div>
             <div style={{ display: 'flex', gap: 8 }}>
               {isAdmin && !editing && (
@@ -381,7 +381,7 @@ const LocationList = ({ locations = [], events = [], onEventClick, onUpdateLocat
                 onChange={e => setEditData({ ...editData, description: e.target.value })}
               />
             ) : (
-              <div style={{ color: '#999', fontSize: 12, whiteSpace: 'pre-wrap' }}>
+              <div style={{ color: 'var(--c-text-muted)', fontSize: 12, whiteSpace: 'pre-wrap' }}>
                 {expandedLocation.description || 'Ei kuvausta'}
               </div>
             )}
@@ -423,19 +423,19 @@ const LocationList = ({ locations = [], events = [], onEventClick, onUpdateLocat
               <div>
                 <div style={{ marginBottom: 12 }}>
                   <div style={S.label}>VARUSTEET</div>
-                  <div style={{ color: '#999', fontSize: 12, whiteSpace: 'pre-wrap', marginTop: 4 }}>
+                  <div style={{ color: 'var(--c-text-muted)', fontSize: 12, whiteSpace: 'pre-wrap', marginTop: 4 }}>
                     {expandedLocation.equipment || '—'}
                   </div>
                 </div>
                 <div style={{ marginBottom: 12 }}>
                   <div style={S.label}>AV-TEKNIIKKA</div>
-                  <div style={{ color: '#999', fontSize: 12, whiteSpace: 'pre-wrap', marginTop: 4 }}>
+                  <div style={{ color: 'var(--c-text-muted)', fontSize: 12, whiteSpace: 'pre-wrap', marginTop: 4 }}>
                     {expandedLocation.techSpecs || '—'}
                   </div>
                 </div>
                 <div>
                   <div style={S.label}>KEITTIÖVARUSTELU</div>
-                  <div style={{ color: '#999', fontSize: 12, whiteSpace: 'pre-wrap', marginTop: 4 }}>
+                  <div style={{ color: 'var(--c-text-muted)', fontSize: 12, whiteSpace: 'pre-wrap', marginTop: 4 }}>
                     {expandedLocation.kitchenEquipment || '—'}
                   </div>
                 </div>
@@ -452,7 +452,7 @@ const LocationList = ({ locations = [], events = [], onEventClick, onUpdateLocat
                   const isPdf = file.file_type === 'application/pdf' || file.file_name?.toLowerCase().endsWith('.pdf');
                   const isViewable = isImage || isPdf;
                   return (
-                    <div key={file.id} style={{ borderBottom: '1px solid #333', padding: '8px 0' }}>
+                    <div key={file.id} style={{ borderBottom: '1px solid var(--c-border-row)', padding: '8px 0' }}>
                       <div style={{ ...S.flexBetween }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                           <span style={{ ...S.tag(false), fontSize: 9, padding: '2px 6px' }}>
@@ -473,21 +473,21 @@ const LocationList = ({ locations = [], events = [], onEventClick, onUpdateLocat
                                   }
                                   w.document.title = file.file_name;
                                 }}
-                                style={{ background: 'none', border: '1px solid #555', color: '#ddd', fontSize: 11, padding: '2px 8px', cursor: 'pointer' }}
+                                style={{ background: 'none', border: '1px solid var(--c-border-soft)', color: 'var(--c-text)', fontSize: 11, padding: '2px 8px', cursor: 'pointer' }}
                               >NÄYTÄ</button>
                             ) : (
-                              <a href={file.file_path} target="_blank" rel="noopener noreferrer" style={{ color: '#ddd', fontSize: 11, textDecoration: 'underline' }}>
+                              <a href={file.file_path} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--c-text)', fontSize: 11, textDecoration: 'underline' }}>
                                 {file.file_path.includes('drive.google.com') ? 'DRIVE' : 'AVAA'}
                               </a>
                             )
                           )}
                           {isAdmin && (
-                            <span onClick={() => handleRemoveFile(file.id)} style={{ color: '#666', cursor: 'pointer', fontSize: 11 }}>✕</span>
+                            <span onClick={() => handleRemoveFile(file.id)} style={{ color: 'var(--c-text-muted)', cursor: 'pointer', fontSize: 11 }}>✕</span>
                           )}
                         </div>
                       </div>
                       {isImage && file.file_path?.startsWith('http') && (
-                        <img src={file.file_path} alt={file.file_name} style={{ marginTop: 6, maxWidth: '100%', maxHeight: 120, objectFit: 'contain', border: '1px solid #333', borderRadius: 2 }} />
+                        <img src={file.file_path} alt={file.file_name} style={{ marginTop: 6, maxWidth: '100%', maxHeight: 120, objectFit: 'contain', border: '1px solid var(--c-border-row)', borderRadius: 2 }} />
                       )}
                     </div>
                   );
@@ -500,7 +500,7 @@ const LocationList = ({ locations = [], events = [], onEventClick, onUpdateLocat
             )}
 
             {isAdmin && showAddFile && (
-              <div style={{ border: '1px solid #444', padding: 12, marginTop: 8 }}>
+              <div style={{ border: '1px solid var(--c-border-soft)', padding: 12, marginTop: 8 }}>
                 <div style={{ ...S.formGrid, marginBottom: 8 }}>
                   <div>
                     <div style={S.label}>NIMI</div>
@@ -536,7 +536,7 @@ const LocationList = ({ locations = [], events = [], onEventClick, onUpdateLocat
                 <div style={{ display: 'flex', gap: 8 }}>
                   <button onClick={addFileLink} style={S.btnSmall}>LISÄÄ LINKKI</button>
                   <button onClick={() => fileInputRef.current?.click()} style={S.btnSmall}>LATAA TIEDOSTO</button>
-                  <button onClick={() => { setShowAddFile(false); setNewFile({ name: '', type: 'other', driveLink: '' }); }} style={{ ...S.btnSmall, borderColor: '#666', color: '#666' }}>PERUUTA</button>
+                  <button onClick={() => { setShowAddFile(false); setNewFile({ name: '', type: 'other', driveLink: '' }); }} style={{ ...S.btnSmall, borderColor: 'var(--c-text-muted)', color: 'var(--c-text-muted)' }}>PERUUTA</button>
                 </div>
                 <input ref={fileInputRef} type="file" style={{ display: 'none' }} onChange={handleFileUpload} />
               </div>
@@ -553,7 +553,7 @@ const LocationList = ({ locations = [], events = [], onEventClick, onUpdateLocat
                 placeholder="Sijaintiin liittyviä muistiinpanoja..."
               />
             ) : (
-              <div style={{ color: '#999', fontSize: 12, whiteSpace: 'pre-wrap' }}>
+              <div style={{ color: 'var(--c-text-muted)', fontSize: 12, whiteSpace: 'pre-wrap' }}>
                 {expandedLocation.notes || 'Ei muistiinpanoja'}
               </div>
             )}
@@ -583,7 +583,7 @@ const LocationList = ({ locations = [], events = [], onEventClick, onUpdateLocat
                 ))}
               </>
             ) : (
-              <div style={{ color: '#666', fontSize: 12 }}>Ei tulevia tapahtumia</div>
+              <div style={{ color: 'var(--c-text-muted)', fontSize: 12 }}>Ei tulevia tapahtumia</div>
             )}
           </Section>
 
@@ -598,7 +598,7 @@ const LocationList = ({ locations = [], events = [], onEventClick, onUpdateLocat
                   <span style={S.col(1)}>VIERAAT</span>
                 </div>
                 {past.map(event => (
-                  <div key={event.id} onClick={() => onEventClick?.(event)} style={{ ...S.row, cursor: 'pointer', color: '#666' }}>
+                  <div key={event.id} onClick={() => onEventClick?.(event)} style={{ ...S.row, cursor: 'pointer', color: 'var(--c-text-muted)' }}>
                     <span style={S.col(1)}>{new Date(event.date).toLocaleDateString('fi-FI')}</span>
                     <span style={S.col(2)}>{event.name}</span>
                     <span style={{ ...S.col(1), fontSize: 11 }}>{event.type || ''}</span>
@@ -607,7 +607,7 @@ const LocationList = ({ locations = [], events = [], onEventClick, onUpdateLocat
                 ))}
               </>
             ) : (
-              <div style={{ color: '#666', fontSize: 12 }}>Ei aiempia tapahtumia</div>
+              <div style={{ color: 'var(--c-text-muted)', fontSize: 12 }}>Ei aiempia tapahtumia</div>
             )}
           </Section>
         </div>

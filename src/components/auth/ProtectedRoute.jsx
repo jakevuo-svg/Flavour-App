@@ -96,7 +96,7 @@ const loadingContainerStyle = {
   alignItems: 'center',
   justifyContent: 'center',
   minHeight: '100vh',
-  backgroundColor: '#111',
+  backgroundColor: 'var(--c-bg)',
   fontFamily: 'system-ui, -apple-system, sans-serif',
 };
 
@@ -110,14 +110,14 @@ const spinnerStyle = {
 const spinnerInnerStyle = {
   width: '40px',
   height: '40px',
-  border: '2px solid #555',
-  borderTop: '2px solid #ddd',
+  border: '2px solid var(--c-border-soft)',
+  borderTop: '2px solid var(--c-border)',
   borderRadius: '50%',
   animation: 'spin 0.8s linear infinite',
 };
 
 const loadingTextStyle = {
-  color: '#888',
+  color: 'var(--c-text-muted)',
   fontSize: '14px',
   margin: '0',
   letterSpacing: '1px',
@@ -129,7 +129,7 @@ const accessDeniedContainerStyle = {
   alignItems: 'center',
   justifyContent: 'center',
   minHeight: '100vh',
-  backgroundColor: '#111',
+  backgroundColor: 'var(--c-bg)',
   padding: '20px',
   fontFamily: 'system-ui, -apple-system, sans-serif',
 };
@@ -137,8 +137,8 @@ const accessDeniedContainerStyle = {
 const accessDeniedCardStyle = {
   width: '100%',
   maxWidth: '400px',
-  backgroundColor: '#1e1e1e',
-  border: '1px solid #555',
+  backgroundColor: 'var(--c-bg-card)',
+  border: '1px solid var(--c-border-soft)',
   borderRadius: '4px',
   padding: '40px',
   textAlign: 'center',
@@ -148,34 +148,34 @@ const accessDeniedCardStyle = {
 const accessDeniedTitleStyle = {
   fontSize: '22px',
   fontWeight: '700',
-  color: '#ddd',
+  color: 'var(--c-text)',
   margin: '0 0 16px 0',
 };
 
 const accessDeniedTextStyle = {
   fontSize: '14px',
-  color: '#aaa',
+  color: 'var(--c-text-muted)',
   margin: '0 0 20px 0',
   lineHeight: '1.6',
 };
 
 const accessDeniedRoleStyle = {
   fontSize: '13px',
-  color: '#888',
-  backgroundColor: '#2a2a2a',
+  color: 'var(--c-text-muted)',
+  backgroundColor: 'var(--c-bg-hover)',
   padding: '12px',
   borderRadius: '3px',
-  border: '1px solid #555',
+  border: '1px solid var(--c-border-soft)',
   margin: '0',
 };
 
 const accessDeniedDateStyle = {
   fontSize: '13px',
-  color: '#888',
-  backgroundColor: '#2a2a2a',
+  color: 'var(--c-text-muted)',
+  backgroundColor: 'var(--c-bg-hover)',
   padding: '12px',
   borderRadius: '3px',
-  border: '1px solid #554444',
+  border: '1px solid var(--c-error-border)',
   margin: '16px 0 0 0',
 };
 

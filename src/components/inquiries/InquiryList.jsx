@@ -50,16 +50,16 @@ export default function InquiryList({ inquiries, onInquiryClick, onAddClick, sea
     padding: '2px 8px',
     fontSize: 10,
     fontWeight: 700,
-    background: (INQUIRY_STATUS_COLORS[status] || '#666') + '22',
-    color: INQUIRY_STATUS_COLORS[status] || '#666',
-    border: `1px solid ${INQUIRY_STATUS_COLORS[status] || '#666'}`,
+    background: (INQUIRY_STATUS_COLORS[status] || 'var(--c-text-muted)') + '22',
+    color: INQUIRY_STATUS_COLORS[status] || 'var(--c-text-muted)',
+    border: `1px solid ${INQUIRY_STATUS_COLORS[status] || 'var(--c-text-muted)'}`,
   });
 
   return (
     <div>
       {/* Status Filter */}
       <div style={{ ...S.border, ...S.bg, borderTop: 'none' }}>
-        <div style={{ ...S.pad, display: 'flex', gap: 6, flexWrap: 'wrap', borderBottom: '1px solid #333' }}>
+        <div style={{ ...S.pad, display: 'flex', gap: 6, flexWrap: 'wrap', borderBottom: '1px solid var(--c-border-row)' }}>
           <span
             onClick={() => setStatusFilter('')}
             style={{ ...S.tag(!statusFilter), cursor: 'pointer', fontSize: 10 }}
@@ -90,10 +90,10 @@ export default function InquiryList({ inquiries, onInquiryClick, onAddClick, sea
             { label: 'VASTATTU', val: counts.VASTATTU, color: INQUIRY_STATUS_COLORS.VASTATTU },
             { label: 'TARJOTTU', val: counts.TARJOTTU, color: INQUIRY_STATUS_COLORS.TARJOTTU },
             { label: 'VAHVISTETTU', val: counts.VAHVISTETTU, color: INQUIRY_STATUS_COLORS.VAHVISTETTU },
-            { label: 'PIPELINE', val: `${pipelineTotal.toLocaleString('fi-FI')} €`, color: '#ddd' },
+            { label: 'PIPELINE', val: `${pipelineTotal.toLocaleString('fi-FI')} €`, color: 'var(--c-text)' },
           ].map((s) => (
-            <div key={s.label} style={{ flex: '1 1 60px', textAlign: 'center', padding: '10px 4px', borderRight: '1px solid #333', borderBottom: '1px solid #333' }}>
-              <div style={{ fontSize: 9, color: '#888', fontWeight: 700, letterSpacing: 0.5 }}>{s.label}</div>
+            <div key={s.label} style={{ flex: '1 1 60px', textAlign: 'center', padding: '10px 4px', borderRight: '1px solid var(--c-border-row)', borderBottom: '1px solid var(--c-border-row)' }}>
+              <div style={{ fontSize: 9, color: 'var(--c-text-muted)', fontWeight: 700, letterSpacing: 0.5 }}>{s.label}</div>
               <div style={{ fontSize: 16, fontWeight: 700, color: s.color }}>{s.val}</div>
             </div>
           ))}
@@ -108,7 +108,7 @@ export default function InquiryList({ inquiries, onInquiryClick, onAddClick, sea
       {/* Inquiry Rows */}
       <div style={{ ...S.border, ...S.bg, borderTop: 'none' }}>
         {sorted.length === 0 ? (
-          <div style={{ padding: 24, textAlign: 'center', color: '#888', fontSize: 12 }}>Ei tiedusteluja</div>
+          <div style={{ padding: 24, textAlign: 'center', color: 'var(--c-text-muted)', fontSize: 12 }}>Ei tiedusteluja</div>
         ) : (
           sorted.map((inq) => {
             const today = new Date(); today.setHours(0,0,0,0);
@@ -124,48 +124,48 @@ export default function InquiryList({ inquiries, onInquiryClick, onAddClick, sea
                 onClick={() => onInquiryClick(inq)}
                 style={{
                   padding: '10px 12px',
-                  borderBottom: '1px solid #333',
+                  borderBottom: '1px solid var(--c-border-row)',
                   cursor: 'pointer',
-                  background: isOverdue ? '#1a0a0a' : 'transparent',
+                  background: isOverdue ? 'var(--c-danger-row-bg)' : 'transparent',
                 }}
               >
                 {/* Row 1: Name + Status + Date */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8, marginBottom: 4 }}>
                   <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <span style={{ fontWeight: 700, fontSize: 13, color: '#ddd', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    <span style={{ fontWeight: 700, fontSize: 13, color: 'var(--c-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {inq.contact_name || inq.company || 'Nimetön'}
                     </span>
                     <span style={statusBadge(inq.status)}>{inq.status}</span>
                   </div>
-                  <span style={{ fontSize: 11, color: '#999', flexShrink: 0 }}>{fmtDate(inq.received_at)}</span>
+                  <span style={{ fontSize: 11, color: 'var(--c-text-muted)', flexShrink: 0 }}>{fmtDate(inq.received_at)}</span>
                 </div>
 
                 {/* Row 2: Company + Details */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
                   <div style={{ flex: 1, minWidth: 0, display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
                     {inq.company && inq.contact_name && (
-                      <span style={{ fontSize: 11, color: '#888' }}>{inq.company}</span>
+                      <span style={{ fontSize: 11, color: 'var(--c-text-muted)' }}>{inq.company}</span>
                     )}
                     {inq.guest_count && (
-                      <span style={{ fontSize: 10, color: '#999' }}>{inq.guest_count} hlö</span>
+                      <span style={{ fontSize: 10, color: 'var(--c-text-muted)' }}>{inq.guest_count} hlö</span>
                     )}
                     {inq.location_name && (
-                      <span style={{ fontSize: 10, color: '#999' }}>{inq.location_name}</span>
+                      <span style={{ fontSize: 10, color: 'var(--c-text-muted)' }}>{inq.location_name}</span>
                     )}
                     {inq.assigned_name && (
-                      <span style={{ fontSize: 10, color: '#999' }}>→ {inq.assigned_name}</span>
+                      <span style={{ fontSize: 10, color: 'var(--c-text-muted)' }}>→ {inq.assigned_name}</span>
                     )}
                   </div>
                   <div style={{ flexShrink: 0, textAlign: 'right' }}>
                     {inq.price ? (
-                      <span style={{ fontSize: 12, fontWeight: 700, color: '#ddd' }}>{inq.price.toLocaleString('fi-FI')} €</span>
+                      <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--c-text)' }}>{inq.price.toLocaleString('fi-FI')} €</span>
                     ) : null}
                   </div>
                 </div>
 
                 {/* Row 3: Deadline warning */}
                 {(isOverdue || isDueToday) && (
-                  <div style={{ marginTop: 4, fontSize: 10, fontWeight: 700, color: isOverdue ? '#ff6666' : '#ffaa44' }}>
+                  <div style={{ marginTop: 4, fontSize: 10, fontWeight: 700, color: isOverdue ? 'var(--c-danger-subtle)' : 'var(--c-warning)' }}>
                     {isOverdue ? '! VASTAUS MYÖHÄSSÄ' : '! VASTAA TÄNÄÄN'} — {fmtDate(inq.respond_by)}
                   </div>
                 )}

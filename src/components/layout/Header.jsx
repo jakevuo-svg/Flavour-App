@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import S from '../../styles/theme';
 import NotificationPanel from '../common/NotificationPanel';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { useTheme } from '../../contexts/ThemeContext';
 
 export default function Header({
   onHome, onSave, onNewEvent, onNewPerson, onNewNote, onSignOut, onChangePassword,
@@ -10,6 +11,7 @@ export default function Header({
   onEventClick, onPersonClick, events = [], persons = [],
 }) {
   const { lang, toggleLang, t } = useLanguage();
+  const { isDark, toggleTheme } = useTheme();
   const [menuOpen, setMenuOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const menuRef = useRef(null);
@@ -35,6 +37,18 @@ export default function Header({
     fn?.();
   };
 
+  // Menu item style helper
+  const menuItemStyle = (extra = {}) => ({
+    padding: '10px 16px',
+    cursor: 'pointer',
+    fontSize: 12,
+    fontWeight: 700,
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+    color: 'var(--c-text)',
+    ...extra,
+  });
+
   return (
     <div style={{ ...S.border, ...S.bg, ...S.flexBetween, ...S.pad, position: "sticky", top: 0, zIndex: 100, flexWrap: 'wrap', gap: 6 }}>
       <div style={{ ...S.flex, gap: 6 }}>
@@ -43,6 +57,15 @@ export default function Header({
       </div>
       <div style={{ ...S.flex, gap: 6 }}>
         {onSave && <button style={S.btnWire} onClick={onSave}>SAVE</button>}
+
+        {/* Theme toggle */}
+        <button
+          style={{ ...S.btnWire, padding: '4px 10px', fontSize: 14, minWidth: 36 }}
+          onClick={toggleTheme}
+          title={isDark ? 'Vaihda vaaleaan teemaan' : 'Vaihda tummaan teemaan'}
+        >
+          {isDark ? '☀' : '☾'}
+        </button>
 
         {/* Language toggle */}
         <button
@@ -63,7 +86,7 @@ export default function Header({
             {unreadCount > 0 && (
               <span style={{
                 position: 'absolute', top: -4, right: -4,
-                background: '#ddd', color: '#111',
+                background: 'var(--c-accent-bg)', color: 'var(--c-text-inverse)',
                 fontSize: 9, fontWeight: 800,
                 width: 16, height: 16,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -102,57 +125,31 @@ export default function Header({
             top: '100%',
             right: 0,
             marginTop: 4,
-            background: '#1a1a1a',
-            border: '2px solid #ddd',
+            background: 'var(--c-menu-bg)',
+            border: '2px solid var(--c-border)',
             zIndex: 200,
             minWidth: 180,
           }}>
             <div
               onClick={() => handleOption(onNewEvent)}
-              style={{
-                padding: '10px 16px',
-                cursor: 'pointer',
-                fontSize: 12,
-                fontWeight: 700,
-                letterSpacing: 1,
-                textTransform: 'uppercase',
-                borderBottom: '1px solid #444',
-                color: '#ddd',
-              }}
-              onMouseEnter={e => e.currentTarget.style.background = '#333'}
+              style={menuItemStyle({ borderBottom: '1px solid var(--c-border-row)' })}
+              onMouseEnter={e => e.currentTarget.style.background = 'var(--c-menu-hover)'}
               onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
             >
               {t('newEvent')}
             </div>
             <div
               onClick={() => handleOption(onNewPerson)}
-              style={{
-                padding: '10px 16px',
-                cursor: 'pointer',
-                fontSize: 12,
-                fontWeight: 700,
-                letterSpacing: 1,
-                textTransform: 'uppercase',
-                borderBottom: '1px solid #444',
-                color: '#ddd',
-              }}
-              onMouseEnter={e => e.currentTarget.style.background = '#333'}
+              style={menuItemStyle({ borderBottom: '1px solid var(--c-border-row)' })}
+              onMouseEnter={e => e.currentTarget.style.background = 'var(--c-menu-hover)'}
               onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
             >
               {t('newPerson')}
             </div>
             <div
               onClick={() => handleOption(onNewNote)}
-              style={{
-                padding: '10px 16px',
-                cursor: 'pointer',
-                fontSize: 12,
-                fontWeight: 700,
-                letterSpacing: 1,
-                textTransform: 'uppercase',
-                color: '#ddd',
-              }}
-              onMouseEnter={e => e.currentTarget.style.background = '#333'}
+              style={menuItemStyle()}
+              onMouseEnter={e => e.currentTarget.style.background = 'var(--c-menu-hover)'}
               onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
             >
               {t('newNote')}
@@ -160,17 +157,8 @@ export default function Header({
             {onChangePassword && (
               <div
                 onClick={() => handleOption(onChangePassword)}
-                style={{
-                  padding: '10px 16px',
-                  cursor: 'pointer',
-                  fontSize: 12,
-                  fontWeight: 700,
-                  letterSpacing: 1,
-                  textTransform: 'uppercase',
-                  borderTop: '1px solid #444',
-                  color: '#ddd',
-                }}
-                onMouseEnter={e => e.currentTarget.style.background = '#333'}
+                style={menuItemStyle({ borderTop: '1px solid var(--c-border-row)' })}
+                onMouseEnter={e => e.currentTarget.style.background = 'var(--c-menu-hover)'}
                 onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
               >
                 {t('changePassword')}
@@ -179,17 +167,8 @@ export default function Header({
             {onSignOut && (
               <div
                 onClick={() => handleOption(onSignOut)}
-                style={{
-                  padding: '10px 16px',
-                  cursor: 'pointer',
-                  fontSize: 12,
-                  fontWeight: 700,
-                  letterSpacing: 1,
-                  textTransform: 'uppercase',
-                  borderTop: '1px solid #444',
-                  color: '#999',
-                }}
-                onMouseEnter={e => e.currentTarget.style.background = '#333'}
+                style={menuItemStyle({ borderTop: '1px solid var(--c-border-row)', color: 'var(--c-text-muted)' })}
+                onMouseEnter={e => e.currentTarget.style.background = 'var(--c-menu-hover)'}
                 onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
               >
                 {t('signOut')}

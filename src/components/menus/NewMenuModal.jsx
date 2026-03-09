@@ -30,16 +30,16 @@ export default function NewMenuModal({ isOpen, onClose, onSubmit }) {
   };
 
   const inputStyle = {
-    width: '100%', padding: '8px 10px', background: '#1a1a1a',
-    border: '1px solid #333', color: '#ddd', fontSize: 13,
+    width: '100%', padding: '8px 10px', background: 'var(--c-bg)',
+    border: '1px solid var(--c-border-row)', color: 'var(--c-text)', fontSize: 13,
     borderRadius: 0, boxSizing: 'border-box',
   };
-  const labelStyle = { fontSize: 10, color: '#888', fontWeight: 700, letterSpacing: 0.5, marginBottom: 4, display: 'block' };
+  const labelStyle = { fontSize: 10, color: 'var(--c-text-muted)', fontWeight: 700, letterSpacing: 0.5, marginBottom: 4, display: 'block' };
 
   return (
     <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }} onClick={onClose}>
-      <div style={{ background: '#111', border: '1px solid #333', padding: 24, width: '90%', maxWidth: 420, maxHeight: '85vh', overflow: 'auto' }} onClick={e => e.stopPropagation()}>
-        <div style={{ fontSize: 14, fontWeight: 700, color: '#ddd', marginBottom: 20, letterSpacing: 1 }}>UUSI MENU</div>
+      <div style={{ background: 'var(--c-bg)', border: '1px solid var(--c-border-row)', padding: 24, width: '90%', maxWidth: 420, maxHeight: '85vh', overflow: 'auto' }} onClick={e => e.stopPropagation()}>
+        <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--c-text)', marginBottom: 20, letterSpacing: 1 }}>UUSI MENU</div>
         <form onSubmit={handleSubmit}>
           <div style={{ marginBottom: 12 }}>
             <label style={labelStyle}>NIMI *</label>
@@ -64,8 +64,8 @@ export default function NewMenuModal({ isOpen, onClose, onSubmit }) {
           </div>
 
           <div style={{ display: 'flex', gap: 8 }}>
-            <button type="submit" style={{ flex: 1, padding: '10px', background: '#ddd', color: '#111', fontWeight: 700, fontSize: 12, border: 'none', cursor: 'pointer', letterSpacing: 1 }}>LUO MENU</button>
-            <button type="button" onClick={onClose} style={{ padding: '10px 16px', background: 'transparent', color: '#666', fontWeight: 700, fontSize: 12, border: '1px solid #333', cursor: 'pointer' }}>PERUUTA</button>
+            <button type="submit" style={{ flex: 1, padding: '10px', background: 'var(--c-accent-bg)', color: 'var(--c-text-inverse)', fontWeight: 700, fontSize: 12, border: 'none', cursor: 'pointer', letterSpacing: 1 }}>LUO MENU</button>
+            <button type="button" onClick={onClose} style={{ padding: '10px 16px', background: 'transparent', color: 'var(--c-text-muted)', fontWeight: 700, fontSize: 12, border: '1px solid var(--c-border-row)', cursor: 'pointer' }}>PERUUTA</button>
           </div>
         </form>
       </div>

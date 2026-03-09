@@ -276,7 +276,7 @@ export default function DataExport() {
         VARMUUSKOPIOINTI / EXPORT
       </div>
 
-      <div style={{ fontSize: 12, color: '#999', marginBottom: 16, lineHeight: 1.6 }}>
+      <div style={{ fontSize: 12, color: 'var(--c-text-muted)', marginBottom: 16, lineHeight: 1.6 }}>
         Lataa kaikki data varmuuskopioksi ulkoiselle kovalevylle.
       </div>
 
@@ -285,9 +285,9 @@ export default function DataExport() {
           onClick={exportZIP}
           disabled={exporting}
           style={{
-            background: exporting && exportType === 'zip' ? '#333' : '#ddd',
-            color: exporting && exportType === 'zip' ? '#999' : '#111',
-            border: '2px solid #ddd',
+            background: exporting && exportType === 'zip' ? 'var(--c-accent-bg)' : 'var(--c-text)',
+            color: exporting && exportType === 'zip' ? 'var(--c-text-muted)' : 'var(--c-bg)',
+            border: '2px solid var(--c-border)',
             padding: '10px 20px', fontSize: 12, fontWeight: 700,
             cursor: exporting ? 'default' : 'pointer', letterSpacing: 0.5,
             opacity: exporting && exportType !== 'zip' ? 0.4 : 1,
@@ -311,33 +311,33 @@ export default function DataExport() {
         </button>
       </div>
 
-      <div style={{ fontSize: 10, color: '#555', marginBottom: 16, lineHeight: 1.5 }}>
-        <strong style={{ color: '#888' }}>ZIP</strong> = kaikki data + liitetiedostot (menu, tilaukset, logot) yhdessä paketissa<br />
-        <strong style={{ color: '#888' }}>JSON</strong> = tietokantadata ilman liitteitä<br />
-        <strong style={{ color: '#888' }}>CSV</strong> = tapahtumat taulukkomuodossa (Excel)
+      <div style={{ fontSize: 10, color: 'var(--c-text-muted)', marginBottom: 16, lineHeight: 1.5 }}>
+        <strong style={{ color: 'var(--c-text-muted)' }}>ZIP</strong> = kaikki data + liitetiedostot (menu, tilaukset, logot) yhdessä paketissa<br />
+        <strong style={{ color: 'var(--c-text-muted)' }}>JSON</strong> = tietokantadata ilman liitteitä<br />
+        <strong style={{ color: 'var(--c-text-muted)' }}>CSV</strong> = tapahtumat taulukkomuodossa (Excel)
       </div>
 
       {progress && (
-        <div style={{ fontSize: 12, color: '#4a9', marginBottom: 12, padding: '8px 12px', background: '#112a1a', border: '1px solid #1c4a2c' }}>
+        <div style={{ fontSize: 12, color: 'var(--c-success)', marginBottom: 12, padding: '8px 12px', background: 'var(--c-success-bg)', border: '1px solid var(--c-success-border)' }}>
           {progress}
         </div>
       )}
 
       {error && (
-        <div style={{ color: '#ff4444', fontSize: 12, marginBottom: 12, padding: '8px 12px', background: '#2a1111', border: '1px solid #4a1c1c' }}>
+        <div style={{ color: 'var(--c-danger)', fontSize: 12, marginBottom: 12, padding: '8px 12px', background: 'var(--c-danger-bg)', border: '1px solid var(--c-error-border)' }}>
           {error}
         </div>
       )}
 
       {lastExport && (
-        <div style={{ border: '1px solid #333', padding: 12, background: '#1a1a1a' }}>
-          <div style={{ fontSize: 11, color: '#4a9', fontWeight: 700, marginBottom: 6 }}>
+        <div style={{ border: '1px solid var(--c-border-row)', padding: 12, background: 'var(--c-bg)' }}>
+          <div style={{ fontSize: 11, color: 'var(--c-success)', fontWeight: 700, marginBottom: 6 }}>
             VIIMEISIN EXPORT
           </div>
-          <div style={{ fontSize: 12, color: '#ccc', marginBottom: 4 }}>
+          <div style={{ fontSize: 12, color: 'var(--c-text)', marginBottom: 4 }}>
             {lastExport.filename}
           </div>
-          <div style={{ fontSize: 11, color: '#666' }}>
+          <div style={{ fontSize: 11, color: 'var(--c-text-muted)' }}>
             {lastExport.date}
             {lastExport.counts && (
               <span style={{ marginLeft: 10 }}>

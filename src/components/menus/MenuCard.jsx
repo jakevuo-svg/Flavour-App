@@ -13,12 +13,12 @@ const MENU_TYPES = [
 const CATEGORY_COLORS = {
   alkuruoka: '#27ae60', pääruoka: '#e67e22', jälkiruoka: '#9b59b6',
   salaatti: '#2ecc71', keitto: '#f39c12', välipala: '#1abc9c',
-  cocktailpala: '#e74c3c', leipä: '#d4a574', juoma: '#3498db', muu: '#666',
+  cocktailpala: '#e74c3c', leipä: '#d4a574', juoma: '#3498db', muu: 'var(--c-text-muted)',
 };
 
 const TYPE_COLORS = {
   '3-ruokalajin illallinen': '#e67e22', buffet: '#27ae60', cocktailpalat: '#e74c3c',
-  lounas: '#3498db', aamupala: '#f1c40f', snacks: '#1abc9c', muu: '#666',
+  lounas: '#3498db', aamupala: '#f1c40f', snacks: '#1abc9c', muu: 'var(--c-text-muted)',
 };
 
 const RECIPE_CATEGORIES = [
@@ -44,14 +44,14 @@ export default function MenuCard({ menu, onUpdate, onDelete, onBack, recipes = [
   const [newRecipeDesc, setNewRecipeDesc] = useState('');
 
   const inputStyle = {
-    width: '100%', padding: '8px 10px', background: '#1a1a1a',
-    border: '1px solid #333', color: '#ddd', fontSize: 13,
+    width: '100%', padding: '8px 10px', background: 'var(--c-bg)',
+    border: '1px solid var(--c-border-row)', color: 'var(--c-text)', fontSize: 13,
     borderRadius: 0, boxSizing: 'border-box',
   };
-  const labelStyle = { fontSize: 10, color: '#888', fontWeight: 700, letterSpacing: 0.5, marginBottom: 4, display: 'block' };
-  const sectionStyle = { marginBottom: 16, padding: 12, background: '#0d0d0d', border: '1px solid #1a1a1a' };
+  const labelStyle = { fontSize: 10, color: 'var(--c-text-muted)', fontWeight: 700, letterSpacing: 0.5, marginBottom: 4, display: 'block' };
+  const sectionStyle = { marginBottom: 16, padding: 12, background: 'var(--c-bg)', border: '1px solid var(--c-border-row)' };
 
-  const typeColor = TYPE_COLORS[menu.menu_type] || '#666';
+  const typeColor = TYPE_COLORS[menu.menu_type] || 'var(--c-text-muted)';
   const menuRecipes = menu.menu_recipes || [];
 
   // Recipes already in menu
@@ -100,12 +100,12 @@ export default function MenuCard({ menu, onUpdate, onDelete, onBack, recipes = [
     <div style={{ padding: 16 }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-        <button onClick={onBack} style={{ background: 'none', border: 'none', color: '#888', cursor: 'pointer', fontSize: 16, padding: 0 }}>←</button>
+        <button onClick={onBack} style={{ background: 'none', border: 'none', color: 'var(--c-text-muted)', cursor: 'pointer', fontSize: 16, padding: 0 }}>←</button>
         <div style={{ flex: 1 }}>
           {editing ? (
             <input style={{ ...inputStyle, fontSize: 16, fontWeight: 700 }} value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} />
           ) : (
-            <div style={{ fontSize: 16, fontWeight: 700, color: '#ddd' }}>{menu.name}</div>
+            <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--c-text)' }}>{menu.name}</div>
           )}
         </div>
         <span style={{ fontSize: 10, padding: '2px 8px', background: typeColor + '22', color: typeColor, border: `1px solid ${typeColor}` }}>
@@ -117,13 +117,13 @@ export default function MenuCard({ menu, onUpdate, onDelete, onBack, recipes = [
       <div style={{ display: 'flex', gap: 6, marginBottom: 16 }}>
         {editing ? (
           <>
-            <button onClick={handleSave} style={{ padding: '6px 14px', background: '#ddd', color: '#111', fontWeight: 700, fontSize: 11, border: 'none', cursor: 'pointer' }}>TALLENNA</button>
-            <button onClick={() => { setForm({ name: menu.name, description: menu.description, menu_type: menu.menu_type, tags: menu.tags || [] }); setEditing(false); }} style={{ padding: '6px 14px', background: 'transparent', color: '#666', fontWeight: 700, fontSize: 11, border: '1px solid #333', cursor: 'pointer' }}>PERUUTA</button>
+            <button onClick={handleSave} style={{ padding: '6px 14px', background: 'var(--c-accent-bg)', color: 'var(--c-text-inverse)', fontWeight: 700, fontSize: 11, border: 'none', cursor: 'pointer' }}>TALLENNA</button>
+            <button onClick={() => { setForm({ name: menu.name, description: menu.description, menu_type: menu.menu_type, tags: menu.tags || [] }); setEditing(false); }} style={{ padding: '6px 14px', background: 'transparent', color: 'var(--c-text-muted)', fontWeight: 700, fontSize: 11, border: '1px solid var(--c-border-row)', cursor: 'pointer' }}>PERUUTA</button>
           </>
         ) : (
           <>
-            <button onClick={() => setEditing(true)} style={{ padding: '6px 14px', background: '#333', color: '#ddd', fontWeight: 700, fontSize: 11, border: 'none', cursor: 'pointer' }}>MUOKKAA</button>
-            <button onClick={() => { if (window.confirm('Poista menu?')) { onDelete(menu.id); onBack(); } }} style={{ padding: '6px 14px', background: 'transparent', color: '#c0392b', fontWeight: 700, fontSize: 11, border: '1px solid #333', cursor: 'pointer' }}>POISTA</button>
+            <button onClick={() => setEditing(true)} style={{ padding: '6px 14px', background: 'var(--c-accent-bg)', color: 'var(--c-text)', fontWeight: 700, fontSize: 11, border: 'none', cursor: 'pointer' }}>MUOKKAA</button>
+            <button onClick={() => { if (window.confirm('Poista menu?')) { onDelete(menu.id); onBack(); } }} style={{ padding: '6px 14px', background: 'transparent', color: 'var(--c-danger)', fontWeight: 700, fontSize: 11, border: '1px solid var(--c-border-row)', cursor: 'pointer' }}>POISTA</button>
           </>
         )}
       </div>
@@ -134,7 +134,7 @@ export default function MenuCard({ menu, onUpdate, onDelete, onBack, recipes = [
         {editing ? (
           <textarea style={{ ...inputStyle, minHeight: 60, resize: 'vertical' }} value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} />
         ) : (
-          <div style={{ color: '#ddd', fontSize: 13, whiteSpace: 'pre-wrap' }}>{menu.description || '—'}</div>
+          <div style={{ color: 'var(--c-text)', fontSize: 13, whiteSpace: 'pre-wrap' }}>{menu.description || '—'}</div>
         )}
       </div>
 
@@ -156,8 +156,8 @@ export default function MenuCard({ menu, onUpdate, onDelete, onBack, recipes = [
         ) : (
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
             {menu.tags?.length ? menu.tags.map(t => (
-              <span key={t} style={{ fontSize: 10, padding: '2px 6px', background: '#333', color: '#aaa' }}>{t}</span>
-            )) : <span style={{ color: '#555', fontSize: 12 }}>—</span>}
+              <span key={t} style={{ fontSize: 10, padding: '2px 6px', background: 'var(--c-accent-bg)', color: 'var(--c-text-muted)' }}>{t}</span>
+            )) : <span style={{ color: 'var(--c-text-muted)', fontSize: 12 }}>—</span>}
           </div>
         )}
       </div>
@@ -167,8 +167,8 @@ export default function MenuCard({ menu, onUpdate, onDelete, onBack, recipes = [
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
           <label style={{ ...labelStyle, marginBottom: 0 }}>ANNOKSET ({menuRecipes.length})</label>
           <button onClick={() => setShowAddRecipe(!showAddRecipe)} style={{
-            padding: '4px 10px', fontSize: 10, fontWeight: 700, border: '1px solid #333',
-            background: showAddRecipe ? '#333' : 'transparent', color: showAddRecipe ? '#ddd' : '#888', cursor: 'pointer',
+            padding: '4px 10px', fontSize: 10, fontWeight: 700, border: '1px solid var(--c-border-row)',
+            background: showAddRecipe ? 'var(--c-accent-bg)' : 'transparent', color: showAddRecipe ? 'var(--c-text)' : 'var(--c-text-muted)', cursor: 'pointer',
           }}>
             {showAddRecipe ? 'SULJE' : '+ LISÄÄ ANNOS'}
           </button>
@@ -176,9 +176,9 @@ export default function MenuCard({ menu, onUpdate, onDelete, onBack, recipes = [
 
         {/* Add recipe: create new OR pick existing */}
         {showAddRecipe && (
-          <div style={{ marginBottom: 12, padding: 8, border: '1px solid #333', background: '#111' }}>
+          <div style={{ marginBottom: 12, padding: 8, border: '1px solid var(--c-border-row)', background: 'var(--c-bg)' }}>
             {/* Quick create new recipe */}
-            <div style={{ marginBottom: 10, paddingBottom: 10, borderBottom: '1px solid #333' }}>
+            <div style={{ marginBottom: 10, paddingBottom: 10, borderBottom: '1px solid var(--c-border-row)' }}>
               <div style={{ ...labelStyle, marginBottom: 6 }}>LUO UUSI ANNOS</div>
               <div style={{ display: 'flex', gap: 4, marginBottom: 4 }}>
                 <input
@@ -212,7 +212,7 @@ export default function MenuCard({ menu, onUpdate, onDelete, onBack, recipes = [
                 disabled={!newRecipeName.trim()}
                 style={{
                   padding: '6px 12px', fontSize: 10, fontWeight: 700, border: 'none', cursor: 'pointer',
-                  background: newRecipeName.trim() ? '#ddd' : '#333', color: newRecipeName.trim() ? '#111' : '#666',
+                  background: newRecipeName.trim() ? 'var(--c-text)' : 'var(--c-accent-bg)', color: newRecipeName.trim() ? 'var(--c-bg)' : 'var(--c-text-muted)',
                 }}
               >LISÄÄ MENUUN</button>
             </div>
@@ -227,18 +227,18 @@ export default function MenuCard({ menu, onUpdate, onDelete, onBack, recipes = [
             />
             <div style={{ maxHeight: 160, overflow: 'auto' }}>
               {filteredAvailable.length === 0 ? (
-                <div style={{ padding: 8, color: '#666', fontSize: 11, textAlign: 'center' }}>
+                <div style={{ padding: 8, color: 'var(--c-text-muted)', fontSize: 11, textAlign: 'center' }}>
                   {availableRecipes.length === 0 ? 'Kaikki reseptit jo menussa' : 'Ei tuloksia'}
                 </div>
               ) : (
                 filteredAvailable.slice(0, 20).map(r => {
-                  const cc = CATEGORY_COLORS[r.category] || '#666';
+                  const cc = CATEGORY_COLORS[r.category] || 'var(--c-text-muted)';
                   return (
                     <div key={r.id} onClick={() => handleAddRecipe(r.id)} style={{
                       padding: '6px 8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
-                      borderBottom: '1px solid #1a1a1a',
+                      borderBottom: '1px solid var(--c-border-row)',
                     }}>
-                      <span style={{ fontSize: 12, color: '#ddd', flex: 1 }}>{r.name}</span>
+                      <span style={{ fontSize: 12, color: 'var(--c-text)', flex: 1 }}>{r.name}</span>
                       <span style={{ fontSize: 9, padding: '1px 4px', background: cc + '22', color: cc }}>{r.category}</span>
                     </div>
                   );
@@ -250,27 +250,27 @@ export default function MenuCard({ menu, onUpdate, onDelete, onBack, recipes = [
 
         {/* Existing recipes */}
         {menuRecipes.length === 0 ? (
-          <div style={{ color: '#555', fontSize: 12, textAlign: 'center', padding: 12 }}>Ei annoksia vielä</div>
+          <div style={{ color: 'var(--c-text-muted)', fontSize: 12, textAlign: 'center', padding: 12 }}>Ei annoksia vielä</div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             {menuRecipes
               .sort((a, b) => (a.course_order || 0) - (b.course_order || 0))
               .map((mr, idx) => {
                 const r = mr.recipes || {};
-                const cc = CATEGORY_COLORS[r.category] || '#666';
+                const cc = CATEGORY_COLORS[r.category] || 'var(--c-text-muted)';
                 return (
                   <div key={mr.id} style={{
-                    padding: '8px 10px', background: '#111', border: '1px solid #1a1a1a',
+                    padding: '8px 10px', background: 'var(--c-bg)', border: '1px solid var(--c-border-row)',
                     display: 'flex', alignItems: 'center', gap: 8,
                   }}>
-                    <span style={{ fontSize: 11, color: '#555', width: 20, textAlign: 'center' }}>{idx + 1}</span>
+                    <span style={{ fontSize: 11, color: 'var(--c-text-muted)', width: 20, textAlign: 'center' }}>{idx + 1}</span>
                     <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: 12, fontWeight: 700, color: '#ddd' }}>{r.name || 'Tuntematon'}</div>
-                      {r.description && <div style={{ fontSize: 10, color: '#888', marginTop: 2 }}>{r.description}</div>}
+                      <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--c-text)' }}>{r.name || 'Tuntematon'}</div>
+                      {r.description && <div style={{ fontSize: 10, color: 'var(--c-text-muted)', marginTop: 2 }}>{r.description}</div>}
                     </div>
                     <span style={{ fontSize: 9, padding: '1px 4px', background: cc + '22', color: cc }}>{r.category}</span>
                     <button onClick={() => handleRemoveRecipe(mr.recipe_id)} style={{
-                      background: 'none', border: 'none', color: '#c0392b', cursor: 'pointer', fontSize: 14, padding: '0 4px',
+                      background: 'none', border: 'none', color: 'var(--c-danger)', cursor: 'pointer', fontSize: 14, padding: '0 4px',
                     }}>×</button>
                   </div>
                 );

@@ -102,12 +102,12 @@ const NotesView = ({ notes = [], events = [], persons = [], onAddNote, onDeleteN
 
       {/* Notes list */}
       <div style={{ ...S.border, ...S.bg, borderTop: "none" }}>
-        <div style={{ ...S.pad, borderBottom: "1px solid #444" }}>
+        <div style={{ ...S.pad, borderBottom: "1px solid var(--c-border-soft)" }}>
           <div style={S.label}>MUISTIINPANOT ({notes.length})</div>
         </div>
 
         {sortedNotes.length === 0 ? (
-          <div style={{ padding: 12, color: '#666', fontSize: 12 }}>Ei muistiinpanoja</div>
+          <div style={{ padding: 12, color: 'var(--c-text-muted)', fontSize: 12 }}>Ei muistiinpanoja</div>
         ) : (
           sortedNotes.map(note => (
             <div key={note.id}>
@@ -118,7 +118,7 @@ const NotesView = ({ notes = [], events = [], persons = [], onAddNote, onDeleteN
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div style={{ flex: 1 }}>
                     <div style={{ fontWeight: 600, marginBottom: 4 }}>{note.title}</div>
-                    <div style={{ display: 'flex', gap: 12, fontSize: 11, color: '#999' }}>
+                    <div style={{ display: 'flex', gap: 12, fontSize: 11, color: 'var(--c-text-muted)' }}>
                       <span>{formatDate(note.created_at || note.date)}</span>
                       {note.event_id && <span>Tapahtuma: {getEventName(note.event_id)}</span>}
                       {note.person_id && <span>Henkilö: {getPersonName(note.person_id)}</span>}
@@ -136,8 +136,8 @@ const NotesView = ({ notes = [], events = [], persons = [], onAddNote, onDeleteN
               </div>
 
               {expandedNoteId === note.id && (
-                <div style={{ padding: '8px 12px 12px 24px', borderBottom: '1px solid #333', background: '#1a1a1a' }}>
-                  <p style={{ color: '#999', lineHeight: 1.6, whiteSpace: 'pre-wrap', fontSize: 12, margin: 0 }}>
+                <div style={{ padding: '8px 12px 12px 24px', borderBottom: '1px solid var(--c-border-row)', background: 'var(--c-bg)' }}>
+                  <p style={{ color: 'var(--c-text-muted)', lineHeight: 1.6, whiteSpace: 'pre-wrap', fontSize: 12, margin: 0 }}>
                     {note.content}
                   </p>
                 </div>

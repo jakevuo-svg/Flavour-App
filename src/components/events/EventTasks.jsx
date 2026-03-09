@@ -3,9 +3,9 @@ import S from '../../styles/theme';
 
 const PRIORITY_LABELS = { HIGH: 'Korkea', MEDIUM: 'Normaali', LOW: 'Matala' };
 const PRIORITY_COLORS = {
-  HIGH: { bg: '#3a2020', color: '#ff9999', border: '#552222' },
-  MEDIUM: { bg: '#3a3a20', color: '#ffff99', border: '#555522' },
-  LOW: { bg: '#203a20', color: '#99ff99', border: '#225522' },
+  HIGH: { bg: 'var(--c-danger-bg)', color: 'var(--c-danger-subtle)', border: 'var(--c-error-border)' },
+  MEDIUM: { bg: 'var(--c-bg-hover)', color: 'var(--c-warning)', border: 'var(--c-border-soft)' },
+  LOW: { bg: 'var(--c-success-bg)', color: 'var(--c-success)', border: 'var(--c-success-border)' },
 };
 const STATUS_LABELS = { TODO: 'Tekemättä', IN_PROGRESS: 'Käynnissä', DONE: 'Valmis' };
 
@@ -61,14 +61,14 @@ export default function EventTasks({ eventId, tasks = [], onAddTask, onUpdateTas
     width: 22,
     height: 22,
     borderRadius: 4,
-    border: status === 'DONE' ? '2px solid #666' : '2px solid #ddd',
-    background: status === 'DONE' ? '#444' : status === 'IN_PROGRESS' ? '#3a3a20' : 'transparent',
+    border: status === 'DONE' ? '2px solid var(--c-text-muted)' : '2px solid var(--c-border)',
+    background: status === 'DONE' ? 'var(--c-border-row)' : status === 'IN_PROGRESS' ? 'var(--c-bg-hover)' : 'transparent',
     cursor: 'pointer',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     fontSize: 12,
-    color: status === 'DONE' ? '#999' : '#ddd',
+    color: status === 'DONE' ? 'var(--c-text-muted)' : 'var(--c-text)',
     flexShrink: 0,
     transition: 'all 0.15s',
   });
@@ -89,15 +89,15 @@ export default function EventTasks({ eventId, tasks = [], onAddTask, onUpdateTas
       {/* Header with counts and add button */}
       <div style={{ ...S.flexBetween, marginBottom: 12 }}>
         <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-          <span style={{ fontSize: 12, color: '#999' }}>
+          <span style={{ fontSize: 12, color: 'var(--c-text-muted)' }}>
             {todoCount} tekemättä
           </span>
           {inProgressCount > 0 && (
-            <span style={{ fontSize: 12, color: '#ffff99' }}>
+            <span style={{ fontSize: 12, color: 'var(--c-warning)' }}>
               {inProgressCount} käynnissä
             </span>
           )}
-          <span style={{ fontSize: 12, color: '#666' }}>
+          <span style={{ fontSize: 12, color: 'var(--c-text-muted)' }}>
             {doneCount} valmis
           </span>
         </div>
@@ -118,9 +118,9 @@ export default function EventTasks({ eventId, tasks = [], onAddTask, onUpdateTas
             style={{
               padding: '3px 10px',
               fontSize: 11,
-              border: '1px solid ' + (filter === f ? '#ddd' : '#444'),
-              background: filter === f ? '#ddd' : 'transparent',
-              color: filter === f ? '#111' : '#999',
+              border: '1px solid ' + (filter === f ? 'var(--c-text)' : 'var(--c-border-row)'),
+              background: filter === f ? 'var(--c-text)' : 'transparent',
+              color: filter === f ? 'var(--c-bg)' : 'var(--c-text-muted)',
               borderRadius: 3,
               cursor: 'pointer',
               transition: 'all 0.15s',
@@ -133,7 +133,7 @@ export default function EventTasks({ eventId, tasks = [], onAddTask, onUpdateTas
 
       {/* Add task form */}
       {showForm && (
-        <div style={{ border: '1px solid #444', padding: 12, marginBottom: 12, borderRadius: 3, background: '#1a1a1a' }}>
+        <div style={{ border: '1px solid var(--c-border-soft)', padding: 12, marginBottom: 12, borderRadius: 3, background: 'var(--c-bg)' }}>
           <input
             type="text"
             value={newTitle}
@@ -173,7 +173,7 @@ export default function EventTasks({ eventId, tasks = [], onAddTask, onUpdateTas
 
       {/* Task list */}
       {sortedTasks.length === 0 ? (
-        <div style={{ padding: 16, textAlign: 'center', color: '#666', fontSize: 12 }}>
+        <div style={{ padding: 16, textAlign: 'center', color: 'var(--c-text-muted)', fontSize: 12 }}>
           {filter === 'ALL' ? 'Ei tehtäviä — lisää ensimmäinen!' : 'Ei tehtäviä tällä suodattimella'}
         </div>
       ) : (
@@ -187,8 +187,8 @@ export default function EventTasks({ eventId, tasks = [], onAddTask, onUpdateTas
                 alignItems: 'flex-start',
                 padding: '8px 10px',
                 borderRadius: 3,
-                background: task.status === 'DONE' ? '#1a1a1a' : isOverdue(task) ? '#2a1a1a' : '#1e1e1e',
-                border: isOverdue(task) ? '1px solid #552222' : '1px solid #333',
+                background: task.status === 'DONE' ? 'var(--c-menu-bg)' : isOverdue(task) ? 'var(--c-danger-row-bg)' : 'var(--c-bg-card)',
+                border: isOverdue(task) ? '1px solid #552222' : '1px solid var(--c-border-row)',
                 transition: 'all 0.15s',
               }}
             >
@@ -207,12 +207,12 @@ export default function EventTasks({ eventId, tasks = [], onAddTask, onUpdateTas
                   fontSize: 13,
                   fontWeight: 500,
                   textDecoration: task.status === 'DONE' ? 'line-through' : 'none',
-                  color: task.status === 'DONE' ? '#666' : '#ddd',
+                  color: task.status === 'DONE' ? 'var(--c-text-muted)' : 'var(--c-text)',
                 }}>
                   {task.title}
                 </div>
                 {task.description && (
-                  <div style={{ fontSize: 11, color: '#888', marginTop: 2 }}>
+                  <div style={{ fontSize: 11, color: 'var(--c-text-muted)', marginTop: 2 }}>
                     {task.description}
                   </div>
                 )}
@@ -222,9 +222,9 @@ export default function EventTasks({ eventId, tasks = [], onAddTask, onUpdateTas
                     fontSize: 10,
                     padding: '1px 6px',
                     borderRadius: 2,
-                    background: PRIORITY_COLORS[task.priority]?.bg || '#2a2a2a',
-                    color: PRIORITY_COLORS[task.priority]?.color || '#999',
-                    border: `1px solid ${PRIORITY_COLORS[task.priority]?.border || '#444'}`,
+                    background: PRIORITY_COLORS[task.priority]?.bg || 'var(--c-bg-hover)',
+                    color: PRIORITY_COLORS[task.priority]?.color || 'var(--c-text-muted)',
+                    border: `1px solid ${PRIORITY_COLORS[task.priority]?.border || 'var(--c-border-row)'}`,
                   }}>
                     {PRIORITY_LABELS[task.priority]}
                   </span>
@@ -232,14 +232,14 @@ export default function EventTasks({ eventId, tasks = [], onAddTask, onUpdateTas
                   {task.due_date && (
                     <span style={{
                       fontSize: 10,
-                      color: isOverdue(task) ? '#ff7777' : '#888',
+                      color: isOverdue(task) ? '#ff7777' : 'var(--c-text-muted)',
                       fontWeight: isOverdue(task) ? 600 : 400,
                     }}>
                       {isOverdue(task) ? '⚠ ' : ''}{formatDate(task.due_date)}
                     </span>
                   )}
                   {/* Created by */}
-                  <span style={{ fontSize: 10, color: '#555' }}>
+                  <span style={{ fontSize: 10, color: 'var(--c-text-muted)' }}>
                     {task.created_by}
                   </span>
                 </div>
@@ -251,7 +251,7 @@ export default function EventTasks({ eventId, tasks = [], onAddTask, onUpdateTas
                 style={{
                   background: 'none',
                   border: 'none',
-                  color: '#555',
+                  color: 'var(--c-text-muted)',
                   cursor: 'pointer',
                   fontSize: 14,
                   padding: '0 4px',

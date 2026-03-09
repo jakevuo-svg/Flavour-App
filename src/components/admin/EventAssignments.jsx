@@ -87,10 +87,10 @@ const EventAssignments = ({ events = [], assignWorker, removeWorkerAssignment, g
   if (workers.length === 0 && !loading) {
     return (
       <div style={{ ...S.border, ...S.bg, borderTop: 'none' }}>
-        <div style={{ ...S.pad, borderBottom: '1px solid #444' }}>
+        <div style={{ ...S.pad, borderBottom: '1px solid var(--c-border-soft)' }}>
           <div style={S.label}>{t('eventAccess')}</div>
         </div>
-        <div style={{ ...S.pad, color: '#666', fontSize: 12 }}>
+        <div style={{ ...S.pad, color: 'var(--c-text-muted)', fontSize: 12 }}>
           {t('noWorkersYet')}
         </div>
       </div>
@@ -99,9 +99,9 @@ const EventAssignments = ({ events = [], assignWorker, removeWorkerAssignment, g
 
   return (
     <div style={{ ...S.border, ...S.bg, borderTop: 'none' }}>
-      <div style={{ ...S.pad, borderBottom: '1px solid #444' }}>
+      <div style={{ ...S.pad, borderBottom: '1px solid var(--c-border-soft)' }}>
         <div style={S.label}>{t('eventAccess')}</div>
-        <div style={{ fontSize: 11, color: '#666', marginTop: 4 }}>
+        <div style={{ fontSize: 11, color: 'var(--c-text-muted)', marginTop: 4 }}>
           {t('eventAccessDesc')}
         </div>
       </div>
@@ -109,27 +109,27 @@ const EventAssignments = ({ events = [], assignWorker, removeWorkerAssignment, g
       {message && (
         <div style={{
           padding: '8px 16px', fontSize: 12, fontWeight: 600,
-          background: message.type === 'error' ? '#3a1111' : '#113a11',
-          color: message.type === 'error' ? '#ff6b6b' : '#6bff6b',
-          borderBottom: '1px solid #444',
+          background: message.type === 'error' ? 'var(--c-danger-bg)' : 'var(--c-success-bg)',
+          color: message.type === 'error' ? 'var(--c-danger-subtle)' : 'var(--c-success)',
+          borderBottom: '1px solid var(--c-border-soft)',
         }}>
           {message.text}
         </div>
       )}
 
       {loading ? (
-        <div style={{ ...S.pad, color: '#666', fontSize: 12 }}>{t('loading')}</div>
+        <div style={{ ...S.pad, color: 'var(--c-text-muted)', fontSize: 12 }}>{t('loading')}</div>
       ) : (
         <div style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
             <thead>
-              <tr style={{ borderBottom: '2px solid #ddd', background: '#2a2a2a' }}>
+              <tr style={{ borderBottom: '2px solid var(--c-border)', background: 'var(--c-bg-hover)' }}>
                 <th style={thStyle}>{t('eventName')}</th>
                 <th style={thStyle}>{t('date')}</th>
                 {workers.map(w => (
                   <th key={w.id} style={{ ...thStyle, textAlign: 'center', minWidth: 80 }}>
                     <div>{w.first_name}</div>
-                    <div style={{ fontSize: 9, color: '#666', fontWeight: 400 }}>
+                    <div style={{ fontSize: 9, color: 'var(--c-text-muted)', fontWeight: 400 }}>
                       {w.last_name}
                     </div>
                   </th>
@@ -138,11 +138,11 @@ const EventAssignments = ({ events = [], assignWorker, removeWorkerAssignment, g
             </thead>
             <tbody>
               {sortedEvents.map(event => (
-                <tr key={event.id} style={{ borderBottom: '1px solid #333' }}>
+                <tr key={event.id} style={{ borderBottom: '1px solid var(--c-border-row)' }}>
                   <td style={{ ...tdStyle, fontWeight: 600, maxWidth: 200 }}>
                     {event.name}
                   </td>
-                  <td style={{ ...tdStyle, color: '#999', whiteSpace: 'nowrap' }}>
+                  <td style={{ ...tdStyle, color: 'var(--c-text-muted)', whiteSpace: 'nowrap' }}>
                     {event.date ? new Date(event.date).toLocaleDateString('fi-FI') : '-'}
                   </td>
                   {workers.map(w => {
@@ -156,9 +156,9 @@ const EventAssignments = ({ events = [], assignWorker, removeWorkerAssignment, g
                           style={{
                             width: 28,
                             height: 28,
-                            border: isAssigned ? '2px solid #6bff6b' : '2px solid #555',
-                            background: isAssigned ? '#1a2a1a' : '#1e1e1e',
-                            color: isAssigned ? '#6bff6b' : '#555',
+                            border: isAssigned ? '2px solid var(--c-success)' : '2px solid var(--c-border-soft)',
+                            background: isAssigned ? 'var(--c-success-bg)' : 'var(--c-bg-card)',
+                            color: isAssigned ? 'var(--c-success)' : 'var(--c-border-soft)',
                             cursor: w.is_active ? 'pointer' : 'not-allowed',
                             fontSize: 14,
                             fontWeight: 700,
@@ -191,7 +191,7 @@ const thStyle = {
   fontWeight: 700,
   textTransform: 'uppercase',
   letterSpacing: 1,
-  color: '#999',
+  color: 'var(--c-text-muted)',
 };
 
 const tdStyle = {

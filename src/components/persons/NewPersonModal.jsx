@@ -149,7 +149,7 @@ export default function NewPersonModal({ show, onClose, onAdd }) {
           </Field>
         </div>
 
-        {error && <div style={{ color: '#ff6b6b', fontSize: 12, padding: '6px 0' }}>{error}</div>}
+        {error && <div style={{ color: 'var(--c-danger-subtle)', fontSize: 12, padding: '6px 0' }}>{error}</div>}
 
         <div style={{ ...S.flexWrap, gap: 8, marginTop: 16 }}>
           <button

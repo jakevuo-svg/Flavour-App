@@ -29,7 +29,7 @@ export default function LoginScreen() {
     alignItems: 'center',
     justifyContent: 'center',
     minHeight: '100vh',
-    backgroundColor: '#111',
+    backgroundColor: 'var(--c-bg)',
     padding: '20px',
     fontFamily: 'system-ui, -apple-system, sans-serif',
   };
@@ -37,8 +37,8 @@ export default function LoginScreen() {
   const cardStyle = {
     width: '100%',
     maxWidth: '400px',
-    backgroundColor: '#1e1e1e',
-    border: '2px solid #ddd',
+    backgroundColor: 'var(--c-bg-card)',
+    border: '2px solid var(--c-border)',
     padding: '40px',
     boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5)',
   };
@@ -47,14 +47,14 @@ export default function LoginScreen() {
     fontSize: '32px',
     fontWeight: '700',
     letterSpacing: '6px',
-    color: '#ddd',
+    color: 'var(--c-text)',
     textAlign: 'center',
     margin: '0 0 8px 0',
   };
 
   const subtitleStyle = {
     fontSize: '13px',
-    color: '#888',
+    color: 'var(--c-text-muted)',
     textAlign: 'center',
     margin: '0 0 32px 0',
     letterSpacing: '1px',
@@ -68,7 +68,7 @@ export default function LoginScreen() {
   const labelStyle = {
     display: 'block',
     fontSize: '12px',
-    color: '#ddd',
+    color: 'var(--c-text)',
     marginBottom: '6px',
     textTransform: 'uppercase',
     letterSpacing: '0.5px',
@@ -77,9 +77,9 @@ export default function LoginScreen() {
   const inputStyle = {
     width: '100%',
     padding: '10px 12px',
-    backgroundColor: '#2a2a2a',
-    border: '1px solid #555',
-    color: '#ddd',
+    backgroundColor: 'var(--c-bg-hover)',
+    border: '1px solid var(--c-border-soft)',
+    color: 'var(--c-text)',
     fontSize: '14px',
     fontFamily: 'system-ui, -apple-system, sans-serif',
     boxSizing: 'border-box',
@@ -89,8 +89,8 @@ export default function LoginScreen() {
 
   const inputFocusStyle = {
     ...inputStyle,
-    borderColor: '#ddd',
-    backgroundColor: '#333',
+    borderColor: 'var(--c-text)',
+    backgroundColor: 'var(--c-accent-bg)',
   };
 
   const [emailFocused, setEmailFocused] = useState(false);
@@ -99,8 +99,8 @@ export default function LoginScreen() {
   const buttonStyle = {
     width: '100%',
     padding: '12px 16px',
-    backgroundColor: '#ddd',
-    color: '#111',
+    backgroundColor: 'var(--c-accent-bg)',
+    color: 'var(--c-text-inverse)',
     border: 'none',
     fontSize: '14px',
     fontWeight: '600',
@@ -115,19 +115,19 @@ export default function LoginScreen() {
 
   const buttonHoverStyle = {
     ...buttonStyle,
-    backgroundColor: '#ccc',
+    backgroundColor: 'var(--c-text)',
   };
 
   const [buttonHovered, setButtonHovered] = useState(false);
 
   const errorStyle = {
-    color: '#aa5555',
+    color: 'var(--c-danger-subtle)',
     fontSize: '13px',
     marginTop: '16px',
     textAlign: 'center',
     padding: '8px 12px',
-    backgroundColor: '#2a2a2a',
-    border: '1px solid #554444',
+    backgroundColor: 'var(--c-bg-hover)',
+    border: '1px solid var(--c-error-border)',
   };
 
   return (
@@ -140,9 +140,9 @@ export default function LoginScreen() {
           <div style={{
             padding: '12px 16px',
             marginBottom: '20px',
-            background: '#1a2a1a',
-            border: '1px solid #2a4a2a',
-            color: '#6bff6b',
+            background: 'var(--c-success-bg)',
+            border: '1px solid var(--c-success-border)',
+            color: 'var(--c-success)',
             fontSize: '13px',
             textAlign: 'center',
           }}>

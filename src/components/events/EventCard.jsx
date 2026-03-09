@@ -49,16 +49,16 @@ const Section = ({ title, children, defaultOpen = false, count }) => {
   const [open, setOpen] = useState(defaultOpen);
   const hasContent = children && (typeof children !== 'string' || children.trim());
   return (
-    <div style={{ borderTop: '2px solid #444' }}>
+    <div style={{ borderTop: '2px solid var(--c-border-soft)' }}>
       <div
         onClick={() => setOpen(!open)}
-        style={{ padding: '10px 16px', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: open ? '#1a1a1a' : 'transparent' }}
+        style={{ padding: '10px 16px', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: open ? 'var(--c-menu-bg)' : 'transparent' }}
       >
         <span style={{ ...S.label, fontSize: 11 }}>
           {open ? '▼' : '▶'} {title}
-          {count != null && <span style={{ color: '#666', fontWeight: 400, marginLeft: 6 }}>({count})</span>}
+          {count != null && <span style={{ color: 'var(--c-text-muted)', fontWeight: 400, marginLeft: 6 }}>({count})</span>}
         </span>
-        {!hasContent && !open && <span style={{ fontSize: 10, color: '#555' }}>tyhjä</span>}
+        {!hasContent && !open && <span style={{ fontSize: 10, color: 'var(--c-text-muted)' }}>tyhjä</span>}
       </div>
       {open && <div style={{ padding: '0 16px 16px' }}>{children}</div>}
     </div>
@@ -66,8 +66,8 @@ const Section = ({ title, children, defaultOpen = false, count }) => {
 };
 
 const TextBlock = ({ text }) => {
-  if (!text) return <span style={{ color: '#555', fontSize: 12 }}>-</span>;
-  return <div style={{ fontSize: 13, color: '#bbb', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{text}</div>;
+  if (!text) return <span style={{ color: 'var(--c-text-muted)', fontSize: 12 }}>-</span>;
+  return <div style={{ fontSize: 13, color: 'var(--c-text)', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{text}</div>;
 };
 
 // Inline-editable Drive link
@@ -92,7 +92,7 @@ const EditableDriveLink = ({ url, label, onSave }) => {
           onKeyDown={e => e.key === 'Enter' && save()}
         />
         <button onClick={save} style={{ ...S.btnSmall, fontSize: 10, padding: '3px 8px' }}>OK</button>
-        <button onClick={() => { setValue(url || ''); setEditing(false); }} style={{ ...S.btnSmall, fontSize: 10, padding: '3px 8px', borderColor: '#666', color: '#666' }}>✕</button>
+        <button onClick={() => { setValue(url || ''); setEditing(false); }} style={{ ...S.btnSmall, fontSize: 10, padding: '3px 8px', borderColor: 'var(--c-text-muted)', color: 'var(--c-text-muted)' }}>✕</button>
       </div>
     );
   }
@@ -100,13 +100,13 @@ const EditableDriveLink = ({ url, label, onSave }) => {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
       {url ? (
-        <a href={url} target="_blank" rel="noopener noreferrer" style={{ color: '#ddd', fontSize: 12, textDecoration: 'underline', wordBreak: 'break-all' }}>
+        <a href={url} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--c-text)', fontSize: 12, textDecoration: 'underline', wordBreak: 'break-all' }}>
           {label || 'AVAA →'}
         </a>
       ) : (
-        <span style={{ color: '#555', fontSize: 12 }}>Ei linkkiä</span>
+        <span style={{ color: 'var(--c-text-muted)', fontSize: 12 }}>Ei linkkiä</span>
       )}
-      <button onClick={() => setEditing(true)} style={{ background: 'none', border: 'none', color: '#666', cursor: 'pointer', fontSize: 11, padding: '2px 4px' }}>
+      <button onClick={() => setEditing(true)} style={{ background: 'none', border: 'none', color: 'var(--c-text-muted)', cursor: 'pointer', fontSize: 11, padding: '2px 4px' }}>
         {url ? '✎' : '+ LINKKI'}
       </button>
     </div>
@@ -163,17 +163,17 @@ const AttachmentSection = ({ attachments = [], onAdd, onRemove, onUpload, fileIn
       {attachments.length > 0 && (
         <div style={{ marginBottom: 8 }}>
           {attachments.map(att => (
-            <div key={att.id} style={{ border: '1px solid #333', padding: 8, marginBottom: 4, background: '#1a1a1a', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div key={att.id} style={{ border: '1px solid var(--c-border-row)', padding: 8, marginBottom: 4, background: 'var(--c-bg)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                 <span style={{ fontSize: 12, fontWeight: 600 }}>{att.name}</span>
-                {att.fileSize && <span style={{ fontSize: 10, color: '#555' }}>{att.fileSize < 1048576 ? `${(att.fileSize/1024).toFixed(0)} KB` : `${(att.fileSize/1048576).toFixed(1)} MB`}</span>}
+                {att.fileSize && <span style={{ fontSize: 10, color: 'var(--c-text-muted)' }}>{att.fileSize < 1048576 ? `${(att.fileSize/1024).toFixed(0)} KB` : `${(att.fileSize/1048576).toFixed(1)} MB`}</span>}
               </div>
               <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
                 {att.driveLink && (
                   <a href={att.driveLink} target="_blank" rel="noopener noreferrer" style={{ ...S.btnSmall, textDecoration: 'none', fontSize: 10 }}>DRIVE →</a>
                 )}
                 {att.fileData && att.fileType?.startsWith('image/') && (
-                  <img src={att.fileData} alt={att.name} style={{ width: 32, height: 32, objectFit: 'cover', border: '1px solid #444' }} />
+                  <img src={att.fileData} alt={att.name} style={{ width: 32, height: 32, objectFit: 'cover', border: '1px solid var(--c-border-soft)' }} />
                 )}
                 {att.fileData && (
                   <a href={att.fileData} download={att.fileName || att.name} style={{ ...S.btnSmall, textDecoration: 'none', fontSize: 10 }}>LATAA</a>
@@ -195,7 +195,7 @@ const AttachmentSection = ({ attachments = [], onAdd, onRemove, onUpload, fileIn
       </div>
 
       {showForm && (
-        <div style={{ border: '1px solid #444', padding: 12, marginTop: 8, background: '#1a1a1a' }}>
+        <div style={{ border: '1px solid var(--c-border-soft)', padding: 12, marginTop: 8, background: 'var(--c-bg)' }}>
           <input
             value={newItem.name}
             onChange={e => setNewItem({ ...newItem, name: e.target.value })}
@@ -219,7 +219,7 @@ const AttachmentSection = ({ attachments = [], onAdd, onRemove, onUpload, fileIn
 const RECIPE_CATEGORY_COLORS = {
   alkuruoka: '#27ae60', pääruoka: '#e67e22', jälkiruoka: '#9b59b6',
   salaatti: '#2ecc71', keitto: '#f39c12', välipala: '#1abc9c',
-  cocktailpala: '#e74c3c', leipä: '#d4a574', juoma: '#3498db', muu: '#666',
+  cocktailpala: '#e74c3c', leipä: '#d4a574', juoma: '#3498db', muu: 'var(--c-text-muted)',
 };
 
 const RECIPE_CATEGORIES = [
@@ -580,10 +580,10 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, onArchive
     <div style={{ ...S.border, ...S.bg, borderTop: "none" }}>
       {/* Archived banner */}
       {event?.is_archived && (
-        <div style={{ background: '#2a2a1a', borderBottom: '2px solid #665', padding: '8px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <span style={{ fontSize: 11, fontWeight: 700, color: '#aa8', letterSpacing: 1 }}>ARKISTOITU</span>
+        <div style={{ background: 'var(--c-bg-hover)', borderBottom: '2px solid var(--c-border-soft)', padding: '8px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--c-text-muted)', letterSpacing: 1 }}>ARKISTOITU</span>
           <button onClick={() => onArchive?.(event.id, false).then(() => onBack?.())} style={{
-            background: 'transparent', color: '#4a9', border: '1px solid #4a9',
+            background: 'transparent', color: 'var(--c-success)', border: '1px solid #4a9',
             padding: '3px 10px', fontSize: 10, fontWeight: 700, cursor: 'pointer',
           }}>↩ PALAUTA AKTIIVISEKSI</button>
         </div>
@@ -591,17 +591,17 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, onArchive
       {/* Back + Header */}
       <div style={{ padding: '12px 16px' }}>
         <button onClick={onBack} style={{ ...S.btnSmall, marginBottom: 12 }}>← TAKAISIN</button>
-        <div style={{ ...S.flexBetween, paddingBottom: 12, borderBottom: '2px solid #444' }}>
+        <div style={{ ...S.flexBetween, paddingBottom: 12, borderBottom: '2px solid var(--c-border-soft)' }}>
           <div>
             <div style={{ fontSize: 18, fontWeight: 700, marginBottom: 4 }}>{event?.name}</div>
             <div style={{ ...S.flex, ...S.gap, flexWrap: 'wrap' }}>
               <span style={{ ...S.tag(false), fontSize: 10 }}>{event?.status}</span>
               <span style={{ ...S.tag(false), fontSize: 10 }}>{event?.type}</span>
-              <span style={{ color: '#999', fontSize: 12 }}>
+              <span style={{ color: 'var(--c-text-muted)', fontSize: 12 }}>
                 {event?.date ? new Date(event.date).toLocaleDateString('fi-FI') : ''}{event?.end_date ? ` – ${new Date(event.end_date).toLocaleDateString('fi-FI')}` : ''} • {event?.start_time || ''}{event?.end_time ? `–${event.end_time}` : ''}
               </span>
-              <span style={{ color: '#999', fontSize: 12 }}>Pax: {event?.guest_count || '-'}</span>
-              {event?.language && <span style={{ color: '#666', fontSize: 11 }}>({event.language})</span>}
+              <span style={{ color: 'var(--c-text-muted)', fontSize: 12 }}>Pax: {event?.guest_count || '-'}</span>
+              {event?.language && <span style={{ color: 'var(--c-text-muted)', fontSize: 11 }}>({event.language})</span>}
             </div>
           </div>
           <div style={{ ...S.flex, ...S.gap }}>
@@ -610,12 +610,12 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, onArchive
                 <button onClick={() => setIsEditing(true)} style={S.btnWire}>MUOKKAA</button>
                 {event?.is_archived ? (
                   <button onClick={() => onArchive?.(event.id, false).then(() => onBack?.())} style={{
-                    background: 'transparent', color: '#4a9', border: '1px solid #4a9',
+                    background: 'transparent', color: 'var(--c-success)', border: '1px solid #4a9',
                     padding: '6px 14px', fontSize: 11, fontWeight: 700, cursor: 'pointer', letterSpacing: 0.5,
                   }}>↩ PALAUTA</button>
                 ) : (
                   <button onClick={() => onArchive?.(event.id, true).then(() => onBack?.())} style={{
-                    background: 'transparent', color: '#888', border: '1px solid #555',
+                    background: 'transparent', color: 'var(--c-text-muted)', border: '1px solid var(--c-border-soft)',
                     padding: '6px 14px', fontSize: 11, fontWeight: 700, cursor: 'pointer', letterSpacing: 0.5,
                   }}>ARKISTOI</button>
                 )}
@@ -639,24 +639,24 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, onArchive
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }} onClick={() => setShowDeleteConfirm(false)}>
           <div style={{
-            background: '#111', border: '2px solid #ff4444', padding: 24,
+            background: 'var(--c-bg)', border: '2px solid #ff4444', padding: 24,
             maxWidth: 400, width: '90%',
           }} onClick={e => e.stopPropagation()}>
-            <div style={{ fontSize: 16, fontWeight: 700, color: '#ff4444', marginBottom: 12 }}>
+            <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--c-danger)', marginBottom: 12 }}>
               POISTA TAPAHTUMA?
             </div>
-            <div style={{ fontSize: 13, color: '#ccc', marginBottom: 8 }}>
+            <div style={{ fontSize: 13, color: 'var(--c-text)', marginBottom: 8 }}>
               Oletko varma, että haluat poistaa tapahtuman:
             </div>
-            <div style={{ fontSize: 15, fontWeight: 700, color: '#fff', marginBottom: 4 }}>
+            <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--c-text-inverse)', marginBottom: 4 }}>
               {event?.name}
             </div>
-            <div style={{ fontSize: 12, color: '#888', marginBottom: 16 }}>
+            <div style={{ fontSize: 12, color: 'var(--c-text-muted)', marginBottom: 16 }}>
               {event?.date ? new Date(event.date).toLocaleDateString('fi-FI') : ''} • {event?.company || ''} • Pax {event?.guest_count || '-'}
             </div>
             <div style={{
-              fontSize: 11, color: '#ff6666', marginBottom: 16, padding: '8px 10px',
-              background: '#2a1111', border: '1px solid #4a1c1c',
+              fontSize: 11, color: 'var(--c-danger)', marginBottom: 16, padding: '8px 10px',
+              background: 'var(--c-danger-bg)', border: '1px solid var(--c-error-border)',
             }}>
               Tätä toimintoa ei voi peruuttaa. Kaikki tapahtuman tiedot, tehtävät ja muistiinpanot poistetaan pysyvästi.
             </div>
@@ -664,7 +664,7 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, onArchive
               <button
                 onClick={() => { setShowDeleteConfirm(false); onDelete?.(event.id); }}
                 style={{
-                  background: '#ff4444', color: '#fff', border: 'none',
+                  background: 'var(--c-danger)', color: 'var(--c-text-inverse)', border: 'none',
                   padding: '8px 20px', fontSize: 12, fontWeight: 700,
                   cursor: 'pointer', letterSpacing: 1,
                 }}
@@ -674,7 +674,7 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, onArchive
               <button
                 onClick={() => setShowDeleteConfirm(false)}
                 style={{
-                  background: 'transparent', color: '#ccc', border: '1px solid #555',
+                  background: 'transparent', color: 'var(--c-text)', border: '1px solid var(--c-border-soft)',
                   padding: '8px 20px', fontSize: 12, fontWeight: 700,
                   cursor: 'pointer',
                 }}
@@ -736,19 +736,19 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, onArchive
                       return (
                         <div key={a} onClick={() => toggleAllergen(a)} style={{
                           display: 'flex', alignItems: 'center', gap: 6,
-                          border: active ? '2px solid #ddd' : '1px solid #555',
-                          background: active ? '#ddd' : '#1e1e1e',
-                          color: active ? '#111' : '#999',
+                          border: active ? '2px solid var(--c-border)' : '1px solid var(--c-border-soft)',
+                          background: active ? 'var(--c-text)' : 'var(--c-bg-card)',
+                          color: active ? 'var(--c-bg)' : 'var(--c-text-muted)',
                           padding: '4px 10px', cursor: 'pointer',
                           fontSize: 11, fontWeight: 600, textTransform: 'uppercase',
                           transition: 'all 0.15s',
                         }}>
                           <span style={{
                             width: 14, height: 14,
-                            border: active ? '2px solid #111' : '2px solid #666',
-                            background: active ? '#111' : 'transparent',
+                            border: active ? '2px solid var(--c-text-inverse)' : '2px solid var(--c-text-muted)',
+                            background: active ? 'var(--c-bg)' : 'transparent',
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            fontSize: 10, color: active ? '#ddd' : 'transparent', flexShrink: 0,
+                            fontSize: 10, color: active ? 'var(--c-text)' : 'transparent', flexShrink: 0,
                           }}>{active ? '✓' : ''}</span>
                           {a}
                         </div>
@@ -760,8 +760,8 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, onArchive
                       <div style={{ ...S.label, marginBottom: 6 }}>KAPPALEMÄÄRÄT</div>
                       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                         {parsed.allergens.map(a => (
-                          <div key={a.name} style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#1a1a1a', border: '1px solid #444', padding: '4px 8px' }}>
-                            <span style={{ fontSize: 11, color: '#ccc', fontWeight: 600, textTransform: 'uppercase' }}>{a.name}</span>
+                          <div key={a.name} style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'var(--c-bg)', border: '1px solid var(--c-border-soft)', padding: '4px 8px' }}>
+                            <span style={{ fontSize: 11, color: 'var(--c-text)', fontWeight: 600, textTransform: 'uppercase' }}>{a.name}</span>
                             <input
                               type="number"
                               min="0"
@@ -771,7 +771,7 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, onArchive
                               placeholder="kpl"
                               style={{ ...S.input, width: 50, textAlign: 'center', padding: '2px 4px', fontSize: 12 }}
                             />
-                            <span style={{ fontSize: 10, color: '#666' }}>kpl</span>
+                            <span style={{ fontSize: 10, color: 'var(--c-text-muted)' }}>kpl</span>
                           </div>
                         ))}
                       </div>
@@ -793,18 +793,18 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, onArchive
             {EF({ label: "", field: "menu", textarea: true })}
             {EF({ label: "Menu Drive linkki", field: "menuLink", type: "url" })}
             {/* Linked recipes */}
-            <div style={{ marginTop: 12, paddingTop: 8, borderTop: '1px solid #333' }}>
+            <div style={{ marginTop: 12, paddingTop: 8, borderTop: '1px solid var(--c-border-row)' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
                 <div style={{ ...S.label, fontSize: 10 }}>RUOKALAJIT ({eventRecipes.length})</div>
                 <button onClick={() => setShowRecipePicker(!showRecipePicker)} style={{
-                  padding: '3px 10px', fontSize: 10, fontWeight: 700, border: '1px solid #333',
-                  background: showRecipePicker ? '#333' : 'transparent', color: showRecipePicker ? '#ddd' : '#888', cursor: 'pointer',
+                  padding: '3px 10px', fontSize: 10, fontWeight: 700, border: '1px solid var(--c-border-row)',
+                  background: showRecipePicker ? 'var(--c-accent-bg)' : 'transparent', color: showRecipePicker ? 'var(--c-text)' : 'var(--c-text-muted)', cursor: 'pointer',
                 }}>{showRecipePicker ? 'SULJE' : '+ LISÄÄ RUOKALAJI'}</button>
               </div>
               {showRecipePicker && (
-                <div style={{ marginBottom: 8, padding: 6, border: '1px solid #333', background: '#111' }}>
+                <div style={{ marginBottom: 8, padding: 6, border: '1px solid var(--c-border-row)', background: 'var(--c-bg)' }}>
                   {/* Quick create */}
-                  <div style={{ marginBottom: 8, paddingBottom: 8, borderBottom: '1px solid #333' }}>
+                  <div style={{ marginBottom: 8, paddingBottom: 8, borderBottom: '1px solid var(--c-border-row)' }}>
                     <div style={{ ...S.label, fontSize: 9, marginBottom: 4 }}>LUO UUSI ANNOS</div>
                     <div style={{ display: 'flex', gap: 4, marginBottom: 4 }}>
                       <input style={{ ...S.input, flex: 1, boxSizing: 'border-box' }} value={newRecipeName} onChange={e => setNewRecipeName(e.target.value)} placeholder="Annoksen nimi" autoFocus />
@@ -822,7 +822,7 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, onArchive
                       } catch(e) { console.error(e); }
                     }} disabled={!newRecipeName.trim()} style={{
                       padding: '5px 10px', fontSize: 10, fontWeight: 700, border: 'none', cursor: 'pointer',
-                      background: newRecipeName.trim() ? '#ddd' : '#333', color: newRecipeName.trim() ? '#111' : '#666',
+                      background: newRecipeName.trim() ? 'var(--c-text)' : 'var(--c-accent-bg)', color: newRecipeName.trim() ? 'var(--c-bg)' : 'var(--c-text-muted)',
                     }}>LISÄÄ</button>
                   </div>
                   {/* Search existing */}
@@ -833,14 +833,14 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, onArchive
                       const linkedIds = new Set(eventRecipes.map(er => er.recipe_id));
                       const available = recipes.filter(r => !linkedIds.has(r.id) && (!recipeSearch || r.name.toLowerCase().includes(recipeSearch.toLowerCase()) || r.category?.toLowerCase().includes(recipeSearch.toLowerCase())));
                       return available.length === 0 ? (
-                        <div style={{ padding: 6, color: '#666', fontSize: 11, textAlign: 'center' }}>Ei tuloksia</div>
+                        <div style={{ padding: 6, color: 'var(--c-text-muted)', fontSize: 11, textAlign: 'center' }}>Ei tuloksia</div>
                       ) : available.slice(0, 15).map(r => {
-                        const cc = RECIPE_CATEGORY_COLORS[r.category] || '#666';
+                        const cc = RECIPE_CATEGORY_COLORS[r.category] || 'var(--c-text-muted)';
                         return (
                           <div key={r.id} onClick={async () => { try { await onAddEventRecipe(event.id, r.id); setShowRecipePicker(false); setRecipeSearch(''); } catch(e){} }} style={{
-                            padding: '5px 6px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, borderBottom: '1px solid #1a1a1a',
+                            padding: '5px 6px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, borderBottom: '1px solid var(--c-border-row)',
                           }}>
-                            <span style={{ fontSize: 11, color: '#ddd', flex: 1 }}>{r.name}</span>
+                            <span style={{ fontSize: 11, color: 'var(--c-text)', flex: 1 }}>{r.name}</span>
                             <span style={{ fontSize: 9, padding: '1px 4px', background: cc + '22', color: cc }}>{r.category}</span>
                           </div>
                         );
@@ -851,12 +851,12 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, onArchive
               )}
               {eventRecipes.map(er => {
                 const r = er.recipes || {};
-                const cc = RECIPE_CATEGORY_COLORS[r.category] || '#666';
+                const cc = RECIPE_CATEGORY_COLORS[r.category] || 'var(--c-text-muted)';
                 return (
-                  <div key={er.id} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 0', borderBottom: '1px solid #1a1a1a' }}>
-                    <span style={{ fontSize: 12, color: '#ddd', flex: 1 }}>{r.name || '?'}</span>
+                  <div key={er.id} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 0', borderBottom: '1px solid var(--c-border-row)' }}>
+                    <span style={{ fontSize: 12, color: 'var(--c-text)', flex: 1 }}>{r.name || '?'}</span>
                     <span style={{ fontSize: 9, padding: '1px 4px', background: cc + '22', color: cc }}>{r.category}</span>
-                    <button onClick={() => onRemoveEventRecipe(event.id, er.recipe_id)} style={{ background: 'none', border: 'none', color: '#c0392b', cursor: 'pointer', fontSize: 14, padding: '0 2px' }}>×</button>
+                    <button onClick={() => onRemoveEventRecipe(event.id, er.recipe_id)} style={{ background: 'none', border: 'none', color: 'var(--c-danger)', cursor: 'pointer', fontSize: 14, padding: '0 2px' }}>×</button>
                   </div>
                 );
               })}
@@ -880,19 +880,19 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, onArchive
                       return (
                         <div key={opt} onClick={() => toggleDrink(opt)} style={{
                           display: 'flex', alignItems: 'center', gap: 6,
-                          border: active ? '2px solid #ddd' : '1px solid #555',
-                          background: active ? '#ddd' : '#1e1e1e',
-                          color: active ? '#111' : '#999',
+                          border: active ? '2px solid var(--c-border)' : '1px solid var(--c-border-soft)',
+                          background: active ? 'var(--c-text)' : 'var(--c-bg-card)',
+                          color: active ? 'var(--c-bg)' : 'var(--c-text-muted)',
                           padding: '4px 10px', cursor: 'pointer',
                           fontSize: 11, fontWeight: 600, textTransform: 'uppercase',
                           transition: 'all 0.15s',
                         }}>
                           <span style={{
                             width: 14, height: 14,
-                            border: active ? '2px solid #111' : '2px solid #666',
-                            background: active ? '#111' : 'transparent',
+                            border: active ? '2px solid var(--c-text-inverse)' : '2px solid var(--c-text-muted)',
+                            background: active ? 'var(--c-bg)' : 'transparent',
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            fontSize: 10, color: active ? '#ddd' : 'transparent', flexShrink: 0,
+                            fontSize: 10, color: active ? 'var(--c-text)' : 'transparent', flexShrink: 0,
                           }}>{active ? '✓' : ''}</span>
                           {opt}
                         </div>
@@ -900,7 +900,7 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, onArchive
                     })}
                   </div>
                   {selected.includes('Drinkkilippuja') && (
-                    <div style={{ border: '1px solid #444', padding: 10, marginBottom: 8, background: '#111' }}>
+                    <div style={{ border: '1px solid var(--c-border-soft)', padding: 10, marginBottom: 8, background: 'var(--c-bg)' }}>
                       <div style={{ ...S.label, marginBottom: 6 }}>DRINKKILIPPUJEN LÄHDE</div>
                       <div style={{ display: 'flex', gap: 8 }}>
                         {[{ value: 'asiakas', label: 'ASIAKKAALTA' }, { value: 'me', label: 'MEILTÄ' }].map(opt => {
@@ -908,19 +908,19 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, onArchive
                           return (
                             <div key={opt.value} onClick={() => handleInputChange('drinkTicketSource', opt.value)} style={{
                               display: 'flex', alignItems: 'center', gap: 6,
-                              border: active ? '2px solid #ddd' : '1px solid #555',
-                              background: active ? '#ddd' : '#1e1e1e',
-                              color: active ? '#111' : '#999',
+                              border: active ? '2px solid var(--c-border)' : '1px solid var(--c-border-soft)',
+                              background: active ? 'var(--c-text)' : 'var(--c-bg-card)',
+                              color: active ? 'var(--c-bg)' : 'var(--c-text-muted)',
                               padding: '6px 14px', cursor: 'pointer',
                               fontSize: 11, fontWeight: 600, transition: 'all 0.15s',
                             }}>
                               <span style={{
                                 width: 12, height: 12, borderRadius: '50%',
-                                border: active ? '2px solid #111' : '2px solid #666',
-                                background: active ? '#111' : 'transparent',
+                                border: active ? '2px solid var(--c-text-inverse)' : '2px solid var(--c-text-muted)',
+                                background: active ? 'var(--c-bg)' : 'transparent',
                                 display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
                               }}>
-                                {active && <span style={{ width: 4, height: 4, borderRadius: '50%', background: '#ddd' }} />}
+                                {active && <span style={{ width: 4, height: 4, borderRadius: '50%', background: 'var(--c-accent-bg)' }} />}
                               </span>
                               {opt.label}
                             </div>
@@ -930,7 +930,7 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, onArchive
                     </div>
                   )}
                   {selected.length > 0 && (
-                    <div style={{ marginBottom: 6, fontSize: 11, color: '#999' }}>Valittu: {selected.join(', ')}</div>
+                    <div style={{ marginBottom: 6, fontSize: 11, color: 'var(--c-text-muted)' }}>Valittu: {selected.join(', ')}</div>
                   )}
                   <div style={{ ...S.label, marginBottom: 4 }}>JUOMIEN LISÄTIEDOT</div>
                   <textarea
@@ -965,22 +965,22 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, onArchive
 
             {/* Global notes for this event — same as view mode */}
             {notes.length > 0 && (
-              <div style={{ marginTop: 12, paddingTop: 8, borderTop: '1px solid #333' }}>
+              <div style={{ marginTop: 12, paddingTop: 8, borderTop: '1px solid var(--c-border-row)' }}>
                 <div style={{ ...S.label, marginBottom: 6 }}>TAPAHTUMAMUISTIINPANOT</div>
                 {notes.map(note => (
-                  <div key={note.id} style={{ border: '1px solid #333', padding: 10, marginBottom: 6, background: '#1a1a1a' }}>
+                  <div key={note.id} style={{ border: '1px solid var(--c-border-row)', padding: 10, marginBottom: 6, background: 'var(--c-bg)' }}>
                     <div style={{ ...S.flexBetween, marginBottom: 4 }}>
-                      <span style={{ fontSize: 10, color: '#666' }}>
+                      <span style={{ fontSize: 10, color: 'var(--c-text-muted)' }}>
                         {note.author && <span style={{ marginRight: 8 }}>{note.author}</span>}
                         {new Date(note.created_at).toLocaleDateString('fi-FI')} {new Date(note.created_at).toLocaleTimeString('fi-FI', { hour: '2-digit', minute: '2-digit' })}
                         {note.modified_at && note.modified_at !== note.created_at && <span style={{ marginLeft: 6, fontStyle: 'italic' }}>(muokattu)</span>}
                       </span>
                       <div style={{ display: 'flex', gap: 4 }}>
-                        <button onClick={() => { setEditingNoteId(note.id); setEditingNoteText(note.content); }} style={{ background: 'none', border: 'none', color: '#666', cursor: 'pointer', fontSize: 11 }}>✎</button>
-                        <button onClick={() => onDeleteNote?.(note.id)} style={{ background: 'none', border: 'none', color: '#555', cursor: 'pointer', fontSize: 11 }}>✕</button>
+                        <button onClick={() => { setEditingNoteId(note.id); setEditingNoteText(note.content); }} style={{ background: 'none', border: 'none', color: 'var(--c-text-muted)', cursor: 'pointer', fontSize: 11 }}>✎</button>
+                        <button onClick={() => onDeleteNote?.(note.id)} style={{ background: 'none', border: 'none', color: 'var(--c-text-muted)', cursor: 'pointer', fontSize: 11 }}>✕</button>
                       </div>
                     </div>
-                    {note.title && <div style={{ fontSize: 13, fontWeight: 700, color: '#ddd', marginBottom: 4, textTransform: 'uppercase' }}>{note.title}</div>}
+                    {note.title && <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--c-text)', marginBottom: 4, textTransform: 'uppercase' }}>{note.title}</div>}
                     {editingNoteId === note.id ? (
                       <div>
                         <textarea
@@ -995,7 +995,7 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, onArchive
                         </div>
                       </div>
                     ) : (
-                      <div style={{ fontSize: 13, color: '#bbb', whiteSpace: 'pre-wrap', lineHeight: 1.5 }}>{note.content}</div>
+                      <div style={{ fontSize: 13, color: 'var(--c-text)', whiteSpace: 'pre-wrap', lineHeight: 1.5 }}>{note.content}</div>
                     )}
                   </div>
                 ))}
@@ -1004,10 +1004,10 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, onArchive
 
             {/* Add note form in edit mode */}
             {showAddNote ? (
-              <div style={{ border: '1px solid #444', padding: 12, marginTop: 8, background: '#1a1a1a' }}>
+              <div style={{ border: '1px solid var(--c-border-soft)', padding: 12, marginTop: 8, background: 'var(--c-bg)' }}>
                 <div style={{ marginBottom: 8 }}>
                   <div style={{ ...S.label, marginBottom: 4 }}>MAINITSE HENKILÖ</div>
-                  <select value={noteMentionId} onChange={e => setNoteMentionId(e.target.value)} style={{ ...S.selectFull, color: '#ddd', background: '#1e1e1e' }}>
+                  <select value={noteMentionId} onChange={e => setNoteMentionId(e.target.value)} style={{ ...S.selectFull, color: 'var(--c-text)', background: 'var(--c-bg-card)' }}>
                     <option value="">Ei mainintaa</option>
                     {allSystemUsers.length > 0 && <option disabled style={{ fontWeight: 700 }}>— Tiimi —</option>}
                     {allSystemUsers.map(u => (
@@ -1055,7 +1055,7 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, onArchive
           {/* TYÖNTEKIJÄT */}
           {can('card_workers') && <Section title="TYÖNTEKIJÄT" defaultOpen={true} count={assignedWorkers.length}>
             {assignedWorkers.length === 0 && !showAddWorker && (
-              <div style={{ color: '#666', fontSize: 12, marginBottom: 8 }}>Ei lisättyjä työntekijöitä</div>
+              <div style={{ color: 'var(--c-text-muted)', fontSize: 12, marginBottom: 8 }}>Ei lisättyjä työntekijöitä</div>
             )}
 
             {/* Worker list — booking/shift style */}
@@ -1063,15 +1063,15 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, onArchive
               const shiftRole = worker.assignment_role || 'staff';
               const ROLE_LABELS = { staff: 'Henkilökunta', kitchen: 'Keittiö', service: 'Tarjoilu', setup: 'Rakennus', host: 'Juontaja', other: 'Muu' };
               return (
-                <div key={worker.id} style={{ borderBottom: '1px solid #333', padding: '8px 0', display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                <div key={worker.id} style={{ borderBottom: '1px solid var(--c-border-row)', padding: '8px 0', display: 'flex', alignItems: 'flex-start', gap: 10 }}>
                   {/* Time column */}
                   <div style={{ flex: '0 0 90px', textAlign: 'center' }}>
                     {worker.start_time || worker.end_time ? (
                       <div style={{ fontSize: 14, fontWeight: 700, fontFamily: 'monospace', letterSpacing: 1 }}>
-                        {worker.start_time || '??'}<span style={{ color: '#555' }}>–</span>{worker.end_time || '??'}
+                        {worker.start_time || '??'}<span style={{ color: 'var(--c-text-muted)' }}>–</span>{worker.end_time || '??'}
                       </div>
                     ) : (
-                      <div style={{ fontSize: 11, color: '#555' }}>Ei aikaa</div>
+                      <div style={{ fontSize: 11, color: 'var(--c-text-muted)' }}>Ei aikaa</div>
                     )}
                   </div>
                   {/* Info column */}
@@ -1081,7 +1081,7 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, onArchive
                       <span style={{ ...S.tag(false), fontSize: 9, padding: '1px 6px' }}>{ROLE_LABELS[shiftRole] || shiftRole}</span>
                     </div>
                     {worker.assignment_notes && (
-                      <div style={{ fontSize: 11, color: '#888', marginTop: 3, fontStyle: 'italic' }}>{worker.assignment_notes}</div>
+                      <div style={{ fontSize: 11, color: 'var(--c-text-muted)', marginTop: 3, fontStyle: 'italic' }}>{worker.assignment_notes}</div>
                     )}
                   </div>
                   {/* Remove button */}
@@ -1092,15 +1092,15 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, onArchive
 
             {/* Add worker — booking form */}
             {can('action_edit') && showAddWorker ? (
-              <div style={{ border: '1px solid #555', padding: 12, marginTop: 8, background: '#1a1a1a' }}>
+              <div style={{ border: '1px solid var(--c-border-soft)', padding: 12, marginTop: 8, background: 'var(--c-bg)' }}>
                 <div style={{ ...S.label, marginBottom: 8 }}>UUSI VUORO</div>
                 {availableWorkers.length === 0 ? (
-                  <div style={{ color: '#666', fontSize: 12 }}>Kaikki työntekijät on jo lisätty</div>
+                  <div style={{ color: 'var(--c-text-muted)', fontSize: 12 }}>Kaikki työntekijät on jo lisätty</div>
                 ) : (
                   <>
                     {/* Row 1: Worker select */}
                     <div style={{ marginBottom: 8 }}>
-                      <div style={{ fontSize: 10, color: '#888', marginBottom: 3 }}>HENKILÖ</div>
+                      <div style={{ fontSize: 10, color: 'var(--c-text-muted)', marginBottom: 3 }}>HENKILÖ</div>
                       <select
                         value={newShift.userId}
                         onChange={e => setNewShift({ ...newShift, userId: e.target.value })}
@@ -1116,7 +1116,7 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, onArchive
                     {/* Row 2: Time + Role */}
                     <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
                       <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: 10, color: '#888', marginBottom: 3 }}>ALKAA</div>
+                        <div style={{ fontSize: 10, color: 'var(--c-text-muted)', marginBottom: 3 }}>ALKAA</div>
                         <input
                           type="time"
                           value={newShift.start_time}
@@ -1125,7 +1125,7 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, onArchive
                         />
                       </div>
                       <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: 10, color: '#888', marginBottom: 3 }}>LOPPUU</div>
+                        <div style={{ fontSize: 10, color: 'var(--c-text-muted)', marginBottom: 3 }}>LOPPUU</div>
                         <input
                           type="time"
                           value={newShift.end_time}
@@ -1134,7 +1134,7 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, onArchive
                         />
                       </div>
                       <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: 10, color: '#888', marginBottom: 3 }}>ROOLI</div>
+                        <div style={{ fontSize: 10, color: 'var(--c-text-muted)', marginBottom: 3 }}>ROOLI</div>
                         <select
                           value={newShift.role}
                           onChange={e => setNewShift({ ...newShift, role: e.target.value })}
@@ -1152,7 +1152,7 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, onArchive
 
                     {/* Row 3: Notes */}
                     <div style={{ marginBottom: 8 }}>
-                      <div style={{ fontSize: 10, color: '#888', marginBottom: 3 }}>LISÄTIEDOT</div>
+                      <div style={{ fontSize: 10, color: 'var(--c-text-muted)', marginBottom: 3 }}>LISÄTIEDOT</div>
                       <input
                         value={newShift.notes}
                         onChange={e => setNewShift({ ...newShift, notes: e.target.value })}
@@ -1188,15 +1188,15 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, onArchive
                   {parsed.allergens.length > 0 && (
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 8 }}>
                       {parsed.allergens.map(a => (
-                        <span key={a.name} style={{ border: '2px solid #ddd', background: '#ddd', color: '#111', padding: '4px 10px', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: 4 }}>
+                        <span key={a.name} style={{ border: '2px solid var(--c-border)', background: 'var(--c-accent-bg)', color: 'var(--c-text-inverse)', padding: '4px 10px', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: 4 }}>
                           {a.name}
-                          {a.count > 0 && <span style={{ background: '#111', color: '#ddd', padding: '1px 5px', fontSize: 10, fontWeight: 700, marginLeft: 2 }}>{a.count}</span>}
+                          {a.count > 0 && <span style={{ background: 'var(--c-bg)', color: 'var(--c-text)', padding: '1px 5px', fontSize: 10, fontWeight: 700, marginLeft: 2 }}>{a.count}</span>}
                         </span>
                       ))}
                     </div>
                   )}
                   {parsed.notes && <TextBlock text={parsed.notes} />}
-                  {!event?.erv && <div style={{ color: '#666', fontSize: 12 }}>Ei erityisruokavalioita</div>}
+                  {!event?.erv && <div style={{ color: 'var(--c-text-muted)', fontSize: 12 }}>Ei erityisruokavalioita</div>}
                 </div>
               );
             })()}
@@ -1209,14 +1209,14 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, onArchive
 
             {/* Linked recipes */}
             {eventRecipes.length > 0 && (
-              <div style={{ marginTop: 10, paddingTop: 8, borderTop: '1px solid #333' }}>
+              <div style={{ marginTop: 10, paddingTop: 8, borderTop: '1px solid var(--c-border-row)' }}>
                 <div style={{ ...S.label, fontSize: 10, marginBottom: 6 }}>RUOKALAJIT</div>
                 {eventRecipes.map(er => {
                   const r = er.recipes || {};
-                  const cc = RECIPE_CATEGORY_COLORS[r.category] || '#666';
+                  const cc = RECIPE_CATEGORY_COLORS[r.category] || 'var(--c-text-muted)';
                   return (
-                    <div key={er.id} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 0', borderBottom: '1px solid #1a1a1a' }}>
-                      <span style={{ fontSize: 12, color: '#ddd', flex: 1 }}>{r.name || '?'}</span>
+                    <div key={er.id} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 0', borderBottom: '1px solid var(--c-border-row)' }}>
+                      <span style={{ fontSize: 12, color: 'var(--c-text)', flex: 1 }}>{r.name || '?'}</span>
                       <span style={{ fontSize: 9, padding: '1px 4px', background: cc + '22', color: cc }}>{r.category}</span>
                     </div>
                   );
@@ -1227,13 +1227,13 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, onArchive
             {/* Add recipe button (view mode) */}
             <div style={{ marginTop: 8 }}>
               <button onClick={() => setShowRecipePicker(!showRecipePicker)} style={{
-                padding: '4px 10px', fontSize: 10, fontWeight: 700, border: '1px solid #333',
-                background: showRecipePicker ? '#333' : 'transparent', color: showRecipePicker ? '#ddd' : '#888', cursor: 'pointer',
+                padding: '4px 10px', fontSize: 10, fontWeight: 700, border: '1px solid var(--c-border-row)',
+                background: showRecipePicker ? 'var(--c-accent-bg)' : 'transparent', color: showRecipePicker ? 'var(--c-text)' : 'var(--c-text-muted)', cursor: 'pointer',
               }}>{showRecipePicker ? 'SULJE' : '+ LISÄÄ RUOKALAJI'}</button>
               {showRecipePicker && (
-                <div style={{ marginTop: 6, padding: 6, border: '1px solid #333', background: '#111' }}>
+                <div style={{ marginTop: 6, padding: 6, border: '1px solid var(--c-border-row)', background: 'var(--c-bg)' }}>
                   {/* Quick create */}
-                  <div style={{ marginBottom: 8, paddingBottom: 8, borderBottom: '1px solid #333' }}>
+                  <div style={{ marginBottom: 8, paddingBottom: 8, borderBottom: '1px solid var(--c-border-row)' }}>
                     <div style={{ ...S.label, fontSize: 9, marginBottom: 4 }}>LUO UUSI ANNOS</div>
                     <div style={{ display: 'flex', gap: 4, marginBottom: 4 }}>
                       <input style={{ ...S.input, flex: 1, boxSizing: 'border-box' }} value={newRecipeName} onChange={e => setNewRecipeName(e.target.value)} placeholder="Annoksen nimi" autoFocus />
@@ -1251,7 +1251,7 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, onArchive
                       } catch(e) { console.error(e); }
                     }} disabled={!newRecipeName.trim()} style={{
                       padding: '5px 10px', fontSize: 10, fontWeight: 700, border: 'none', cursor: 'pointer',
-                      background: newRecipeName.trim() ? '#ddd' : '#333', color: newRecipeName.trim() ? '#111' : '#666',
+                      background: newRecipeName.trim() ? 'var(--c-text)' : 'var(--c-accent-bg)', color: newRecipeName.trim() ? 'var(--c-bg)' : 'var(--c-text-muted)',
                     }}>LISÄÄ</button>
                   </div>
                   {/* Search existing */}
@@ -1262,14 +1262,14 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, onArchive
                       const linkedIds = new Set(eventRecipes.map(er => er.recipe_id));
                       const available = recipes.filter(r => !linkedIds.has(r.id) && (!recipeSearch || r.name.toLowerCase().includes(recipeSearch.toLowerCase()) || r.category?.toLowerCase().includes(recipeSearch.toLowerCase())));
                       return available.length === 0 ? (
-                        <div style={{ padding: 6, color: '#666', fontSize: 11, textAlign: 'center' }}>Ei tuloksia</div>
+                        <div style={{ padding: 6, color: 'var(--c-text-muted)', fontSize: 11, textAlign: 'center' }}>Ei tuloksia</div>
                       ) : available.slice(0, 15).map(r => {
-                        const cc = RECIPE_CATEGORY_COLORS[r.category] || '#666';
+                        const cc = RECIPE_CATEGORY_COLORS[r.category] || 'var(--c-text-muted)';
                         return (
                           <div key={r.id} onClick={async () => { try { await onAddEventRecipe(event.id, r.id); setShowRecipePicker(false); setRecipeSearch(''); } catch(e){} }} style={{
-                            padding: '5px 6px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, borderBottom: '1px solid #1a1a1a',
+                            padding: '5px 6px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, borderBottom: '1px solid var(--c-border-row)',
                           }}>
-                            <span style={{ fontSize: 11, color: '#ddd', flex: 1 }}>{r.name}</span>
+                            <span style={{ fontSize: 11, color: 'var(--c-text)', flex: 1 }}>{r.name}</span>
                             <span style={{ fontSize: 9, padding: '1px 4px', background: cc + '22', color: cc }}>{r.category}</span>
                           </div>
                         );
@@ -1280,11 +1280,11 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, onArchive
               )}
             </div>
 
-            <div style={{ marginTop: 10, paddingTop: 8, borderTop: '1px solid #333' }}>
+            <div style={{ marginTop: 10, paddingTop: 8, borderTop: '1px solid var(--c-border-row)' }}>
               <div style={{ ...S.label, marginBottom: 4 }}>DRIVE-LINKKI</div>
               <EditableDriveLink url={formData.menuLink} label="Menu Drive →" onSave={(val) => saveField('menuLink', val)} />
             </div>
-            <div style={{ marginTop: 10, paddingTop: 8, borderTop: '1px solid #333' }}>
+            <div style={{ marginTop: 10, paddingTop: 8, borderTop: '1px solid var(--c-border-row)' }}>
               <div style={{ ...S.label, marginBottom: 6 }}>LIITTEET</div>
               <AttachmentSection
                 attachments={menuAttachments}
@@ -1306,22 +1306,22 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, onArchive
                   {selected.length > 0 ? (
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 8 }}>
                       {selected.map(d => (
-                        <span key={d} style={{ border: '2px solid #ddd', background: '#ddd', color: '#111', padding: '4px 10px', fontSize: 11, fontWeight: 600, textTransform: 'uppercase' }}>{d}</span>
+                        <span key={d} style={{ border: '2px solid var(--c-border)', background: 'var(--c-accent-bg)', color: 'var(--c-text-inverse)', padding: '4px 10px', fontSize: 11, fontWeight: 600, textTransform: 'uppercase' }}>{d}</span>
                       ))}
                     </div>
                   ) : (
-                    <div style={{ color: '#666', fontSize: 12, marginBottom: 4 }}>Ei valittua juomatapaa</div>
+                    <div style={{ color: 'var(--c-text-muted)', fontSize: 12, marginBottom: 4 }}>Ei valittua juomatapaa</div>
                   )}
                   {selected.includes('Drinkkilippuja') && event?.drinkTicketSource && (
-                    <div style={{ marginBottom: 8, padding: '6px 10px', border: '1px solid #444', background: '#1a1a1a', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                      <span style={{ fontSize: 10, color: '#888', textTransform: 'uppercase' }}>Drinkkilippujen lähde:</span>
-                      <span style={{ fontSize: 12, fontWeight: 600, color: '#ddd' }}>
+                    <div style={{ marginBottom: 8, padding: '6px 10px', border: '1px solid var(--c-border-soft)', background: 'var(--c-bg)', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{ fontSize: 10, color: 'var(--c-text-muted)', textTransform: 'uppercase' }}>Drinkkilippujen lähde:</span>
+                      <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--c-text)' }}>
                         {event.drinkTicketSource === 'asiakas' ? 'ASIAKKAALTA' : event.drinkTicketSource === 'me' ? 'MEILTÄ' : event.drinkTicketSource}
                       </span>
                     </div>
                   )}
                   {event?.drinkNotes && (
-                    <div style={{ marginTop: 6, paddingTop: 6, borderTop: '1px solid #333' }}>
+                    <div style={{ marginTop: 6, paddingTop: 6, borderTop: '1px solid var(--c-border-row)' }}>
                       <div style={{ ...S.label, marginBottom: 4 }}>LISÄTIEDOT</div>
                       <TextBlock text={event.drinkNotes} />
                     </div>
@@ -1346,7 +1346,7 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, onArchive
                 <TextBlock text={event.orderNotes} />
               </div>
             )}
-            <div style={{ paddingTop: 8, borderTop: '1px solid #333' }}>
+            <div style={{ paddingTop: 8, borderTop: '1px solid var(--c-border-row)' }}>
               <div style={{ ...S.label, marginBottom: 6 }}>LIITTEET</div>
               <AttachmentSection
                 attachments={orderAttachments}
@@ -1362,18 +1362,18 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, onArchive
           {can('card_materials') && <Section title="MATERIAALIT / LIITTEET" defaultOpen={materials.length > 0} count={materials.length}>
             {/* Existing materials */}
             {materials.length === 0 && !showAddMaterial && (
-              <div style={{ color: '#666', fontSize: 12, marginBottom: 8 }}>Ei materiaaleja</div>
+              <div style={{ color: 'var(--c-text-muted)', fontSize: 12, marginBottom: 8 }}>Ei materiaaleja</div>
             )}
             {materials.map(mat => {
               const typeLabel = MATERIAL_TYPES.find(t => t.key === mat.type)?.label || mat.type;
               const isImage = mat.fileType?.startsWith('image/');
               return (
-                <div key={mat.id} style={{ border: '1px solid #333', padding: 10, marginBottom: 8, background: '#1a1a1a' }}>
+                <div key={mat.id} style={{ border: '1px solid var(--c-border-row)', padding: 10, marginBottom: 8, background: 'var(--c-bg)' }}>
                   <div style={{ ...S.flexBetween, marginBottom: isImage && mat.fileData ? 8 : 0 }}>
                     <div>
-                      <span style={{ fontSize: 12, fontWeight: 700, color: '#ddd' }}>{mat.name}</span>
-                      <span style={{ fontSize: 10, color: '#666', marginLeft: 8, textTransform: 'uppercase' }}>{typeLabel}</span>
-                      {mat.fileSize && <span style={{ fontSize: 10, color: '#555', marginLeft: 6 }}>{formatFileSize(mat.fileSize)}</span>}
+                      <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--c-text)' }}>{mat.name}</span>
+                      <span style={{ fontSize: 10, color: 'var(--c-text-muted)', marginLeft: 8, textTransform: 'uppercase' }}>{typeLabel}</span>
+                      {mat.fileSize && <span style={{ fontSize: 10, color: 'var(--c-text-muted)', marginLeft: 6 }}>{formatFileSize(mat.fileSize)}</span>}
                     </div>
                     <div style={{ display: 'flex', gap: 6 }}>
                       {mat.driveLink && (
@@ -1386,7 +1386,7 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, onArchive
                     </div>
                   </div>
                   {isImage && mat.fileData && (
-                    <img src={mat.fileData} alt={mat.name} style={{ maxWidth: '100%', maxHeight: 200, border: '1px solid #333', marginTop: 4 }} />
+                    <img src={mat.fileData} alt={mat.name} style={{ maxWidth: '100%', maxHeight: 200, border: '1px solid var(--c-border-row)', marginTop: 4 }} />
                   )}
                 </div>
               );
@@ -1410,7 +1410,7 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, onArchive
             </div>
 
             {showAddMaterial && (
-              <div style={{ border: '1px solid #444', padding: 12, marginTop: 8, background: '#1a1a1a' }}>
+              <div style={{ border: '1px solid var(--c-border-soft)', padding: 12, marginTop: 8, background: 'var(--c-bg)' }}>
                 <div style={{ ...S.label, marginBottom: 8 }}>LISÄÄ MATERIAALI</div>
                 <input
                   value={newMaterial.name}
@@ -1445,13 +1445,13 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, onArchive
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
               <tbody>
                 {[['Ruoka', event?.food, event?.foodPrice], ['Juomat', event?.drinks, event?.drinksPrice], ['Tekniikka', event?.tech, event?.techPrice], ['Ohjelma', event?.program, event?.programPrice]].map(([label, desc, price]) => (
-                  <tr key={label} style={{ borderBottom: '1px solid #444' }}>
+                  <tr key={label} style={{ borderBottom: '1px solid var(--c-border-soft)' }}>
                     <td style={{ padding: '4px 0', fontWeight: 600 }}>{label}</td>
-                    <td style={{ padding: '4px 0', color: '#999' }}>{desc || ''}</td>
+                    <td style={{ padding: '4px 0', color: 'var(--c-text-muted)' }}>{desc || ''}</td>
                     <td style={{ padding: '4px 0', textAlign: 'right', fontWeight: 700 }}>{price ? `${price} €` : ''}</td>
                   </tr>
                 ))}
-                <tr style={{ borderTop: '2px solid #ddd' }}>
+                <tr style={{ borderTop: '2px solid var(--c-border)' }}>
                   <td style={{ padding: '6px 0', fontWeight: 700 }}>YHTEENSÄ</td>
                   <td></td>
                   <td style={{ padding: '6px 0', textAlign: 'right', fontWeight: 700 }}>{total.toFixed(2)} €</td>
@@ -1470,7 +1470,7 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, onArchive
               </button>
             </div>
             {showAddTask && (
-              <div style={{ border: '1px solid #444', padding: 12, marginBottom: 12, background: '#1a1a1a' }}>
+              <div style={{ border: '1px solid var(--c-border-soft)', padding: 12, marginBottom: 12, background: 'var(--c-bg)' }}>
                 <input value={newTask.title} onChange={e => setNewTask({ ...newTask, title: e.target.value })} placeholder="Tehtävän nimi" style={{ ...S.input, width: '100%', boxSizing: 'border-box', marginBottom: 8 }} onKeyDown={e => e.key === 'Enter' && handleAddTask()} />
                 <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
                   <select value={newTask.priority} onChange={e => setNewTask({ ...newTask, priority: e.target.value })} style={{ ...S.select, flex: 1 }}>
@@ -1482,15 +1482,15 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, onArchive
                   <div style={{ ...S.label, marginBottom: 4 }}>VASTUUHENKILÖ</div>
                   <select value={newTask.assigned_to} onChange={e => setNewTask({ ...newTask, assigned_to: e.target.value })} style={{ ...S.selectFull }}>
                     <option value="">Ei vastuuhenkilöä</option>
-                    {assignedWorkers.length > 0 && <option disabled style={{ color: '#666', fontStyle: 'italic' }}>— Tapahtuman työntekijät —</option>}
+                    {assignedWorkers.length > 0 && <option disabled style={{ color: 'var(--c-text-muted)', fontStyle: 'italic' }}>— Tapahtuman työntekijät —</option>}
                     {assignedWorkers.map(w => (
                       <option key={w.id} value={w.id}>{w.first_name} {w.last_name}</option>
                     ))}
-                    {allSystemUsers.filter(u => !assignedIds.has(u.id)).length > 0 && <option disabled style={{ color: '#666', fontStyle: 'italic' }}>— Muut käyttäjät —</option>}
+                    {allSystemUsers.filter(u => !assignedIds.has(u.id)).length > 0 && <option disabled style={{ color: 'var(--c-text-muted)', fontStyle: 'italic' }}>— Muut käyttäjät —</option>}
                     {allSystemUsers.filter(u => !assignedIds.has(u.id)).map(u => (
                       <option key={u.id} value={u.id}>{u.first_name} {u.last_name}</option>
                     ))}
-                    {persons.length > 0 && <option disabled style={{ color: '#666', fontStyle: 'italic' }}>— Kontaktit —</option>}
+                    {persons.length > 0 && <option disabled style={{ color: 'var(--c-text-muted)', fontStyle: 'italic' }}>— Kontaktit —</option>}
                     {persons.map(p => (
                       <option key={`p-${p.id}`} value={p.id}>{p.first_name} {p.last_name}</option>
                     ))}
@@ -1499,7 +1499,7 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, onArchive
                 <button onClick={handleAddTask} style={S.btnBlack}>LISÄÄ</button>
               </div>
             )}
-            {eventTasks.length === 0 && !showAddTask && <div style={{ color: '#666', fontSize: 12 }}>Ei tehtäviä</div>}
+            {eventTasks.length === 0 && !showAddTask && <div style={{ color: 'var(--c-text-muted)', fontSize: 12 }}>Ei tehtäviä</div>}
             {eventTasks.map(task => {
               const isDone = task.status === 'DONE';
               const isInProgress = task.status === 'IN_PROGRESS';
@@ -1507,11 +1507,11 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, onArchive
                 ? (assignedWorkers.find(w => w.id === task.assigned_to) || allSystemUsers.find(u => u.id === task.assigned_to) || persons.find(p => p.id === task.assigned_to))
                 : null;
               const assigneeName = assignee ? `${assignee.first_name} ${assignee.last_name}` : null;
-              const priColor = task.priority === 'KORKEA' ? '#ff4444' : task.priority === 'MATALA' ? '#666' : '#999';
+              const priColor = task.priority === 'KORKEA' ? 'var(--c-danger)' : task.priority === 'MATALA' ? 'var(--c-text-muted)' : 'var(--c-text-muted)';
               return (
                 <div key={task.id} style={{
-                  border: isDone ? '1px solid #333' : '1px solid #555',
-                  background: isDone ? '#111' : '#1a1a1a',
+                  border: isDone ? '1px solid var(--c-border-row)' : '1px solid var(--c-border-soft)',
+                  background: isDone ? 'var(--c-bg)' : 'var(--c-menu-bg)',
                   padding: 12, marginBottom: 8,
                   opacity: isDone ? 0.7 : 1,
                 }}>
@@ -1521,12 +1521,12 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, onArchive
                       <span style={{
                         fontSize: 13, fontWeight: 600,
                         textDecoration: isDone ? 'line-through' : 'none',
-                        color: isDone ? '#666' : '#ddd',
+                        color: isDone ? 'var(--c-text-muted)' : 'var(--c-text)',
                       }}>
                         {task.title}
                       </span>
                       {task.description && (
-                        <div style={{ fontSize: 11, color: '#888', marginTop: 2 }}>{task.description}</div>
+                        <div style={{ fontSize: 11, color: 'var(--c-text-muted)', marginTop: 2 }}>{task.description}</div>
                       )}
                     </div>
                     <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexShrink: 0, marginLeft: 8 }}>
@@ -1537,11 +1537,11 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, onArchive
 
                   {/* Row 2: Assigned person */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
-                    <span style={{ fontSize: 10, color: '#666', textTransform: 'uppercase' }}>Vastuuhenkilö:</span>
+                    <span style={{ fontSize: 10, color: 'var(--c-text-muted)', textTransform: 'uppercase' }}>Vastuuhenkilö:</span>
                     {assigneeName ? (
-                      <span style={{ fontSize: 12, fontWeight: 600, color: isDone ? '#666' : '#ccc' }}>{assigneeName}</span>
+                      <span style={{ fontSize: 12, fontWeight: 600, color: isDone ? 'var(--c-text-muted)' : 'var(--c-text)' }}>{assigneeName}</span>
                     ) : (
-                      <span style={{ fontSize: 11, color: '#555', fontStyle: 'italic' }}>Ei määritetty</span>
+                      <span style={{ fontSize: 11, color: 'var(--c-text-muted)', fontStyle: 'italic' }}>Ei määritetty</span>
                     )}
                   </div>
 
@@ -1551,7 +1551,7 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, onArchive
                       <button
                         onClick={() => onUpdateTask?.(task.id, { status: 'DONE' })}
                         style={{
-                          background: '#ddd', color: '#111', border: 'none',
+                          background: 'var(--c-accent-bg)', color: 'var(--c-text-inverse)', border: 'none',
                           padding: '5px 16px', fontSize: 11, fontWeight: 700,
                           cursor: 'pointer', letterSpacing: 1,
                         }}
@@ -1562,7 +1562,7 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, onArchive
                       <button
                         onClick={() => onUpdateTask?.(task.id, { status: 'TODO' })}
                         style={{
-                          background: 'transparent', color: '#888', border: '1px solid #555',
+                          background: 'transparent', color: 'var(--c-text-muted)', border: '1px solid var(--c-border-soft)',
                           padding: '5px 16px', fontSize: 11, fontWeight: 700,
                           cursor: 'pointer', letterSpacing: 1,
                         }}
@@ -1574,9 +1574,9 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, onArchive
                       <button
                         onClick={() => onUpdateTask?.(task.id, { status: isInProgress ? 'TODO' : 'IN_PROGRESS' })}
                         style={{
-                          background: isInProgress ? '#333' : 'transparent',
-                          color: isInProgress ? '#ddd' : '#888',
-                          border: '1px solid #555',
+                          background: isInProgress ? 'var(--c-accent-bg)' : 'transparent',
+                          color: isInProgress ? 'var(--c-text)' : 'var(--c-text-muted)',
+                          border: '1px solid var(--c-border-soft)',
                           padding: '5px 12px', fontSize: 10, fontWeight: 600,
                           cursor: 'pointer',
                         }}
@@ -1586,7 +1586,7 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, onArchive
                     )}
                     <span style={{
                       fontSize: 10, fontWeight: 600, marginLeft: 'auto',
-                      color: isDone ? '#4a4' : isInProgress ? '#fa0' : '#888',
+                      color: isDone ? '#4a4' : isInProgress ? '#fa0' : 'var(--c-text-muted)',
                       textTransform: 'uppercase',
                     }}>
                       {isDone ? '✓ VALMIS' : isInProgress ? '◐ KÄYNNISSÄ' : '○ AVOIN'}
@@ -1601,26 +1601,26 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, onArchive
           {can('card_notes') && <Section title="MUISTIINPANOT" defaultOpen={true} count={notes.length + (event?.notes ? 1 : 0)}>
             {/* Legacy notes text */}
             {event?.notes && (
-              <div style={{ marginBottom: 12, paddingBottom: 8, borderBottom: '1px solid #333' }}>
+              <div style={{ marginBottom: 12, paddingBottom: 8, borderBottom: '1px solid var(--c-border-row)' }}>
                 <TextBlock text={event.notes} />
               </div>
             )}
 
             {/* Global notes for this event */}
             {notes.map(note => (
-              <div key={note.id} style={{ border: '1px solid #333', padding: 10, marginBottom: 6, background: '#1a1a1a' }}>
+              <div key={note.id} style={{ border: '1px solid var(--c-border-row)', padding: 10, marginBottom: 6, background: 'var(--c-bg)' }}>
                 <div style={{ ...S.flexBetween, marginBottom: 4 }}>
-                  <span style={{ fontSize: 10, color: '#666' }}>
+                  <span style={{ fontSize: 10, color: 'var(--c-text-muted)' }}>
                     {note.author && <span style={{ marginRight: 8 }}>{note.author}</span>}
                     {new Date(note.created_at).toLocaleDateString('fi-FI')} {new Date(note.created_at).toLocaleTimeString('fi-FI', { hour: '2-digit', minute: '2-digit' })}
                     {note.modified_at && note.modified_at !== note.created_at && <span style={{ marginLeft: 6, fontStyle: 'italic' }}>(muokattu)</span>}
                   </span>
                   <div style={{ display: 'flex', gap: 4 }}>
-                    <button onClick={() => { setEditingNoteId(note.id); setEditingNoteText(note.content); }} style={{ background: 'none', border: 'none', color: '#666', cursor: 'pointer', fontSize: 11 }}>✎</button>
-                    <button onClick={() => onDeleteNote?.(note.id)} style={{ background: 'none', border: 'none', color: '#555', cursor: 'pointer', fontSize: 11 }}>✕</button>
+                    <button onClick={() => { setEditingNoteId(note.id); setEditingNoteText(note.content); }} style={{ background: 'none', border: 'none', color: 'var(--c-text-muted)', cursor: 'pointer', fontSize: 11 }}>✎</button>
+                    <button onClick={() => onDeleteNote?.(note.id)} style={{ background: 'none', border: 'none', color: 'var(--c-text-muted)', cursor: 'pointer', fontSize: 11 }}>✕</button>
                   </div>
                 </div>
-                {note.title && <div style={{ fontSize: 13, fontWeight: 700, color: '#ddd', marginBottom: 4, textTransform: 'uppercase' }}>{note.title}</div>}
+                {note.title && <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--c-text)', marginBottom: 4, textTransform: 'uppercase' }}>{note.title}</div>}
                 {editingNoteId === note.id ? (
                   <div>
                     <textarea
@@ -1635,20 +1635,20 @@ export default function EventCard({ event, onUpdate, onDelete, onBack, onArchive
                     </div>
                   </div>
                 ) : (
-                  <div style={{ fontSize: 13, color: '#bbb', whiteSpace: 'pre-wrap', lineHeight: 1.5 }}>{note.content}</div>
+                  <div style={{ fontSize: 13, color: 'var(--c-text)', whiteSpace: 'pre-wrap', lineHeight: 1.5 }}>{note.content}</div>
                 )}
               </div>
             ))}
 
             {/* Add note form */}
             {showAddNote ? (
-              <div style={{ border: '1px solid #444', padding: 12, marginTop: 8, background: '#1a1a1a' }}>
+              <div style={{ border: '1px solid var(--c-border-soft)', padding: 12, marginTop: 8, background: 'var(--c-bg)' }}>
                 <div style={{ marginBottom: 8 }}>
                   <div style={{ ...S.label, marginBottom: 4 }}>MAINITSE HENKILÖ</div>
                   <select
                     value={noteMentionId}
                     onChange={e => setNoteMentionId(e.target.value)}
-                    style={{ ...S.selectFull, color: '#ddd', background: '#1e1e1e' }}
+                    style={{ ...S.selectFull, color: 'var(--c-text)', background: 'var(--c-bg-card)' }}
                   >
                     <option value="">Ei mainintaa</option>
                     {allSystemUsers.length > 0 && <option disabled style={{ fontWeight: 700 }}>— Tiimi —</option>}

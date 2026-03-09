@@ -31,7 +31,7 @@ const UserManagement = ({ events = [], assignWorker, removeWorkerAssignment, onU
   const [createdPassword, setCreatedPassword] = useState(null);
 
   const isAdmin = profile?.role === 'admin';
-  if (!isAdmin) return <div style={{ ...S.border, ...S.bg, ...S.pad, color: '#666' }}>{t('noAccess')}</div>;
+  if (!isAdmin) return <div style={{ ...S.border, ...S.bg, ...S.pad, color: 'var(--c-text-muted)' }}>{t('noAccess')}</div>;
 
   const handleFormOpen = () => {
     setShowForm(true);
@@ -217,7 +217,7 @@ const UserManagement = ({ events = [], assignWorker, removeWorkerAssignment, onU
 
   return (
     <div style={{ ...S.border, ...S.bg, borderTop: 'none' }}>
-      <div style={{ ...S.pad, ...S.flexBetween, borderBottom: '1px solid #444' }}>
+      <div style={{ ...S.pad, ...S.flexBetween, borderBottom: '1px solid var(--c-border-soft)' }}>
         <div style={S.label}>{t('userManagement')}</div>
         {!showForm && <button onClick={handleFormOpen} style={S.btnSmall}>{t('createUser')}</button>}
       </div>
@@ -226,9 +226,9 @@ const UserManagement = ({ events = [], assignWorker, removeWorkerAssignment, onU
       {message && (
         <div style={{
           padding: '8px 16px', fontSize: 12, fontWeight: 600,
-          background: message.type === 'error' ? '#3a1111' : '#113a11',
-          color: message.type === 'error' ? '#ff6b6b' : '#6bff6b',
-          borderBottom: '1px solid #444',
+          background: message.type === 'error' ? 'var(--c-danger-bg)' : 'var(--c-success-bg)',
+          color: message.type === 'error' ? 'var(--c-danger-subtle)' : 'var(--c-success)',
+          borderBottom: '1px solid var(--c-border-soft)',
         }}>
           {message.text}
         </div>
@@ -237,19 +237,19 @@ const UserManagement = ({ events = [], assignWorker, removeWorkerAssignment, onU
       {/* Created password display */}
       {createdPassword && (
         <div style={{
-          padding: '12px 16px', background: '#1a2a1a', borderBottom: '1px solid #444',
+          padding: '12px 16px', background: 'var(--c-success-bg)', borderBottom: '1px solid var(--c-border-soft)',
         }}>
-          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1, color: '#6bff6b', marginBottom: 6 }}>
+          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1, color: 'var(--c-success)', marginBottom: 6 }}>
             VÄLIAIKAINEN SALASANA — LÄHETÄ KÄYTTÄJÄLLE
           </div>
           <div style={{
             fontFamily: 'monospace', fontSize: 16, fontWeight: 700,
-            background: '#111', padding: '8px 12px', border: '1px solid #333',
-            color: '#fff', letterSpacing: 2, userSelect: 'all',
+            background: 'var(--c-bg)', padding: '8px 12px', border: '1px solid var(--c-border-row)',
+            color: 'var(--c-text-inverse)', letterSpacing: 2, userSelect: 'all',
           }}>
             {createdPassword}
           </div>
-          <div style={{ fontSize: 11, color: '#999', marginTop: 6 }}>
+          <div style={{ fontSize: 11, color: 'var(--c-text-muted)', marginTop: 6 }}>
             Käyttäjä voi vaihtaa salasanan kirjautumisen jälkeen.
             Klikkaa salasanaa kopioidaksesi se.
           </div>
@@ -257,7 +257,7 @@ const UserManagement = ({ events = [], assignWorker, removeWorkerAssignment, onU
       )}
 
       {showForm && (
-        <div style={{ ...S.pad, borderBottom: '1px solid #444' }}>
+        <div style={{ ...S.pad, borderBottom: '1px solid var(--c-border-soft)' }}>
           <div style={{ ...S.label, marginBottom: 12 }}>{editingId ? t('edit') : t('createUser')}</div>
           <form onSubmit={editingId ? handleUpdateUser : handleCreateUser}>
             <div style={S.formGrid}>
@@ -325,16 +325,16 @@ const UserManagement = ({ events = [], assignWorker, removeWorkerAssignment, onU
       {users.map(u => (
         <div key={u.id} style={S.row}>
           <span style={{ ...S.col(2), fontWeight: 600 }}>{u.first_name} {u.last_name}</span>
-          <span style={{ ...S.col(2), color: '#999', fontSize: 12 }}>{u.email}</span>
+          <span style={{ ...S.col(2), color: 'var(--c-text-muted)', fontSize: 12 }}>{u.email}</span>
           <span style={{ ...S.col(1), fontSize: 12 }}>
             {u.role === 'admin' && <span style={{ fontWeight: 700 }}>{t('roleAdmin')}</span>}
             {u.role === 'worker' && t('roleWorker')}
             {u.role === 'temporary' && <span style={{ fontStyle: 'italic' }}>{t('roleTemporary')}</span>}
           </span>
-          <span style={{ ...S.col(1), fontSize: 12, color: u.is_active ? '#ddd' : '#666' }}>
+          <span style={{ ...S.col(1), fontSize: 12, color: u.is_active ? 'var(--c-text)' : 'var(--c-text-muted)' }}>
             {u.is_active ? t('active') : t('inactive')}
           </span>
-          <span style={{ ...S.col(1), color: '#666', fontSize: 11 }}>
+          <span style={{ ...S.col(1), color: 'var(--c-text-muted)', fontSize: 11 }}>
             {u.expires_at && u.role === 'temporary' ? new Date(u.expires_at).toLocaleDateString('fi-FI') : '-'}
           </span>
           <span style={{ ...S.col(2.5), display: 'flex', gap: 6, flexWrap: 'wrap' }}>
@@ -342,7 +342,7 @@ const UserManagement = ({ events = [], assignWorker, removeWorkerAssignment, onU
             {u.role !== 'admin' && (
               <button
                 onClick={() => setAccessWorker(u)}
-                style={{ ...S.btnSmall, color: '#6baaff', borderColor: '#6baaff' }}
+                style={{ ...S.btnSmall, color: 'var(--c-info)', borderColor: 'var(--c-info)' }}
               >
                 {t('accessRights')}
               </button>
@@ -353,7 +353,7 @@ const UserManagement = ({ events = [], assignWorker, removeWorkerAssignment, onU
             {u.id !== profile?.id && (
               <button
                 onClick={() => handleDeleteUser(u)}
-                style={{ ...S.btnSmall, color: '#ff6b6b', borderColor: '#ff6b6b' }}
+                style={{ ...S.btnSmall, color: 'var(--c-danger-subtle)', borderColor: 'var(--c-danger-subtle)' }}
               >
                 {t('deleteUser')}
               </button>

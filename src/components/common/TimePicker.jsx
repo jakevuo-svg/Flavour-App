@@ -48,8 +48,8 @@ export default function TimePicker({ value = '', onChange, label = 'TIME RANGE' 
             ...S.selectFull,
             flex: 1,
             minWidth: 100,
-            backgroundColor: '#1e1e1e',
-            border: '2px solid #ddd'
+            backgroundColor: 'var(--c-bg-card)',
+            border: '2px solid var(--c-border)'
           }}
         >
           <option value=":">Start Time</option>
@@ -68,8 +68,8 @@ export default function TimePicker({ value = '', onChange, label = 'TIME RANGE' 
             ...S.selectFull,
             flex: 1,
             minWidth: 100,
-            backgroundColor: '#1e1e1e',
-            border: '2px solid #ddd',
+            backgroundColor: 'var(--c-bg-card)',
+            border: '2px solid var(--c-border)',
             marginLeft: 8
           }}
         >

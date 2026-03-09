@@ -13,7 +13,7 @@ const MENU_TYPES = [
 
 const TYPE_COLORS = {
   '3-ruokalajin illallinen': '#e67e22', buffet: '#27ae60', cocktailpalat: '#e74c3c',
-  lounas: '#3498db', aamupala: '#f1c40f', snacks: '#1abc9c', muu: '#666',
+  lounas: '#3498db', aamupala: '#f1c40f', snacks: '#1abc9c', muu: 'var(--c-text-muted)',
 };
 
 export default function MenuList({ menus = [], onMenuClick, searchQuery = '' }) {
@@ -47,13 +47,13 @@ export default function MenuList({ menus = [], onMenuClick, searchQuery = '' }) 
           const count = t.value === 'all' ? menus.length : (counts[t.value] || 0);
           if (t.value !== 'all' && count === 0) return null;
           const active = typeFilter === t.value;
-          const color = t.value === 'all' ? '#ddd' : (TYPE_COLORS[t.value] || '#666');
+          const color = t.value === 'all' ? 'var(--c-text)' : (TYPE_COLORS[t.value] || 'var(--c-text-muted)');
           return (
             <button key={t.value} onClick={() => setTypeFilter(t.value)} style={{
               padding: '4px 10px', fontSize: 10, fontWeight: 700, border: '1px solid',
-              borderColor: active ? color : '#333', cursor: 'pointer',
+              borderColor: active ? color : 'var(--c-accent-bg)', cursor: 'pointer',
               background: active ? color + '22' : 'transparent',
-              color: active ? color : '#666', letterSpacing: 0.5,
+              color: active ? color : 'var(--c-text-muted)', letterSpacing: 0.5,
             }}>
               {t.label} ({count})
             </button>
@@ -63,25 +63,25 @@ export default function MenuList({ menus = [], onMenuClick, searchQuery = '' }) 
 
       {/* Menu list */}
       {filtered.length === 0 ? (
-        <div style={{ padding: 24, textAlign: 'center', color: '#888', fontSize: 12 }}>Ei menuja</div>
+        <div style={{ padding: 24, textAlign: 'center', color: 'var(--c-text-muted)', fontSize: 12 }}>Ei menuja</div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           {filtered.map(m => {
-            const tc = TYPE_COLORS[m.menu_type] || '#666';
+            const tc = TYPE_COLORS[m.menu_type] || 'var(--c-text-muted)';
             const recipeCount = m.menu_recipes?.length || 0;
             const typeLabel = MENU_TYPES.find(t => t.value === m.menu_type)?.label || m.menu_type;
             return (
               <div key={m.id} onClick={() => onMenuClick(m)} style={{
-                padding: '10px 12px', background: '#111', border: '1px solid #1a1a1a',
+                padding: '10px 12px', background: 'var(--c-bg)', border: '1px solid var(--c-border-row)',
                 cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: 4,
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <span style={{ fontWeight: 700, fontSize: 13, color: '#ddd', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{m.name}</span>
+                  <span style={{ fontWeight: 700, fontSize: 13, color: 'var(--c-text)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{m.name}</span>
                   <span style={{ fontSize: 9, padding: '1px 6px', background: tc + '22', color: tc, border: `1px solid ${tc}44`, flexShrink: 0 }}>{typeLabel}</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  {m.description && <span style={{ fontSize: 11, color: '#888', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>{m.description}</span>}
-                  <span style={{ fontSize: 10, color: '#999', flexShrink: 0 }}>{recipeCount} annosta</span>
+                  {m.description && <span style={{ fontSize: 11, color: 'var(--c-text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>{m.description}</span>}
+                  <span style={{ fontSize: 10, color: 'var(--c-text-muted)', flexShrink: 0 }}>{recipeCount} annosta</span>
                 </div>
               </div>
             );

@@ -18,7 +18,7 @@ const COMMON_ALLERGENS = ['Gluteeni', 'Laktoosi', 'Maito', 'Kananmuna', 'Pähkin
 const CATEGORY_COLORS = {
   alkuruoka: '#27ae60', pääruoka: '#e67e22', jälkiruoka: '#9b59b6',
   salaatti: '#2ecc71', keitto: '#f39c12', välipala: '#1abc9c',
-  cocktailpala: '#e74c3c', leipä: '#d4a574', juoma: '#3498db', muu: '#666',
+  cocktailpala: '#e74c3c', leipä: '#d4a574', juoma: '#3498db', muu: 'var(--c-text-muted)',
 };
 
 export default function RecipeCard({ recipe, onUpdate, onDelete, onBack }) {
@@ -26,12 +26,12 @@ export default function RecipeCard({ recipe, onUpdate, onDelete, onBack }) {
   const [form, setForm] = useState({ ...recipe, tags: recipe.tags || [], allergens: recipe.allergens || [] });
 
   const inputStyle = {
-    width: '100%', padding: '8px 10px', background: '#1a1a1a',
-    border: '1px solid #333', color: '#ddd', fontSize: 13,
+    width: '100%', padding: '8px 10px', background: 'var(--c-bg)',
+    border: '1px solid var(--c-border-row)', color: 'var(--c-text)', fontSize: 13,
     borderRadius: 0, boxSizing: 'border-box',
   };
-  const labelStyle = { fontSize: 10, color: '#888', fontWeight: 700, letterSpacing: 0.5, marginBottom: 4, display: 'block' };
-  const sectionStyle = { marginBottom: 16, padding: 12, background: '#0d0d0d', border: '1px solid #1a1a1a' };
+  const labelStyle = { fontSize: 10, color: 'var(--c-text-muted)', fontWeight: 700, letterSpacing: 0.5, marginBottom: 4, display: 'block' };
+  const sectionStyle = { marginBottom: 16, padding: 12, background: 'var(--c-bg)', border: '1px solid var(--c-border-row)' };
 
   const handleSave = async () => {
     try {
@@ -59,19 +59,19 @@ export default function RecipeCard({ recipe, onUpdate, onDelete, onBack }) {
     }));
   };
 
-  const catColor = CATEGORY_COLORS[recipe.category] || '#666';
+  const catColor = CATEGORY_COLORS[recipe.category] || 'var(--c-text-muted)';
   const catLabel = CATEGORIES.find(c => c.value === recipe.category)?.label || recipe.category;
 
   return (
     <div style={{ padding: 16 }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-        <button onClick={onBack} style={{ background: 'none', border: 'none', color: '#888', cursor: 'pointer', fontSize: 16, padding: 0 }}>←</button>
+        <button onClick={onBack} style={{ background: 'none', border: 'none', color: 'var(--c-text-muted)', cursor: 'pointer', fontSize: 16, padding: 0 }}>←</button>
         <div style={{ flex: 1 }}>
           {editing ? (
             <input style={{ ...inputStyle, fontSize: 16, fontWeight: 700 }} value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} />
           ) : (
-            <div style={{ fontSize: 16, fontWeight: 700, color: '#ddd' }}>{recipe.name}</div>
+            <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--c-text)' }}>{recipe.name}</div>
           )}
         </div>
         <span style={{ fontSize: 10, padding: '2px 8px', background: catColor + '22', color: catColor, border: `1px solid ${catColor}` }}>{catLabel}</span>
@@ -81,13 +81,13 @@ export default function RecipeCard({ recipe, onUpdate, onDelete, onBack }) {
       <div style={{ display: 'flex', gap: 6, marginBottom: 16 }}>
         {editing ? (
           <>
-            <button onClick={handleSave} style={{ padding: '6px 14px', background: '#ddd', color: '#111', fontWeight: 700, fontSize: 11, border: 'none', cursor: 'pointer' }}>TALLENNA</button>
-            <button onClick={() => { setForm({ ...recipe, tags: recipe.tags || [], allergens: recipe.allergens || [] }); setEditing(false); }} style={{ padding: '6px 14px', background: 'transparent', color: '#666', fontWeight: 700, fontSize: 11, border: '1px solid #333', cursor: 'pointer' }}>PERUUTA</button>
+            <button onClick={handleSave} style={{ padding: '6px 14px', background: 'var(--c-accent-bg)', color: 'var(--c-text-inverse)', fontWeight: 700, fontSize: 11, border: 'none', cursor: 'pointer' }}>TALLENNA</button>
+            <button onClick={() => { setForm({ ...recipe, tags: recipe.tags || [], allergens: recipe.allergens || [] }); setEditing(false); }} style={{ padding: '6px 14px', background: 'transparent', color: 'var(--c-text-muted)', fontWeight: 700, fontSize: 11, border: '1px solid var(--c-border-row)', cursor: 'pointer' }}>PERUUTA</button>
           </>
         ) : (
           <>
-            <button onClick={() => setEditing(true)} style={{ padding: '6px 14px', background: '#333', color: '#ddd', fontWeight: 700, fontSize: 11, border: 'none', cursor: 'pointer' }}>MUOKKAA</button>
-            <button onClick={() => { if (window.confirm('Poista resepti?')) onDelete(recipe.id); onBack(); }} style={{ padding: '6px 14px', background: 'transparent', color: '#c0392b', fontWeight: 700, fontSize: 11, border: '1px solid #333', cursor: 'pointer' }}>POISTA</button>
+            <button onClick={() => setEditing(true)} style={{ padding: '6px 14px', background: 'var(--c-accent-bg)', color: 'var(--c-text)', fontWeight: 700, fontSize: 11, border: 'none', cursor: 'pointer' }}>MUOKKAA</button>
+            <button onClick={() => { if (window.confirm('Poista resepti?')) onDelete(recipe.id); onBack(); }} style={{ padding: '6px 14px', background: 'transparent', color: 'var(--c-danger)', fontWeight: 700, fontSize: 11, border: '1px solid var(--c-border-row)', cursor: 'pointer' }}>POISTA</button>
           </>
         )}
       </div>
@@ -100,7 +100,7 @@ export default function RecipeCard({ recipe, onUpdate, onDelete, onBack }) {
             {CATEGORIES.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
           </select>
         ) : (
-          <div style={{ color: '#ddd', fontSize: 13 }}>{catLabel}</div>
+          <div style={{ color: 'var(--c-text)', fontSize: 13 }}>{catLabel}</div>
         )}
       </div>
 
@@ -109,7 +109,7 @@ export default function RecipeCard({ recipe, onUpdate, onDelete, onBack }) {
         {editing ? (
           <textarea style={{ ...inputStyle, minHeight: 60, resize: 'vertical' }} value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} />
         ) : (
-          <div style={{ color: '#ddd', fontSize: 13, whiteSpace: 'pre-wrap' }}>{recipe.description || '—'}</div>
+          <div style={{ color: 'var(--c-text)', fontSize: 13, whiteSpace: 'pre-wrap' }}>{recipe.description || '—'}</div>
         )}
       </div>
 
@@ -119,9 +119,9 @@ export default function RecipeCard({ recipe, onUpdate, onDelete, onBack }) {
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
             {COMMON_ALLERGENS.map(a => (
               <button key={a} type="button" onClick={() => toggleAllergen(a)} style={{
-                padding: '3px 8px', fontSize: 10, border: '1px solid #333',
-                background: form.allergens.includes(a) ? '#c0392b' : '#1a1a1a',
-                color: form.allergens.includes(a) ? '#fff' : '#888', cursor: 'pointer',
+                padding: '3px 8px', fontSize: 10, border: '1px solid var(--c-border-row)',
+                background: form.allergens.includes(a) ? 'var(--c-danger)' : 'var(--c-menu-bg)',
+                color: form.allergens.includes(a) ? 'var(--c-text-inverse)' : 'var(--c-text-muted)', cursor: 'pointer',
               }}>{a}</button>
             ))}
           </div>
@@ -129,7 +129,7 @@ export default function RecipeCard({ recipe, onUpdate, onDelete, onBack }) {
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
             {recipe.allergens?.length ? recipe.allergens.map(a => (
               <span key={a} style={{ fontSize: 10, padding: '2px 6px', background: '#c0392b22', color: '#e74c3c', border: '1px solid #c0392b44' }}>{a}</span>
-            )) : <span style={{ color: '#555', fontSize: 12 }}>Ei allergeeneja merkitty</span>}
+            )) : <span style={{ color: 'var(--c-text-muted)', fontSize: 12 }}>Ei allergeeneja merkitty</span>}
           </div>
         )}
       </div>
@@ -141,8 +141,8 @@ export default function RecipeCard({ recipe, onUpdate, onDelete, onBack }) {
         ) : (
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
             {recipe.tags?.length ? recipe.tags.map(t => (
-              <span key={t} style={{ fontSize: 10, padding: '2px 6px', background: '#333', color: '#aaa' }}>{t}</span>
-            )) : <span style={{ color: '#555', fontSize: 12 }}>—</span>}
+              <span key={t} style={{ fontSize: 10, padding: '2px 6px', background: 'var(--c-accent-bg)', color: 'var(--c-text-muted)' }}>{t}</span>
+            )) : <span style={{ color: 'var(--c-text-muted)', fontSize: 12 }}>—</span>}
           </div>
         )}
       </div>
@@ -152,7 +152,7 @@ export default function RecipeCard({ recipe, onUpdate, onDelete, onBack }) {
         {editing ? (
           <textarea style={{ ...inputStyle, minHeight: 80, resize: 'vertical' }} value={form.ingredients || ''} onChange={e => setForm(p => ({ ...p, ingredients: e.target.value }))} placeholder="Ainesosat" />
         ) : (
-          <div style={{ color: '#ddd', fontSize: 13, whiteSpace: 'pre-wrap' }}>{recipe.ingredients || '—'}</div>
+          <div style={{ color: 'var(--c-text)', fontSize: 13, whiteSpace: 'pre-wrap' }}>{recipe.ingredients || '—'}</div>
         )}
       </div>
 
@@ -161,7 +161,7 @@ export default function RecipeCard({ recipe, onUpdate, onDelete, onBack }) {
         {editing ? (
           <textarea style={{ ...inputStyle, minHeight: 80, resize: 'vertical' }} value={form.instructions || ''} onChange={e => setForm(p => ({ ...p, instructions: e.target.value }))} placeholder="Valmistusohje" />
         ) : (
-          <div style={{ color: '#ddd', fontSize: 13, whiteSpace: 'pre-wrap' }}>{recipe.instructions || '—'}</div>
+          <div style={{ color: 'var(--c-text)', fontSize: 13, whiteSpace: 'pre-wrap' }}>{recipe.instructions || '—'}</div>
         )}
       </div>
     </div>

@@ -28,8 +28,8 @@ export default function DatePicker({ value = '', onChange, label = 'DATE' }) {
             ...S.selectFull,
             flex: 1,
             minWidth: 80,
-            backgroundColor: '#1e1e1e',
-            border: '2px solid #ddd'
+            backgroundColor: 'var(--c-bg-card)',
+            border: '2px solid var(--c-border)'
           }}
         >
           <option value="">Day</option>
@@ -48,8 +48,8 @@ export default function DatePicker({ value = '', onChange, label = 'DATE' }) {
             ...S.selectFull,
             flex: 1,
             minWidth: 120,
-            backgroundColor: '#1e1e1e',
-            border: '2px solid #ddd',
+            backgroundColor: 'var(--c-bg-card)',
+            border: '2px solid var(--c-border)',
             marginLeft: 8
           }}
         >
@@ -69,8 +69,8 @@ export default function DatePicker({ value = '', onChange, label = 'DATE' }) {
             ...S.selectFull,
             flex: 1,
             minWidth: 80,
-            backgroundColor: '#1e1e1e',
-            border: '2px solid #ddd',
+            backgroundColor: 'var(--c-bg-card)',
+            border: '2px solid var(--c-border)',
             marginLeft: 8
           }}
         >

@@ -89,7 +89,7 @@ export default function EventNotes({ eventId, notes = [], onAddNote }) {
 
       {/* Notes list */}
       {sortedNotes.length === 0 ? (
-        <div style={{ color: '#999', fontSize: 12 }}>
+        <div style={{ color: 'var(--c-text-muted)', fontSize: 12 }}>
           Ei muistiinpanoja
         </div>
       ) : (
@@ -101,7 +101,7 @@ export default function EventNotes({ eventId, notes = [], onAddNote }) {
                 ...S.borderThin,
                 padding: 12,
                 borderRadius: 4,
-                backgroundColor: '#0a0a0a',
+                backgroundColor: 'var(--c-bg)',
                 cursor: 'pointer'
               }}
               onClick={() =>
@@ -117,7 +117,7 @@ export default function EventNotes({ eventId, notes = [], onAddNote }) {
                     {note.created}
                   </div>
                 </div>
-                <div style={{ color: '#999' }}>
+                <div style={{ color: 'var(--c-text-muted)' }}>
                   {expandedId === idx ? '▼' : '▶'}
                 </div>
               </div>
@@ -127,10 +127,10 @@ export default function EventNotes({ eventId, notes = [], onAddNote }) {
                   style={{
                     marginTop: 12,
                     paddingTop: 12,
-                    borderTop: '1px solid #555',
+                    borderTop: '1px solid var(--c-border-soft)',
                     whiteSpace: 'pre-wrap',
                     fontSize: 12,
-                    color: '#ccc'
+                    color: 'var(--c-text)'
                   }}
                 >
                   {note.content}

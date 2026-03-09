@@ -86,8 +86,8 @@ export default function NewInquiryModal({ isOpen, onClose, onSubmit, adminUsers,
   };
 
   const modalBoxStyle = {
-    background: '#1e1e1e',
-    border: '2px solid #ddd',
+    background: 'var(--c-bg-card)',
+    border: '2px solid var(--c-border)',
     padding: 24,
     width: '90%',
     maxWidth: 600,
@@ -96,9 +96,9 @@ export default function NewInquiryModal({ isOpen, onClose, onSubmit, adminUsers,
   };
 
   const inputStyle = {
-    background: '#111',
-    color: '#ddd',
-    border: '1px solid #444',
+    background: 'var(--c-bg)',
+    color: 'var(--c-text)',
+    border: '1px solid var(--c-border-soft)',
     padding: '8px 10px',
     fontSize: 13,
     width: '100%',
@@ -110,7 +110,7 @@ export default function NewInquiryModal({ isOpen, onClose, onSubmit, adminUsers,
     fontSize: 11,
     fontWeight: 700,
     letterSpacing: 0.5,
-    color: '#888',
+    color: 'var(--c-text-muted)',
     marginBottom: 4,
   };
 
@@ -122,7 +122,7 @@ export default function NewInquiryModal({ isOpen, onClose, onSubmit, adminUsers,
     fontSize: 14,
     fontWeight: 700,
     letterSpacing: 1,
-    color: '#ddd',
+    color: 'var(--c-text)',
     marginBottom: 20,
   };
 

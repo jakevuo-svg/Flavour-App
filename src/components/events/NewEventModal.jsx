@@ -212,7 +212,7 @@ export default function NewEventModal({ onClose, onAdd, locations = [], prefille
   return (
     <div style={S.modal} onClick={handleClose}>
       <div style={{ ...S.modalBox, maxWidth: 700 }} onClick={e => e.stopPropagation()}>
-        <div style={{ ...S.flexBetween, marginBottom: 16, paddingBottom: 12, borderBottom: '2px solid #ddd' }}>
+        <div style={{ ...S.flexBetween, marginBottom: 16, paddingBottom: 12, borderBottom: '2px solid var(--c-border)' }}>
           <span style={{ fontWeight: 700, fontSize: 16 }}>UUSI TAPAHTUMA</span>
           <button onClick={handleClose} style={S.btnSmall}>✕</button>
         </div>
@@ -264,7 +264,7 @@ export default function NewEventModal({ onClose, onAdd, locations = [], prefille
                 <div>
                   <div style={S.label}>Sijainti</div>
                   {sortedLocations.length === 0 ? (
-                    <div style={{ color: '#666', fontSize: 12, padding: '6px 0' }}>Ei sijainteja — lisää ensin sijainti Sijainnit-välilehdellä</div>
+                    <div style={{ color: 'var(--c-text-muted)', fontSize: 12, padding: '6px 0' }}>Ei sijainteja — lisää ensin sijainti Sijainnit-välilehdellä</div>
                   ) : (
                     <select value={formData.location_name} onChange={e => handleLocationChange(e.target.value)} style={{ ...S.select, width: '100%', boxSizing: 'border-box' }}>
                       <option value="">Valitse sijainti ({sortedLocations.length})</option>
@@ -326,9 +326,9 @@ export default function NewEventModal({ onClose, onAdd, locations = [], prefille
                         onClick={() => toggleAllergen(a)}
                         style={{
                           display: 'flex', alignItems: 'center', gap: 6,
-                          border: active ? '2px solid #ddd' : '1px solid #555',
-                          background: active ? '#ddd' : '#1e1e1e',
-                          color: active ? '#111' : '#999',
+                          border: active ? '2px solid var(--c-border)' : '1px solid var(--c-border-soft)',
+                          background: active ? 'var(--c-text)' : 'var(--c-bg-card)',
+                          color: active ? 'var(--c-bg)' : 'var(--c-text-muted)',
                           padding: '4px 10px', cursor: 'pointer',
                           fontSize: 11, fontWeight: 600, textTransform: 'uppercase',
                           transition: 'all 0.15s',
@@ -336,10 +336,10 @@ export default function NewEventModal({ onClose, onAdd, locations = [], prefille
                       >
                         <span style={{
                           width: 14, height: 14,
-                          border: active ? '2px solid #111' : '2px solid #666',
-                          background: active ? '#111' : 'transparent',
+                          border: active ? '2px solid var(--c-text-inverse)' : '2px solid var(--c-text-muted)',
+                          background: active ? 'var(--c-bg)' : 'transparent',
                           display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          fontSize: 10, color: active ? '#ddd' : 'transparent',
+                          fontSize: 10, color: active ? 'var(--c-text)' : 'transparent',
                           flexShrink: 0,
                         }}>
                           {active ? '✓' : ''}
@@ -354,8 +354,8 @@ export default function NewEventModal({ onClose, onAdd, locations = [], prefille
                     <div style={{ ...S.label, marginBottom: 6 }}>KAPPALEMÄÄRÄT</div>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                       {formData.allergens.map(a => (
-                        <div key={a.name} style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#1a1a1a', border: '1px solid #444', padding: '4px 8px' }}>
-                          <span style={{ fontSize: 11, color: '#ccc', fontWeight: 600, textTransform: 'uppercase' }}>{a.name}</span>
+                        <div key={a.name} style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'var(--c-bg)', border: '1px solid var(--c-border-soft)', padding: '4px 8px' }}>
+                          <span style={{ fontSize: 11, color: 'var(--c-text)', fontWeight: 600, textTransform: 'uppercase' }}>{a.name}</span>
                           <input
                             type="number"
                             min="0"
@@ -365,7 +365,7 @@ export default function NewEventModal({ onClose, onAdd, locations = [], prefille
                             placeholder="kpl"
                             style={{ ...S.input, width: 50, textAlign: 'center', padding: '2px 4px', fontSize: 12 }}
                           />
-                          <span style={{ fontSize: 10, color: '#666' }}>kpl</span>
+                          <span style={{ fontSize: 10, color: 'var(--c-text-muted)' }}>kpl</span>
                         </div>
                       ))}
                     </div>
@@ -383,13 +383,13 @@ export default function NewEventModal({ onClose, onAdd, locations = [], prefille
               </div>
 
               {/* Menu + Drive link + files */}
-              <div style={{ border: '1px solid #333', padding: 12, background: '#1a1a1a' }}>
+              <div style={{ border: '1px solid var(--c-border-row)', padding: 12, background: 'var(--c-bg)' }}>
                 <div style={{ ...S.label, marginBottom: 6, fontWeight: 700 }}>MENU</div>
                 <textarea value={formData.menu} onChange={e => handleInputChange('menu', e.target.value)} style={{ ...S.input, width: '100%', minHeight: 60, boxSizing: 'border-box', fontFamily: 'inherit', marginBottom: 8 }} placeholder="Menu kuvaus" />
                 <div style={S.label}>Menu Drive -linkki</div>
                 <input type="url" value={formData.menuLink} onChange={e => handleInputChange('menuLink', e.target.value)} style={{ ...S.input, width: '100%', boxSizing: 'border-box', marginBottom: 8 }} placeholder="https://drive.google.com/..." />
                 {(formData.menuAttachments || []).map(att => (
-                  <div key={att.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: '1px solid #444', padding: 6, marginBottom: 4, fontSize: 12 }}>
+                  <div key={att.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: '1px solid var(--c-border-soft)', padding: 6, marginBottom: 4, fontSize: 12 }}>
                     <span>{att.fileName || att.name}</span>
                     <button onClick={() => removeAttachment('menuAttachments', att.id)} style={{ ...S.btnSmall, fontSize: 10, padding: '2px 6px' }}>✕</button>
                   </div>
@@ -399,7 +399,7 @@ export default function NewEventModal({ onClose, onAdd, locations = [], prefille
               </div>
 
               {/* JUOMAT */}
-              <div style={{ border: '1px solid #333', padding: 12, background: '#1a1a1a' }}>
+              <div style={{ border: '1px solid var(--c-border-row)', padding: 12, background: 'var(--c-bg)' }}>
                 <div style={{ ...S.label, marginBottom: 6, fontWeight: 700 }}>JUOMAT</div>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 8 }}>
                   {DRINK_OPTIONS.map(opt => {
@@ -407,19 +407,19 @@ export default function NewEventModal({ onClose, onAdd, locations = [], prefille
                     return (
                       <div key={opt} onClick={() => toggleDrinkOption(opt)} style={{
                         display: 'flex', alignItems: 'center', gap: 6,
-                        border: active ? '2px solid #ddd' : '1px solid #555',
-                        background: active ? '#ddd' : '#1e1e1e',
-                        color: active ? '#111' : '#999',
+                        border: active ? '2px solid var(--c-border)' : '1px solid var(--c-border-soft)',
+                        background: active ? 'var(--c-text)' : 'var(--c-bg-card)',
+                        color: active ? 'var(--c-bg)' : 'var(--c-text-muted)',
                         padding: '4px 10px', cursor: 'pointer',
                         fontSize: 11, fontWeight: 600, textTransform: 'uppercase',
                         transition: 'all 0.15s',
                       }}>
                         <span style={{
                           width: 14, height: 14,
-                          border: active ? '2px solid #111' : '2px solid #666',
-                          background: active ? '#111' : 'transparent',
+                          border: active ? '2px solid var(--c-text-inverse)' : '2px solid var(--c-text-muted)',
+                          background: active ? 'var(--c-bg)' : 'transparent',
                           display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          fontSize: 10, color: active ? '#ddd' : 'transparent', flexShrink: 0,
+                          fontSize: 10, color: active ? 'var(--c-text)' : 'transparent', flexShrink: 0,
                         }}>{active ? '✓' : ''}</span>
                         {opt}
                       </div>
@@ -427,7 +427,7 @@ export default function NewEventModal({ onClose, onAdd, locations = [], prefille
                   })}
                 </div>
                 {formData.drinkService.includes('Drinkkilippuja') && (
-                  <div style={{ border: '1px solid #444', padding: 10, marginBottom: 8, background: '#111' }}>
+                  <div style={{ border: '1px solid var(--c-border-soft)', padding: 10, marginBottom: 8, background: 'var(--c-bg)' }}>
                     <div style={{ ...S.label, marginBottom: 6 }}>DRINKKILIPPUJEN LÄHDE</div>
                     <div style={{ display: 'flex', gap: 8 }}>
                       {[{ value: 'asiakas', label: 'ASIAKKAALTA' }, { value: 'me', label: 'MEILTÄ' }].map(opt => {
@@ -435,19 +435,19 @@ export default function NewEventModal({ onClose, onAdd, locations = [], prefille
                         return (
                           <div key={opt.value} onClick={() => handleInputChange('drinkTicketSource', opt.value)} style={{
                             display: 'flex', alignItems: 'center', gap: 6,
-                            border: active ? '2px solid #ddd' : '1px solid #555',
-                            background: active ? '#ddd' : '#1e1e1e',
-                            color: active ? '#111' : '#999',
+                            border: active ? '2px solid var(--c-border)' : '1px solid var(--c-border-soft)',
+                            background: active ? 'var(--c-text)' : 'var(--c-bg-card)',
+                            color: active ? 'var(--c-bg)' : 'var(--c-text-muted)',
                             padding: '6px 14px', cursor: 'pointer',
                             fontSize: 11, fontWeight: 600, transition: 'all 0.15s',
                           }}>
                             <span style={{
                               width: 12, height: 12, borderRadius: '50%',
-                              border: active ? '2px solid #111' : '2px solid #666',
-                              background: active ? '#111' : 'transparent',
+                              border: active ? '2px solid var(--c-text-inverse)' : '2px solid var(--c-text-muted)',
+                              background: active ? 'var(--c-bg)' : 'transparent',
                               display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
                             }}>
-                              {active && <span style={{ width: 4, height: 4, borderRadius: '50%', background: '#ddd' }} />}
+                              {active && <span style={{ width: 4, height: 4, borderRadius: '50%', background: 'var(--c-accent-bg)' }} />}
                             </span>
                             {opt.label}
                           </div>
@@ -457,7 +457,7 @@ export default function NewEventModal({ onClose, onAdd, locations = [], prefille
                   </div>
                 )}
                 {formData.drinkService.length > 0 && (
-                  <div style={{ marginBottom: 6, fontSize: 11, color: '#999' }}>Valittu: {formData.drinkService.join(', ')}</div>
+                  <div style={{ marginBottom: 6, fontSize: 11, color: 'var(--c-text-muted)' }}>Valittu: {formData.drinkService.join(', ')}</div>
                 )}
                 <div style={S.label}>Juomien lisätiedot</div>
                 <textarea value={formData.drinkNotes} onChange={e => handleInputChange('drinkNotes', e.target.value)} style={{ ...S.input, width: '100%', minHeight: 50, boxSizing: 'border-box', fontFamily: 'inherit' }} placeholder="Esim. drinkkilippujen määrä, erityistoiveet, alkoholittomat vaihtoehdot..." />
@@ -474,14 +474,14 @@ export default function NewEventModal({ onClose, onAdd, locations = [], prefille
               </div>
 
               {/* ORDER / TILAUS */}
-              <div style={{ border: '1px solid #333', padding: 12, background: '#1a1a1a' }}>
+              <div style={{ border: '1px solid var(--c-border-row)', padding: 12, background: 'var(--c-bg)' }}>
                 <div style={{ ...S.label, marginBottom: 6, fontWeight: 700 }}>TILAUS</div>
                 <div style={S.label}>Google Drive -linkki</div>
                 <input type="url" value={formData.orderLink} onChange={e => handleInputChange('orderLink', e.target.value)} style={{ ...S.input, width: '100%', boxSizing: 'border-box', marginBottom: 8 }} placeholder="https://drive.google.com/..." />
                 <div style={S.label}>Tilauksen lisätiedot</div>
                 <textarea value={formData.orderNotes} onChange={e => handleInputChange('orderNotes', e.target.value)} style={{ ...S.input, width: '100%', minHeight: 50, boxSizing: 'border-box', fontFamily: 'inherit', marginBottom: 8 }} placeholder="Lisätiedot" />
                 {(formData.orderAttachments || []).map(att => (
-                  <div key={att.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: '1px solid #444', padding: 6, marginBottom: 4, fontSize: 12 }}>
+                  <div key={att.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: '1px solid var(--c-border-soft)', padding: 6, marginBottom: 4, fontSize: 12 }}>
                     <span>{att.fileName || att.name}</span>
                     <button onClick={() => removeAttachment('orderAttachments', att.id)} style={{ ...S.btnSmall, fontSize: 10, padding: '2px 6px' }}>✕</button>
                   </div>
@@ -491,10 +491,10 @@ export default function NewEventModal({ onClose, onAdd, locations = [], prefille
               </div>
 
               {/* MATERIAALIT / LIITTEET */}
-              <div style={{ border: '1px solid #333', padding: 12, background: '#1a1a1a' }}>
+              <div style={{ border: '1px solid var(--c-border-row)', padding: 12, background: 'var(--c-bg)' }}>
                 <div style={{ ...S.label, marginBottom: 6, fontWeight: 700 }}>MATERIAALIT / LIITTEET</div>
                 {(formData.materials || []).map(att => (
-                  <div key={att.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: '1px solid #444', padding: 6, marginBottom: 4, fontSize: 12 }}>
+                  <div key={att.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: '1px solid var(--c-border-soft)', padding: 6, marginBottom: 4, fontSize: 12 }}>
                     <span>{att.fileName || att.name}</span>
                     <button onClick={() => removeAttachment('materials', att.id)} style={{ ...S.btnSmall, fontSize: 10, padding: '2px 6px' }}>✕</button>
                   </div>
@@ -530,11 +530,11 @@ export default function NewEventModal({ onClose, onAdd, locations = [], prefille
         </div>
 
         {validationError && (
-          <div style={{ marginTop: 12, padding: '8px 12px', background: '#4a1c1c', border: '1px solid #ff4444', color: '#ff6666', fontSize: 12, fontWeight: 600 }}>
+          <div style={{ marginTop: 12, padding: '8px 12px', background: '#4a1c1c', border: '1px solid #ff4444', color: 'var(--c-danger)', fontSize: 12, fontWeight: 600 }}>
             {validationError}
           </div>
         )}
-        <div style={{ ...S.flex, ...S.gap, marginTop: 16, borderTop: '2px solid #444', paddingTop: 16 }}>
+        <div style={{ ...S.flex, ...S.gap, marginTop: 16, borderTop: '2px solid var(--c-border-soft)', paddingTop: 16 }}>
           <button onClick={handleSubmit} style={S.btnBlack}>LISÄÄ TAPAHTUMA</button>
           <button onClick={handleClose} style={S.btnWire}>PERUUTA</button>
         </div>

@@ -21,7 +21,7 @@ export default function Navigation({
   return (
     <div style={{ ...S.border, ...S.bg, borderTop: "none" }}>
       {/* Full-width tab bar — scrollable on mobile */}
-      <div style={{ display: 'flex', borderBottom: "2px solid #ddd", overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+      <div style={{ display: 'flex', borderBottom: "2px solid var(--c-border)", overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
         {tabs.map(tab => (
           <div
             key={tab}
@@ -33,9 +33,9 @@ export default function Navigation({
               fontSize: 11,
               letterSpacing: 0.5,
               cursor: "pointer",
-              background: activeTab === tab ? "#ddd" : "#1e1e1e",
-              color: activeTab === tab ? "#111" : "#ddd",
-              borderRight: "1px solid #ddd",
+              background: activeTab === tab ? "var(--c-accent-bg)" : "var(--c-bg-card)",
+              color: activeTab === tab ? "var(--c-text-inverse)" : "var(--c-text)",
+              borderRight: "1px solid var(--c-border)",
               whiteSpace: 'nowrap',
               minWidth: 0,
             }}

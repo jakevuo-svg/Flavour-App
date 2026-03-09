@@ -119,17 +119,17 @@ const WorkerAccessModal = ({ worker, events = [], assignWorker, removeWorkerAssi
 
         {/* Header */}
         <div style={{ marginBottom: 16 }}>
-          <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1, color: '#999' }}>
+          <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1, color: 'var(--c-text-muted)' }}>
             {t('eventAccess')}
           </div>
           <div style={{ fontSize: 18, fontWeight: 700, marginTop: 4 }}>
             {worker.first_name} {worker.last_name}
           </div>
           <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginTop: 4 }}>
-            <span style={{ fontSize: 12, color: '#999' }}>{worker.email}</span>
+            <span style={{ fontSize: 12, color: 'var(--c-text-muted)' }}>{worker.email}</span>
             <span style={{
               fontSize: 10, fontWeight: 700, textTransform: 'uppercase',
-              padding: '2px 8px', border: '1px solid #555', color: '#888',
+              padding: '2px 8px', border: '1px solid var(--c-border-soft)', color: 'var(--c-text-muted)',
             }}>
               {role === 'admin' ? 'Admin' : role === 'temporary' ? 'Väliaikainen' : 'Työntekijä'}
             </span>
@@ -137,7 +137,7 @@ const WorkerAccessModal = ({ worker, events = [], assignWorker, removeWorkerAssi
         </div>
 
         {/* Tab navigation */}
-        <div style={{ display: 'flex', borderBottom: '2px solid #ddd', marginBottom: 12 }}>
+        <div style={{ display: 'flex', borderBottom: '2px solid var(--c-border)', marginBottom: 12 }}>
           {tabs.map(tab => (
             <div
               key={tab.key}
@@ -148,13 +148,13 @@ const WorkerAccessModal = ({ worker, events = [], assignWorker, removeWorkerAssi
                 fontSize: 11,
                 letterSpacing: 1,
                 cursor: 'pointer',
-                borderBottom: activeTab === tab.key ? '2px solid #ddd' : '2px solid transparent',
-                color: activeTab === tab.key ? '#ddd' : '#666',
+                borderBottom: activeTab === tab.key ? '2px solid var(--c-border)' : '2px solid transparent',
+                color: activeTab === tab.key ? 'var(--c-text)' : 'var(--c-text-muted)',
               }}
             >
               {tab.label}
               {tab.key === 'ERIKOISOIKEUDET' && Object.keys(specialPerms).length > 0 && (
-                <span style={{ color: '#6baaff', marginLeft: 6, fontWeight: 400 }}>
+                <span style={{ color: 'var(--c-info)', marginLeft: 6, fontWeight: 400 }}>
                   ({Object.keys(specialPerms).length})
                 </span>
               )}
@@ -165,16 +165,16 @@ const WorkerAccessModal = ({ worker, events = [], assignWorker, removeWorkerAssi
         {/* TAPAHTUMAT TAB */}
         {activeTab === 'TAPAHTUMAT' && (
           <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-            <div style={{ fontSize: 12, color: '#888', marginBottom: 12, lineHeight: 1.5 }}>
+            <div style={{ fontSize: 12, color: 'var(--c-text-muted)', marginBottom: 12, lineHeight: 1.5 }}>
               {t('eventAccessDesc')}
             </div>
 
             {loading ? (
-              <div style={{ color: '#666', fontSize: 12, padding: '20px 0' }}>{t('loading')}</div>
+              <div style={{ color: 'var(--c-text-muted)', fontSize: 12, padding: '20px 0' }}>{t('loading')}</div>
             ) : (
               <div style={{ flex: 1, overflowY: 'auto' }}>
                 {sortedEvents.length === 0 ? (
-                  <div style={{ color: '#666', fontSize: 12, padding: '20px 0' }}>{t('noResults')}</div>
+                  <div style={{ color: 'var(--c-text-muted)', fontSize: 12, padding: '20px 0' }}>{t('noResults')}</div>
                 ) : (
                   sortedEvents.map(event => {
                     const isAssigned = assignedIds.includes(event.id);
@@ -188,33 +188,33 @@ const WorkerAccessModal = ({ worker, events = [], assignWorker, removeWorkerAssi
                         onClick={() => !isSaving && handleToggle(event.id)}
                         style={{
                           display: 'flex', alignItems: 'center', gap: 12,
-                          padding: '10px 12px', borderBottom: '1px solid #333',
+                          padding: '10px 12px', borderBottom: '1px solid var(--c-border-row)',
                           cursor: isSaving ? 'wait' : 'pointer',
                           opacity: isPast ? 0.5 : 1,
-                          background: isAssigned ? '#1a2a1a' : 'transparent',
+                          background: isAssigned ? 'var(--c-success-bg)' : 'transparent',
                           transition: 'background 0.15s',
                         }}
                       >
                         <div style={{
                           width: 24, height: 24,
-                          border: isAssigned ? '2px solid #6bff6b' : '2px solid #555',
+                          border: isAssigned ? '2px solid var(--c-success)' : '2px solid var(--c-border-soft)',
                           display: 'flex', alignItems: 'center', justifyContent: 'center',
                           flexShrink: 0, fontSize: 14, fontWeight: 700,
-                          color: isAssigned ? '#6bff6b' : '#555',
+                          color: isAssigned ? 'var(--c-success)' : 'var(--c-border-soft)',
                         }}>
                           {isSaving ? '·' : isAssigned ? '✓' : ''}
                         </div>
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <div style={{ fontWeight: 600, fontSize: 13 }}>{event.name}</div>
-                          <div style={{ fontSize: 11, color: '#888', marginTop: 2, display: 'flex', gap: 12 }}>
+                          <div style={{ fontSize: 11, color: 'var(--c-text-muted)', marginTop: 2, display: 'flex', gap: 12 }}>
                             <span>{eventDate ? eventDate.toLocaleDateString('fi-FI') : '-'}</span>
                             {event.location_name && <span>{event.location_name}</span>}
-                            {event.type && <span style={{ color: '#666' }}>{event.type}</span>}
+                            {event.type && <span style={{ color: 'var(--c-text-muted)' }}>{event.type}</span>}
                           </div>
                         </div>
                         <div style={{
                           fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5,
-                          color: event.status === 'CONFIRMED' ? '#6bff6b' : event.status === 'DONE' ? '#666' : '#ddd',
+                          color: event.status === 'CONFIRMED' ? 'var(--c-success)' : event.status === 'DONE' ? 'var(--c-text-muted)' : 'var(--c-text)',
                           flexShrink: 0,
                         }}>
                           {event.status}
@@ -231,13 +231,13 @@ const WorkerAccessModal = ({ worker, events = [], assignWorker, removeWorkerAssi
         {/* ERIKOISOIKEUDET TAB */}
         {activeTab === 'ERIKOISOIKEUDET' && (
           <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-            <div style={{ fontSize: 12, color: '#888', marginBottom: 12, lineHeight: 1.5 }}>
+            <div style={{ fontSize: 12, color: 'var(--c-text-muted)', marginBottom: 12, lineHeight: 1.5 }}>
               Valitse tämän henkilön erikoisoikeudet. Sininen = roolin oletuksesta poikkeava asetus.
               Klikkaa muuttaaksesi: oletusarvo → käänteinen → takaisin oletukseen.
             </div>
 
             {savingPerm && (
-              <div style={{ fontSize: 11, color: '#6baaff', marginBottom: 8 }}>Tallennetaan...</div>
+              <div style={{ fontSize: 11, color: 'var(--c-info)', marginBottom: 8 }}>Tallennetaan...</div>
             )}
 
             <div style={{ flex: 1, overflowY: 'auto' }}>
@@ -245,9 +245,9 @@ const WorkerAccessModal = ({ worker, events = [], assignWorker, removeWorkerAssi
                 <div key={groupName}>
                   {/* Group header */}
                   <div style={{
-                    padding: '6px 12px', background: '#1a1a1a',
-                    borderBottom: '1px solid #444',
-                    fontSize: 10, fontWeight: 700, color: '#666', letterSpacing: 1,
+                    padding: '6px 12px', background: 'var(--c-bg)',
+                    borderBottom: '1px solid var(--c-border-soft)',
+                    fontSize: 10, fontWeight: 700, color: 'var(--c-text-muted)', letterSpacing: 1,
                   }}>
                     {groupName}
                   </div>
@@ -264,20 +264,20 @@ const WorkerAccessModal = ({ worker, events = [], assignWorker, removeWorkerAssi
                         onClick={() => handleTogglePerm(feature.key)}
                         style={{
                           display: 'flex', alignItems: 'center', gap: 12,
-                          padding: '8px 12px', borderBottom: '1px solid #333',
+                          padding: '8px 12px', borderBottom: '1px solid var(--c-border-row)',
                           cursor: 'pointer',
-                          background: overridden ? '#1a1a2a' : 'transparent',
+                          background: overridden ? 'var(--c-info-bg)' : 'transparent',
                           transition: 'background 0.15s',
                         }}
                       >
                         {/* Checkbox */}
                         <div style={{
                           width: 22, height: 22,
-                          border: `2px solid ${overridden ? '#6baaff' : effective ? '#555' : '#444'}`,
-                          background: effective ? (overridden ? '#6baaff' : '#555') : 'transparent',
+                          border: `2px solid ${overridden ? 'var(--c-info)' : effective ? 'var(--c-border-soft)' : 'var(--c-border-row)'}`,
+                          background: effective ? (overridden ? 'var(--c-info)' : 'var(--c-border-soft)') : 'transparent',
                           display: 'flex', alignItems: 'center', justifyContent: 'center',
                           flexShrink: 0, fontSize: 12, fontWeight: 700,
-                          color: effective ? '#111' : 'transparent',
+                          color: effective ? 'var(--c-bg)' : 'transparent',
                         }}>
                           {effective ? '✓' : ''}
                         </div>
@@ -286,7 +286,7 @@ const WorkerAccessModal = ({ worker, events = [], assignWorker, removeWorkerAssi
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <div style={{
                             fontSize: 12,
-                            color: overridden ? '#6baaff' : '#ccc',
+                            color: overridden ? 'var(--c-info)' : 'var(--c-text)',
                             fontWeight: overridden ? 600 : 400,
                           }}>
                             {feature.label}
@@ -294,9 +294,9 @@ const WorkerAccessModal = ({ worker, events = [], assignWorker, removeWorkerAssi
                         </div>
 
                         {/* Status indicator */}
-                        <div style={{ flexShrink: 0, fontSize: 10, color: '#666' }}>
+                        <div style={{ flexShrink: 0, fontSize: 10, color: 'var(--c-text-muted)' }}>
                           {overridden ? (
-                            <span style={{ color: '#6baaff', fontWeight: 600 }}>
+                            <span style={{ color: 'var(--c-info)', fontWeight: 600 }}>
                               {effective ? 'SALLITTU' : 'ESTETTY'}
                             </span>
                           ) : (
@@ -312,19 +312,19 @@ const WorkerAccessModal = ({ worker, events = [], assignWorker, removeWorkerAssi
 
             {/* Legend */}
             <div style={{
-              paddingTop: 10, marginTop: 8, borderTop: '1px solid #444',
-              display: 'flex', gap: 16, fontSize: 10, color: '#666', flexWrap: 'wrap',
+              paddingTop: 10, marginTop: 8, borderTop: '1px solid var(--c-border-soft)',
+              display: 'flex', gap: 16, fontSize: 10, color: 'var(--c-text-muted)', flexWrap: 'wrap',
             }}>
               <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                <span style={{ width: 12, height: 12, border: '2px solid #555', background: '#555', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, color: '#111' }}>✓</span>
+                <span style={{ width: 12, height: 12, border: '2px solid var(--c-border-soft)', background: 'var(--c-border-soft)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, color: 'var(--c-text-inverse)' }}>✓</span>
                 Roolin oletus
               </span>
               <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                <span style={{ width: 12, height: 12, border: '2px solid #6baaff', background: '#6baaff', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, color: '#111' }}>✓</span>
+                <span style={{ width: 12, height: 12, border: '2px solid var(--c-info)', background: 'var(--c-info)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, color: 'var(--c-text-inverse)' }}>✓</span>
                 Erikoisoikeus (sallittu)
               </span>
               <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                <span style={{ width: 12, height: 12, border: '2px solid #6baaff', background: 'transparent', display: 'inline-block' }}></span>
+                <span style={{ width: 12, height: 12, border: '2px solid var(--c-info)', background: 'transparent', display: 'inline-block' }}></span>
                 Erikoisoikeus (estetty)
               </span>
             </div>
@@ -333,10 +333,10 @@ const WorkerAccessModal = ({ worker, events = [], assignWorker, removeWorkerAssi
 
         {/* Footer */}
         <div style={{
-          marginTop: 16, paddingTop: 12, borderTop: '1px solid #444',
+          marginTop: 16, paddingTop: 12, borderTop: '1px solid var(--c-border-soft)',
           display: 'flex', justifyContent: 'space-between', alignItems: 'center',
         }}>
-          <div style={{ fontSize: 12, color: '#999' }}>
+          <div style={{ fontSize: 12, color: 'var(--c-text-muted)' }}>
             {activeTab === 'TAPAHTUMAT'
               ? `${assignedIds.length} / ${events.length} ${t('tab_EVENTS').toLowerCase()}`
               : `${Object.keys(specialPerms).length} erikoisoikeutta`

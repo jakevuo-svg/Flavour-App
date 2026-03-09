@@ -4,10 +4,89 @@
   box-sizing: border-box;
 }
 
+/* === THEME CSS VARIABLES === */
+:root,
+[data-theme="dark"] {
+  --c-bg: #111;
+  --c-bg-card: #1e1e1e;
+  --c-bg-hover: #2a2a2a;
+  --c-text: #ddd;
+  --c-text-muted: #999;
+  --c-text-inverse: #111;
+  --c-border: #ddd;
+  --c-border-soft: #555;
+  --c-border-row: #444;
+  --c-accent: #ddd;
+  --c-accent-bg: #ddd;
+  --c-danger: #ff4444;
+  --c-danger-text: #fff;
+  --c-modal-overlay: rgba(0,0,0,0.7);
+  --c-toast-bg: #ddd;
+  --c-toast-text: #111;
+  --c-color-scheme: dark;
+  --c-active-row-bg: #1a2a1a;
+  --c-success: #6bff6b;
+  --c-success-bg: #1a3a1a;
+  --c-success-border: #2a4a2a;
+  --c-info: #6baaff;
+  --c-info-bg: #1a1a2a;
+  --c-warning: #ffaa44;
+  --c-danger-bg: #3a1111;
+  --c-danger-subtle: #ff6b6b;
+  --c-danger-row-bg: #1a0a0a;
+  --c-link: #88d;
+  --c-menu-bg: #1a1a1a;
+  --c-menu-hover: #333;
+  --c-disabled-bg: #ccc;
+  --c-disabled-text: #666;
+  --c-error-bg: #3a1111;
+  --c-error-border: #554444;
+  color-scheme: dark;
+}
+
+[data-theme="light"] {
+  --c-bg: #f5f5f5;
+  --c-bg-card: #ffffff;
+  --c-bg-hover: #eeeeee;
+  --c-text: #222;
+  --c-text-muted: #777;
+  --c-text-inverse: #fff;
+  --c-border: #333;
+  --c-border-soft: #ccc;
+  --c-border-row: #ddd;
+  --c-accent: #333;
+  --c-accent-bg: #333;
+  --c-danger: #e53e3e;
+  --c-danger-text: #fff;
+  --c-modal-overlay: rgba(0,0,0,0.4);
+  --c-toast-bg: #333;
+  --c-toast-text: #fff;
+  --c-color-scheme: light;
+  --c-active-row-bg: #e8f5e9;
+  --c-success: #2e7d32;
+  --c-success-bg: #e8f5e9;
+  --c-success-border: #a5d6a7;
+  --c-info: #1565c0;
+  --c-info-bg: #e3f2fd;
+  --c-warning: #e65100;
+  --c-danger-bg: #fde8e8;
+  --c-danger-subtle: #c62828;
+  --c-danger-row-bg: #fff5f5;
+  --c-link: #1565c0;
+  --c-menu-bg: #f0f0f0;
+  --c-menu-hover: #e0e0e0;
+  --c-disabled-bg: #e0e0e0;
+  --c-disabled-text: #999;
+  --c-error-bg: #fde8e8;
+  --c-error-border: #e0b0b0;
+  color-scheme: light;
+}
+
 body {
-  background: #111;
-  color: #ddd;
+  background: var(--c-bg);
+  color: var(--c-text);
   font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  transition: background 0.2s, color 0.2s;
 }
 
 ::-webkit-scrollbar {
@@ -15,17 +94,17 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #1e1e1e;
+  background: var(--c-bg-card);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #555;
+  background: var(--c-border-soft);
   border-radius: 3px;
 }
 
 select option {
-  background: #1e1e1e;
-  color: #ddd;
+  background: var(--c-bg-card);
+  color: var(--c-text);
 }
 
 textarea {
@@ -41,12 +120,11 @@ textarea {
 input:focus,
 select:focus,
 textarea:focus {
-  border-color: #ddd !important;
+  border-color: var(--c-border) !important;
 }
 
 /* Mobile responsiveness */
 @media (max-width: 640px) {
-  /* Make modals full-width */
   .modal-box {
     width: calc(100vw - 24px) !important;
     max-width: 100% !important;

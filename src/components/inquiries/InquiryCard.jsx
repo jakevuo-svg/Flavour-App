@@ -5,10 +5,10 @@ import { INQUIRY_STATUSES, INQUIRY_STATUS_COLORS } from '../../hooks/useInquirie
 const Section = ({ title, children, defaultOpen = false }) => {
   const [open, setOpen] = useState(defaultOpen);
   return (
-    <div style={{ borderTop: '2px solid #333', marginTop: 8 }}>
+    <div style={{ borderTop: '2px solid var(--c-border-row)', marginTop: 8 }}>
       <div onClick={() => setOpen(!open)} style={{ padding: '10px 0', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
-        <span style={{ fontSize: 10, color: '#888' }}>{open ? '▼' : '▶'}</span>
-        <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1, color: '#888' }}>{title}</span>
+        <span style={{ fontSize: 10, color: 'var(--c-text-muted)' }}>{open ? '▼' : '▶'}</span>
+        <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1, color: 'var(--c-text-muted)' }}>{title}</span>
       </div>
       {open && <div style={{ paddingBottom: 16 }}>{children}</div>}
     </div>
@@ -17,7 +17,7 @@ const Section = ({ title, children, defaultOpen = false }) => {
 
 const Row = ({ label, children }) => (
   <div style={{ marginBottom: 10 }}>
-    <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 0.5, color: '#888', marginBottom: 4 }}>{label}</div>
+    <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 0.5, color: 'var(--c-text-muted)', marginBottom: 4 }}>{label}</div>
     {children}
   </div>
 );
@@ -52,9 +52,9 @@ const InquiryCard = ({ inquiry, onUpdate, onDelete, onBack, onConvertToEvent, on
   };
 
   const inputStyle = {
-    background: '#111',
-    color: '#ddd',
-    border: '1px solid #444',
+    background: 'var(--c-bg)',
+    color: 'var(--c-text)',
+    border: '1px solid var(--c-border-soft)',
     padding: '8px 10px',
     fontSize: 13,
     width: '100%',
@@ -75,9 +75,9 @@ const InquiryCard = ({ inquiry, onUpdate, onDelete, onBack, onConvertToEvent, on
     <div style={{ ...S.bg, ...S.border, ...S.pad }}>
       {inquiry.event_id && (
         <div style={{
-          background: '#1a3a1a',
-          border: '1px solid #4a8a4a',
-          color: '#8fd68f',
+          background: 'var(--c-success-bg)',
+          border: '1px solid var(--c-success-border)',
+          color: 'var(--c-success)',
           padding: '10px 12px',
           fontSize: 12,
           fontWeight: 700,
@@ -94,7 +94,7 @@ const InquiryCard = ({ inquiry, onUpdate, onDelete, onBack, onConvertToEvent, on
         {viewMode ? (
           <>
             <button onClick={() => setViewMode(false)} style={{ ...S.btnWire }}>MUOKKAA</button>
-            <button onClick={handleDelete} style={{ ...S.btnWire, color: '#c44' }}>POISTA</button>
+            <button onClick={handleDelete} style={{ ...S.btnWire, color: 'var(--c-danger)' }}>POISTA</button>
             {!inquiry.event_id && (
               <button onClick={() => onConvertToEvent(inquiry)} style={{ ...S.btnBlack }}>MUUNNA TAPAHTUMAKSI</button>
             )}
@@ -108,7 +108,7 @@ const InquiryCard = ({ inquiry, onUpdate, onDelete, onBack, onConvertToEvent, on
           <>
             <Row label="Yhteyshenkilö">
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <div style={{ fontSize: 13, color: '#ddd' }}>{formData.contact_name || '-'}</div>
+                <div style={{ fontSize: 13, color: 'var(--c-text)' }}>{formData.contact_name || '-'}</div>
                 {formData.contact_name && onAddPerson && (
                   <button
                     onClick={() => onAddPerson({
@@ -131,20 +131,20 @@ const InquiryCard = ({ inquiry, onUpdate, onDelete, onBack, onConvertToEvent, on
             </Row>
             <Row label="Sähköposti">
               {formData.email ? (
-                <a href={`mailto:${formData.email}`} style={{ fontSize: 13, color: '#88d', textDecoration: 'none' }}>{formData.email}</a>
+                <a href={`mailto:${formData.email}`} style={{ fontSize: 13, color: 'var(--c-link)', textDecoration: 'none' }}>{formData.email}</a>
               ) : (
-                <div style={{ fontSize: 13, color: '#ddd' }}>-</div>
+                <div style={{ fontSize: 13, color: 'var(--c-text)' }}>-</div>
               )}
             </Row>
             <Row label="Puhelin">
               {formData.phone ? (
-                <a href={`tel:${formData.phone}`} style={{ fontSize: 13, color: '#88d', textDecoration: 'none' }}>{formData.phone}</a>
+                <a href={`tel:${formData.phone}`} style={{ fontSize: 13, color: 'var(--c-link)', textDecoration: 'none' }}>{formData.phone}</a>
               ) : (
-                <div style={{ fontSize: 13, color: '#ddd' }}>-</div>
+                <div style={{ fontSize: 13, color: 'var(--c-text)' }}>-</div>
               )}
             </Row>
             <Row label="Yritys">
-              <div style={{ fontSize: 13, color: '#ddd' }}>{formData.company || '-'}</div>
+              <div style={{ fontSize: 13, color: 'var(--c-text)' }}>{formData.company || '-'}</div>
             </Row>
           </>
         ) : (
@@ -170,19 +170,19 @@ const InquiryCard = ({ inquiry, onUpdate, onDelete, onBack, onConvertToEvent, on
         {viewMode ? (
           <>
             <Row label="Toivottu ajankohta">
-              <div style={{ fontSize: 13, color: '#ddd' }}>{formData.requested_date || '-'}</div>
+              <div style={{ fontSize: 13, color: 'var(--c-text)' }}>{formData.requested_date || '-'}</div>
             </Row>
             <Row label="Henkilömäärä">
-              <div style={{ fontSize: 13, color: '#ddd' }}>{formData.guest_count || '-'}</div>
+              <div style={{ fontSize: 13, color: 'var(--c-text)' }}>{formData.guest_count || '-'}</div>
             </Row>
             <Row label="Tapahtumapaikka">
-              <div style={{ fontSize: 13, color: '#ddd' }}>{formData.location_name || '-'}</div>
+              <div style={{ fontSize: 13, color: 'var(--c-text)' }}>{formData.location_name || '-'}</div>
             </Row>
             <Row label="Kuvaus/teema">
-              <div style={{ fontSize: 13, color: '#ddd', whiteSpace: 'pre-wrap' }}>{formData.description || '-'}</div>
+              <div style={{ fontSize: 13, color: 'var(--c-text)', whiteSpace: 'pre-wrap' }}>{formData.description || '-'}</div>
             </Row>
             <Row label="Lähde">
-              <div style={{ fontSize: 13, color: '#ddd' }}>{formData.source || '-'}</div>
+              <div style={{ fontSize: 13, color: 'var(--c-text)' }}>{formData.source || '-'}</div>
             </Row>
           </>
         ) : (
@@ -233,24 +233,24 @@ const InquiryCard = ({ inquiry, onUpdate, onDelete, onBack, onConvertToEvent, on
                   fontSize: 11,
                   fontWeight: 700,
                   letterSpacing: 0.5,
-                  background: (INQUIRY_STATUS_COLORS[formData.status] || '#666') + '22',
-                  color: INQUIRY_STATUS_COLORS[formData.status] || '#666',
-                  border: `1px solid ${INQUIRY_STATUS_COLORS[formData.status] || '#666'}`
+                  background: (INQUIRY_STATUS_COLORS[formData.status] || 'var(--c-text-muted)') + '22',
+                  color: INQUIRY_STATUS_COLORS[formData.status] || 'var(--c-text-muted)',
+                  border: `1px solid ${INQUIRY_STATUS_COLORS[formData.status] || 'var(--c-text-muted)'}`
                 }}>
                   {formData.status}
                 </div>
               )}
             </Row>
             <Row label="Tarjottu">
-              <div style={{ fontSize: 13, color: '#ddd' }}>{formData.offered || '-'}</div>
+              <div style={{ fontSize: 13, color: 'var(--c-text)' }}>{formData.offered || '-'}</div>
             </Row>
             <Row label="Hinta">
-              <div style={{ fontSize: 13, color: '#ddd' }}>
+              <div style={{ fontSize: 13, color: 'var(--c-text)' }}>
                 {formData.price ? `${formData.price} €` : '-'}
               </div>
             </Row>
             <Row label="Vastuuhenkilö">
-              <div style={{ fontSize: 13, color: '#ddd' }}>{formData.assigned_name || '-'}</div>
+              <div style={{ fontSize: 13, color: 'var(--c-text)' }}>{formData.assigned_name || '-'}</div>
             </Row>
             <Row label="Vastaa viimeistään">
               {formData.respond_by ? (() => {
@@ -262,18 +262,18 @@ const InquiryCard = ({ inquiry, onUpdate, onDelete, onBack, onConvertToEvent, on
                   <div style={{
                     fontSize: 13,
                     fontWeight: (isOverdue || isToday) ? 700 : 400,
-                    color: isOverdue ? '#ff6666' : isToday ? '#ffaa44' : '#ddd',
+                    color: isOverdue ? 'var(--c-danger-subtle)' : isToday ? 'var(--c-warning)' : 'var(--c-text)',
                   }}>
                     {isOverdue ? '! MYÖHÄSSÄ — ' : isToday ? '! TÄNÄÄN — ' : ''}{formatDate(formData.respond_by)}
                   </div>
                 );
-              })() : <div style={{ fontSize: 13, color: '#ddd' }}>-</div>}
+              })() : <div style={{ fontSize: 13, color: 'var(--c-text)' }}>-</div>}
             </Row>
             <Row label="Tullut">
-              <div style={{ fontSize: 13, color: '#ddd' }}>{formatDate(formData.received_at)}</div>
+              <div style={{ fontSize: 13, color: 'var(--c-text)' }}>{formatDate(formData.received_at)}</div>
             </Row>
             <Row label="Vastattu">
-              <div style={{ fontSize: 13, color: '#ddd' }}>{formatDate(formData.responded_at)}</div>
+              <div style={{ fontSize: 13, color: 'var(--c-text)' }}>{formatDate(formData.responded_at)}</div>
             </Row>
           </>
         ) : (
@@ -326,13 +326,13 @@ const InquiryCard = ({ inquiry, onUpdate, onDelete, onBack, onConvertToEvent, on
           {viewMode ? (
             <>
               <Row label="Laskun numero">
-                <div style={{ fontSize: 13, color: '#ddd' }}>{formData.invoice_number || '-'}</div>
+                <div style={{ fontSize: 13, color: 'var(--c-text)' }}>{formData.invoice_number || '-'}</div>
               </Row>
               <Row label="Laskutettu">
-                <div style={{ fontSize: 13, color: '#ddd' }}>{formatDate(formData.invoiced_at)}</div>
+                <div style={{ fontSize: 13, color: 'var(--c-text)' }}>{formatDate(formData.invoiced_at)}</div>
               </Row>
               <Row label="Maksettu">
-                <div style={{ fontSize: 13, color: '#ddd' }}>{formatDate(formData.paid_at)}</div>
+                <div style={{ fontSize: 13, color: 'var(--c-text)' }}>{formatDate(formData.paid_at)}</div>
               </Row>
             </>
           ) : (
@@ -356,10 +356,10 @@ const InquiryCard = ({ inquiry, onUpdate, onDelete, onBack, onConvertToEvent, on
         {viewMode ? (
           <>
             <Row label="Lopputulos">
-              <div style={{ fontSize: 13, color: '#ddd', whiteSpace: 'pre-wrap' }}>{formData.outcome || '-'}</div>
+              <div style={{ fontSize: 13, color: 'var(--c-text)', whiteSpace: 'pre-wrap' }}>{formData.outcome || '-'}</div>
             </Row>
             <Row label="Muut huomiot">
-              <div style={{ fontSize: 13, color: '#ddd', whiteSpace: 'pre-wrap' }}>{formData.notes || '-'}</div>
+              <div style={{ fontSize: 13, color: 'var(--c-text)', whiteSpace: 'pre-wrap' }}>{formData.notes || '-'}</div>
             </Row>
           </>
         ) : (

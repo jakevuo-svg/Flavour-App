@@ -56,16 +56,16 @@ export default function PersonList({ persons = [], onPersonClick, searchQuery = 
       {sorted.map(person => (
         <div key={person.id} style={S.row} onClick={() => onPersonClick?.(person)}>
           <span style={{ ...S.col(2), fontWeight: 600 }}>{person.first_name} {person.last_name}</span>
-          <span style={{ ...S.col(2), color: '#999' }}>{person.company || ''}</span>
-          <span style={{ ...S.col(1), color: '#999' }}>{person.type || ''}</span>
-          <span style={{ ...S.col(1), color: '#666', fontSize: 11 }}>
+          <span style={{ ...S.col(2), color: 'var(--c-text-muted)' }}>{person.company || ''}</span>
+          <span style={{ ...S.col(1), color: 'var(--c-text-muted)' }}>{person.type || ''}</span>
+          <span style={{ ...S.col(1), color: 'var(--c-text-muted)', fontSize: 11 }}>
             {person.updated_at ? new Date(person.updated_at).toLocaleDateString('fi-FI') : ''}
           </span>
         </div>
       ))}
 
       {sorted.length === 0 && (
-        <div style={{ padding: 12, color: '#666', fontSize: 12 }}>Ei henkilöitä</div>
+        <div style={{ padding: 12, color: 'var(--c-text-muted)', fontSize: 12 }}>Ei henkilöitä</div>
       )}
     </div>
   );

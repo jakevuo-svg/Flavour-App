@@ -61,29 +61,29 @@ export default function EventList({ events = [], onEventClick, searchQuery = '' 
       {sorted.map(event => (
         <div key={event.id} style={S.row} onClick={() => onEventClick?.(event)}>
           <span style={{ ...S.col(2), fontWeight: 600 }}>{event.name}</span>
-          <span style={{ ...S.col(1), color: '#999', fontSize: 12 }}>
+          <span style={{ ...S.col(1), color: 'var(--c-text-muted)', fontSize: 12 }}>
             {event.date ? new Date(event.date).toLocaleDateString('fi-FI') : ''}
           </span>
-          <span style={{ ...S.col(1.5), color: '#999' }}>{event.location_name || ''}</span>
+          <span style={{ ...S.col(1.5), color: 'var(--c-text-muted)' }}>{event.location_name || ''}</span>
           <span style={S.col(1)}>
             <span style={{
               padding: '2px 8px',
               fontSize: 11,
               fontWeight: 700,
-              border: '1px solid #ddd',
-              color: '#ddd',
-              background: '#1e1e1e',
+              border: '1px solid var(--c-border)',
+              color: 'var(--c-text)',
+              background: 'var(--c-bg-card)',
               textTransform: 'uppercase',
             }}>
               {event.status || ''}
             </span>
           </span>
-          <span style={{ ...S.col(0.8), color: '#999' }}>{event.guest_count || ''}</span>
+          <span style={{ ...S.col(0.8), color: 'var(--c-text-muted)' }}>{event.guest_count || ''}</span>
         </div>
       ))}
 
       {sorted.length === 0 && (
-        <div style={{ padding: 12, color: '#666', fontSize: 12 }}>Ei tapahtumia</div>
+        <div style={{ padding: 12, color: 'var(--c-text-muted)', fontSize: 12 }}>Ei tapahtumia</div>
       )}
     </div>
   );

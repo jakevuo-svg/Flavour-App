@@ -47,7 +47,7 @@ export default function ChangePassword({ onClose }) {
       display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000,
     }} onClick={(e) => e.target === e.currentTarget && onClose?.()}>
       <div style={{
-        background: '#1a1a1a', border: '2px solid #ddd',
+        background: 'var(--c-bg)', border: '2px solid var(--c-border)',
         padding: 24, minWidth: 340, maxWidth: 400,
       }}>
         <div style={{ ...S.label, marginBottom: 16, fontSize: 14 }}>
@@ -57,9 +57,9 @@ export default function ChangePassword({ onClose }) {
         {message && (
           <div style={{
             padding: '8px 12px', marginBottom: 12, fontSize: 12, fontWeight: 600,
-            background: message.type === 'error' ? '#3a1111' : '#113a11',
-            color: message.type === 'error' ? '#ff6b6b' : '#6bff6b',
-            border: '1px solid #333',
+            background: message.type === 'error' ? 'var(--c-danger-bg)' : 'var(--c-success-bg)',
+            color: message.type === 'error' ? 'var(--c-danger-subtle)' : 'var(--c-success)',
+            border: '1px solid var(--c-border-row)',
           }}>
             {message.text}
           </div>
