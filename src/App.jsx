@@ -649,10 +649,10 @@ const AppContent = () => {
       case 'home':
         return (
           <Dashboard
-            events={events}
+            events={events.filter(e => !e.is_archived)}
             persons={persons}
             notes={notes}
-            tasks={tasks}
+            tasks={tasks.filter(t => !events.find(e => e.id === t.event_id)?.is_archived)}
             inquiries={inquiries}
             recentActivity={recentActivity}
             onEventClick={handleEventClick}
