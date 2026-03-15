@@ -137,34 +137,27 @@ const AppContent = () => {
     emitTaskAdded, emitTaskStatusChanged, emitWorkerAssigned,
   } = useNotifications();
 
-  // Memoize deadline checking functions to avoid infinite loops
-  const checkDeadlines = useCallback(() => {
+  // Check deadlines on mount and when events/tasks data changes
+  const deadlinesCheckedRef = useRef(new Set());
+  useEffect(() => {
     const now = new Date();
     events.forEach(event => {
       if (!event.date) return;
       const eventDate = new Date(event.date);
       const hoursLeft = (eventDate - now) / 3600000;
-      if (hoursLeft > 0 && hoursLeft <= 48) {
+      if (hoursLeft > 0 && hoursLeft <= 48 && !deadlinesCheckedRef.current.has(event.id)) {
+        deadlinesCheckedRef.current.add(event.id);
         emitDeadline(event, hoursLeft);
       }
     });
-  }, [events, emitDeadline]);
-
-  const checkOverdueTasks = useCallback(() => {
-    const now = new Date();
     tasks.forEach(task => {
-      if (task.status !== 'DONE' && task.due_date && new Date(task.due_date) < now) {
+      if (task.status !== 'DONE' && task.due_date && new Date(task.due_date) < now && !deadlinesCheckedRef.current.has(task.id)) {
+        deadlinesCheckedRef.current.add(task.id);
         const eventName = events.find(e => e.id === task.event_id)?.name || '';
         emitTaskOverdue(task, eventName);
       }
     });
-  }, [tasks, events, emitTaskOverdue]);
-
-  // Check deadlines when events and tasks change
-  useEffect(() => {
-    checkDeadlines();
-    checkOverdueTasks();
-  }, [checkDeadlines, checkOverdueTasks]);
+  }, [events, tasks]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Fetch admin/team users for dropdowns (inquiry assignment etc.)
   const [adminUsers, setAdminUsers] = useState([]);
