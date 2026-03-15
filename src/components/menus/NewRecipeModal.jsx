@@ -76,7 +76,7 @@ export default function NewRecipeModal({ isOpen, onClose, onSubmit }) {
 
           <div style={{ marginBottom: 12 }}>
             <label style={labelStyle}>KUVAUS</label>
-            <textarea style={{ ...inputStyle, minHeight: 60, resize: 'vertical' }} value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} placeholder="Lyhyt kuvaus annoksesta" />
+            <textarea style={{ ...inputStyle, minHeight: 80, resize: 'vertical', fontFamily: 'inherit' }} value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} placeholder="Lyhyt kuvaus annoksesta" />
           </div>
 
           <div style={{ marginBottom: 12 }}>
@@ -99,12 +99,12 @@ export default function NewRecipeModal({ isOpen, onClose, onSubmit }) {
 
           <div style={{ marginBottom: 12 }}>
             <label style={labelStyle}>AINESOSAT (vapaaehtoinen)</label>
-            <textarea style={{ ...inputStyle, minHeight: 60, resize: 'vertical' }} value={form.ingredients} onChange={e => setForm(p => ({ ...p, ingredients: e.target.value }))} placeholder="Ainesosat, yksi per rivi" />
+            <textarea style={{ ...inputStyle, minHeight: 120, resize: 'vertical', fontFamily: 'inherit' }} value={form.ingredients} onChange={e => setForm(p => ({ ...p, ingredients: e.target.value }))} placeholder="Ainesosat, yksi per rivi" />
           </div>
 
           <div style={{ marginBottom: 16 }}>
             <label style={labelStyle}>VALMISTUSOHJE (vapaaehtoinen)</label>
-            <textarea style={{ ...inputStyle, minHeight: 60, resize: 'vertical' }} value={form.instructions} onChange={e => setForm(p => ({ ...p, instructions: e.target.value }))} placeholder="Valmistusohjeet" />
+            <textarea style={{ ...inputStyle, minHeight: 140, resize: 'vertical', fontFamily: 'inherit' }} value={form.instructions} onChange={e => setForm(p => ({ ...p, instructions: e.target.value }))} placeholder="Valmistusohjeet" />
           </div>
 
           <div style={{ display: 'flex', gap: 8 }}>

@@ -107,7 +107,7 @@ export default function RecipeCard({ recipe, onUpdate, onDelete, onBack }) {
       <div style={sectionStyle}>
         <label style={labelStyle}>KUVAUS</label>
         {editing ? (
-          <textarea style={{ ...inputStyle, minHeight: 60, resize: 'vertical' }} value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} />
+          <textarea style={{ ...inputStyle, minHeight: 80, resize: 'vertical', fontFamily: 'inherit' }} value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} />
         ) : (
           <div style={{ color: 'var(--c-text)', fontSize: 13, whiteSpace: 'pre-wrap' }}>{recipe.description || '—'}</div>
         )}
@@ -150,7 +150,7 @@ export default function RecipeCard({ recipe, onUpdate, onDelete, onBack }) {
       <div style={sectionStyle}>
         <label style={labelStyle}>AINESOSAT</label>
         {editing ? (
-          <textarea style={{ ...inputStyle, minHeight: 80, resize: 'vertical' }} value={form.ingredients || ''} onChange={e => setForm(p => ({ ...p, ingredients: e.target.value }))} placeholder="Ainesosat" />
+          <textarea style={{ ...inputStyle, minHeight: 140, resize: 'vertical', fontFamily: 'inherit' }} value={form.ingredients || ''} onChange={e => setForm(p => ({ ...p, ingredients: e.target.value }))} placeholder="Ainesosat" />
         ) : (
           <div style={{ color: 'var(--c-text)', fontSize: 13, whiteSpace: 'pre-wrap' }}>{recipe.ingredients || '—'}</div>
         )}
@@ -159,7 +159,7 @@ export default function RecipeCard({ recipe, onUpdate, onDelete, onBack }) {
       <div style={sectionStyle}>
         <label style={labelStyle}>VALMISTUSOHJE</label>
         {editing ? (
-          <textarea style={{ ...inputStyle, minHeight: 80, resize: 'vertical' }} value={form.instructions || ''} onChange={e => setForm(p => ({ ...p, instructions: e.target.value }))} placeholder="Valmistusohje" />
+          <textarea style={{ ...inputStyle, minHeight: 160, resize: 'vertical', fontFamily: 'inherit' }} value={form.instructions || ''} onChange={e => setForm(p => ({ ...p, instructions: e.target.value }))} placeholder="Valmistusohje" />
         ) : (
           <div style={{ color: 'var(--c-text)', fontSize: 13, whiteSpace: 'pre-wrap' }}>{recipe.instructions || '—'}</div>
         )}
