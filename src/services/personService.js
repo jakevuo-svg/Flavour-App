@@ -65,20 +65,38 @@ export const createPerson = async (data) => {
   return newPerson;
 };
 
-export const updatePerson = async (id, data) => {
-  // Strip non-updatable fields that would cause Supabase errors
-  const { id: _id, created_at, created_by, ...cleanData } = data;
-  const updateData = {
-    ...cleanData,
-    modified_at: new Date().toISOString(),
-  };
+// Only these columns exist in the persons table
+const PERSON_COLUMNS = ['first_name', 'last_name', 'company', 'role', 'email', 'phone', 'website', 'type', 'next_action', 'notes', 'feedback', 'modified_at', 'modified_by'];
 
-  const { data: updatedPerson, error } = await supabase
+export const updatePerson = async (id, data) => {
+  // Only include fields that actually exist as columns in the DB
+  const updateData = { modified_at: new Date().toISOString() };
+  for (const key of PERSON_COLUMNS) {
+    if (data[key] !== undefined) updateData[key] = data[key];
+  }
+
+  let { data: updatedPerson, error } = await supabase
     .from('persons')
     .update(updateData)
     .eq('id', id)
     .select()
     .single();
+
+  // If column doesn't exist, retry without optional columns
+  if (error && error.message?.includes('column')) {
+    const safeData = { ...updateData };
+    delete safeData.feedback;
+    delete safeData.next_action;
+    delete safeData.modified_by;
+    const retry = await supabase
+      .from('persons')
+      .update(safeData)
+      .eq('id', id)
+      .select()
+      .single();
+    updatedPerson = retry.data;
+    error = retry.error;
+  }
 
   if (error) {
     console.error('Error updating person:', error);

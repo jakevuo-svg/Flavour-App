@@ -25,7 +25,15 @@ export default function PersonCard({ person, onUpdate, onDelete, onBack, events 
     return clean;
   };
 
-  const handleSave = () => { onUpdate?.(person.id, getDbData(formData)); setIsEditing(false); };
+  const handleSave = async () => {
+    try {
+      await onUpdate?.(person.id, getDbData(formData));
+      setIsEditing(false);
+    } catch (err) {
+      console.error('Person save failed:', err);
+      alert('Tallennus epäonnistui: ' + (err.message || 'tuntematon virhe'));
+    }
+  };
   const handleCancel = () => { setFormData({ ...person }); setIsEditing(false); };
 
   // Match events by booker or contact name (text fields, not IDs)
