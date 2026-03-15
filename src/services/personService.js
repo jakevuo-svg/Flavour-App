@@ -65,8 +65,8 @@ export const createPerson = async (data) => {
   return newPerson;
 };
 
-// Only these columns exist in the persons table
-const PERSON_COLUMNS = ['first_name', 'last_name', 'company', 'role', 'email', 'phone', 'website', 'type', 'next_action', 'notes', 'feedback', 'modified_at', 'modified_by'];
+// Core columns that definitely exist in the persons table
+const PERSON_COLUMNS = ['first_name', 'last_name', 'company', 'role', 'email', 'phone', 'website', 'type', 'notes', 'feedback', 'modified_at'];
 
 export const updatePerson = async (id, data) => {
   // Only include fields that actually exist as columns in the DB
@@ -82,12 +82,10 @@ export const updatePerson = async (id, data) => {
     .select()
     .single();
 
-  // If column doesn't exist, retry without optional columns
+  // If feedback column doesn't exist yet, retry without it
   if (error && error.message?.includes('column')) {
     const safeData = { ...updateData };
     delete safeData.feedback;
-    delete safeData.next_action;
-    delete safeData.modified_by;
     const retry = await supabase
       .from('persons')
       .update(safeData)
