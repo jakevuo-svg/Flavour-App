@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { supabase } from './services/supabaseClient';
 import { AuthProvider, useAuth } from './components/auth/AuthContext';
 import { useLanguage } from './contexts/LanguageContext';
@@ -361,29 +361,40 @@ const AppContent = () => {
   };
 
   // Auto-create a person from a name string if not already in persons list
+  // Track recently auto-created names to prevent duplicates within same batch
+  const recentlyCreatedNames = useRef(new Set());
+
   const autoCreatePerson = async (nameStr, company) => {
     if (!nameStr || !nameStr.trim()) return;
     const name = nameStr.trim();
+    const nameLower = name.toLowerCase();
     const parts = name.split(/\s+/);
     const firstName = parts[0] || '';
     const lastName = parts.slice(1).join(' ') || '';
     if (!firstName) return;
 
-    // Check if person already exists (case-insensitive match on full name)
+    // Check if person already exists in state
     const exists = persons.some(p => {
       const pFull = `${p.first_name} ${p.last_name}`.toLowerCase().trim();
-      return pFull === name.toLowerCase();
+      return pFull === nameLower;
     });
     if (exists) return;
 
+    // Check if we just created this name in this batch
+    if (recentlyCreatedNames.current.has(nameLower)) return;
+
     try {
+      recentlyCreatedNames.current.add(nameLower);
       await addPerson({
         first_name: firstName,
         last_name: lastName,
         company: company || '',
         type: 'NEW CONTACT',
       });
+      // Clear after a short delay so the ref doesn't grow forever
+      setTimeout(() => recentlyCreatedNames.current.delete(nameLower), 5000);
     } catch (err) {
+      recentlyCreatedNames.current.delete(nameLower);
       console.warn('Auto-create person failed:', err);
     }
   };
@@ -399,12 +410,15 @@ const AppContent = () => {
       showToast(t('eventAdded'), 'success');
       emitEventCreated({ ...data, id: ev?.id || 'new' });
 
-      // Auto-create persons from booker and contact fields
+      // Auto-create persons from booker and contact fields (sequential to avoid duplicates)
       const company = data.company || '';
-      await Promise.allSettled([
-        autoCreatePerson(data.booker, company),
-        autoCreatePerson(data.contact, company),
-      ]);
+      const bookerName = (data.booker || '').trim().toLowerCase();
+      const contactName = (data.contact || '').trim().toLowerCase();
+      await autoCreatePerson(data.booker, company);
+      // Skip contact if same name as booker
+      if (contactName && contactName !== bookerName) {
+        await autoCreatePerson(data.contact, company);
+      }
     } catch (err) {
       console.error('Failed to create event:', err);
       showToast('Tapahtuman luonti epäonnistui: ' + (err.message || 'tuntematon virhe'), 'error');
