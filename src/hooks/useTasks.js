@@ -33,7 +33,7 @@ export function useTasks() {
 
   useEffect(() => { fetchTasks(); }, [fetchTasks]);
 
-  const addTask = async (taskData) => {
+  const addTask = useCallback(async (taskData) => {
     try {
       // Map Finnish priority labels to DB values
       const priorityMap = { 'KORKEA': 'HIGH', 'NORMAALI': 'MEDIUM', 'MATALA': 'LOW' };
@@ -71,9 +71,9 @@ export function useTasks() {
       setError(err.message);
       return null;
     }
-  };
+  }, [profile?.id]);
 
-  const updateTask = async (taskId, updates) => {
+  const updateTask = useCallback(async (taskId, updates) => {
     try {
       const now = new Date().toISOString();
       const updateData = { ...updates };
@@ -107,7 +107,7 @@ export function useTasks() {
       setError(err.message);
       return false;
     }
-  };
+  }, []);
 
   const deleteTask = async (taskId) => {
     try {

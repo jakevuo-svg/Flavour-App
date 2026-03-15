@@ -31,6 +31,7 @@ import NewMenuModal from './components/menus/NewMenuModal';
 import NewRecipeModal from './components/menus/NewRecipeModal';
 import Toast from './components/common/Toast';
 import ChangePassword from './components/auth/ChangePassword';
+import ErrorBoundary from './components/common/ErrorBoundary';
 import S from './styles/theme';
 
 // Hooks
@@ -136,8 +137,8 @@ const AppContent = () => {
     emitTaskAdded, emitTaskStatusChanged, emitWorkerAssigned,
   } = useNotifications();
 
-  // Check deadlines on mount and when events change
-  useEffect(() => {
+  // Memoize deadline checking functions to avoid infinite loops
+  const checkDeadlines = useCallback(() => {
     const now = new Date();
     events.forEach(event => {
       if (!event.date) return;
@@ -147,15 +148,23 @@ const AppContent = () => {
         emitDeadline(event, hoursLeft);
       }
     });
-    // Also check overdue tasks
+  }, [events, emitDeadline]);
+
+  const checkOverdueTasks = useCallback(() => {
+    const now = new Date();
     tasks.forEach(task => {
       if (task.status !== 'DONE' && task.due_date && new Date(task.due_date) < now) {
         const eventName = events.find(e => e.id === task.event_id)?.name || '';
         emitTaskOverdue(task, eventName);
       }
     });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Only on mount
+  }, [tasks, events, emitTaskOverdue]);
+
+  // Check deadlines when events and tasks change
+  useEffect(() => {
+    checkDeadlines();
+    checkOverdueTasks();
+  }, [checkDeadlines, checkOverdueTasks]);
 
   // Fetch admin/team users for dropdowns (inquiry assignment etc.)
   const [adminUsers, setAdminUsers] = useState([]);
@@ -1033,9 +1042,11 @@ const AppContent = () => {
 
 const App = () => {
   return (
-    <AuthProvider>
-      <AppContent />
-    </AuthProvider>
+    <ErrorBoundary>
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
+    </ErrorBoundary>
   );
 };
 
