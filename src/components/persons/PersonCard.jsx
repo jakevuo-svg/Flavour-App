@@ -63,7 +63,7 @@ export default function PersonCard({ person, onUpdate, onDelete, onBack, events 
   };
 
   // Add feedback (stored on person object)
-  const handleAddFeedback = () => {
+  const handleAddFeedback = async () => {
     if (!newFeedback.text.trim()) return;
     const fb = {
       id: `fb-${Date.now()}`,
@@ -74,15 +74,28 @@ export default function PersonCard({ person, onUpdate, onDelete, onBack, events 
     };
     const updated = { ...formData, feedback: [...feedbackList, fb] };
     setFormData(updated);
-    onUpdate?.(person.id, getDbData(updated));
-    setNewFeedback({ text: '', rating: 5, eventName: '' });
-    setShowAddFeedback(false);
+    try {
+      await onUpdate?.(person.id, getDbData(updated));
+      setNewFeedback({ text: '', rating: 5, eventName: '' });
+      setShowAddFeedback(false);
+    } catch (err) {
+      console.error('Feedback save failed:', err);
+      // Revert local state on failure
+      setFormData(formData);
+      alert('Palautteen tallennus epäonnistui: ' + (err.message || 'tuntematon virhe'));
+    }
   };
 
-  const removeFeedback = (fbId) => {
+  const removeFeedback = async (fbId) => {
     const updated = { ...formData, feedback: feedbackList.filter(f => f.id !== fbId) };
     setFormData(updated);
-    onUpdate?.(person.id, getDbData(updated));
+    try {
+      await onUpdate?.(person.id, getDbData(updated));
+    } catch (err) {
+      console.error('Feedback remove failed:', err);
+      setFormData(formData);
+      alert('Palautteen poisto epäonnistui: ' + (err.message || 'tuntematon virhe'));
+    }
   };
 
   // Star rating helper
