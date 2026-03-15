@@ -201,6 +201,7 @@ const AppContent = () => {
   const [selectedMenu, setSelectedMenu] = useState(null);
   const [selectedRecipe, setSelectedRecipe] = useState(null);
   const [workerActivities, setWorkerActivities] = useState([]);
+  const recentlyCreatedNames = useRef(new Set());
 
   // Keep selectedEvent in sync with the events array (so edits reflect immediately)
   useEffect(() => {
@@ -361,9 +362,6 @@ const AppContent = () => {
   };
 
   // Auto-create a person from a name string if not already in persons list
-  // Track recently auto-created names to prevent duplicates within same batch
-  const recentlyCreatedNames = useRef(new Set());
-
   const autoCreatePerson = async (nameStr, company) => {
     if (!nameStr || !nameStr.trim()) return;
     const name = nameStr.trim();
