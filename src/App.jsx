@@ -250,9 +250,13 @@ const AppContent = () => {
   // Dynamic recent activity — built from real notes
   const recentActivity = useMemo(() => {
     const activities = [];
+    const archivedEventIds = new Set(events.filter(e => e.is_archived).map(e => e.id));
 
     // Convert actual notes to activity entries
     notes.forEach(note => {
+      // Skip notes linked to archived events
+      if (note.event_id && archivedEventIds.has(note.event_id)) return;
+
       let target = '';
       let entityType = '';
       let entityId = '';
@@ -285,9 +289,9 @@ const AppContent = () => {
       }
     });
 
-    // Convert recent event modifications to activity entries
+    // Convert recent event modifications to activity entries (skip archived)
     events.forEach(event => {
-      if (!event.modified_at) return;
+      if (!event.modified_at || event.is_archived) return;
       const lastChange = event.last_change || '';
       activities.push({
         id: `event-mod-${event.id}`,
@@ -300,9 +304,9 @@ const AppContent = () => {
       });
     });
 
-    // Convert tasks to activity entries
-    console.log('[Activity] Processing tasks:', tasks.length, 'tasks');
+    // Convert tasks to activity entries (skip tasks from archived events)
     tasks.forEach(task => {
+      if (task.event_id && archivedEventIds.has(task.event_id)) return;
       const eventName = events.find(e => e.id === task.event_id)?.name || '';
       const statusLabels = { TODO: 'Tehtävä', IN_PROGRESS: 'Käynnissä', DONE: 'Valmis' };
       if (task.created_at) {
@@ -330,8 +334,6 @@ const AppContent = () => {
     });
     // Include worker assignment activities
     workerActivities.forEach(wa => activities.push(wa));
-
-    console.log('[Activity] Total activities before sort:', activities.length, 'task entries:', activities.filter(a => a.action?.includes('TASK')).length);
 
     // Sort newest first, limit to 50
     return activities
