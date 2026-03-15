@@ -45,7 +45,10 @@ const DateView = ({ events = [], onEventClick, onAddEvent }) => {
   };
 
   const handleAddEvent = (monthIndex, day) => {
-    const dateStr = new Date(selectedYear, monthIndex, day).toISOString().split('T')[0];
+    const y = selectedYear;
+    const m = String(monthIndex + 1).padStart(2, '0');
+    const d = String(day).padStart(2, '0');
+    const dateStr = `${y}-${m}-${d}`;
     onAddEvent?.({ date: dateStr });
   };
 
