@@ -66,8 +66,10 @@ export const createPerson = async (data) => {
 };
 
 export const updatePerson = async (id, data) => {
+  // Strip non-updatable fields that would cause Supabase errors
+  const { id: _id, created_at, created_by, ...cleanData } = data;
   const updateData = {
-    ...data,
+    ...cleanData,
     modified_at: new Date().toISOString(),
   };
 

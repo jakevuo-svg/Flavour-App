@@ -16,11 +16,25 @@ export default function PersonCard({ person, onUpdate, onDelete, onBack, events 
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const handleInputChange = (field, value) => setFormData({ ...formData, [field]: value });
-  const handleSave = () => { onUpdate?.(person.id, formData); setIsEditing(false); };
+
+  // Only send DB-safe fields to Supabase (exclude feedback, id, created_at etc.)
+  const DB_FIELDS = ['first_name', 'last_name', 'company', 'role', 'email', 'phone', 'website', 'type', 'next_action', 'notes', 'feedback'];
+  const getDbData = (data) => {
+    const clean = {};
+    DB_FIELDS.forEach(f => { if (data[f] !== undefined) clean[f] = data[f]; });
+    return clean;
+  };
+
+  const handleSave = () => { onUpdate?.(person.id, getDbData(formData)); setIsEditing(false); };
   const handleCancel = () => { setFormData({ ...person }); setIsEditing(false); };
 
+  // Match events by booker or contact name (text fields, not IDs)
+  const personFullName = `${person?.first_name || ''} ${person?.last_name || ''}`.trim().toLowerCase();
   const personEvents = events.filter(e => {
-    return e.contact_person_id === person?.id;
+    if (!personFullName) return false;
+    const booker = (e.booker || '').trim().toLowerCase();
+    const contact = (e.contact || '').trim().toLowerCase();
+    return booker === personFullName || contact === personFullName;
   });
   const personNotes = notes.filter(n => n.person_id === person?.id);
   const feedbackList = formData.feedback || [];
@@ -29,7 +43,7 @@ export default function PersonCard({ person, onUpdate, onDelete, onBack, events 
   const saveField = (field, value) => {
     const updated = { ...formData, [field]: value };
     setFormData(updated);
-    onUpdate?.(person.id, updated);
+    onUpdate?.(person.id, getDbData(updated));
   };
 
   // Add note via global notes system
@@ -52,7 +66,7 @@ export default function PersonCard({ person, onUpdate, onDelete, onBack, events 
     };
     const updated = { ...formData, feedback: [...feedbackList, fb] };
     setFormData(updated);
-    onUpdate?.(person.id, updated);
+    onUpdate?.(person.id, getDbData(updated));
     setNewFeedback({ text: '', rating: 5, eventName: '' });
     setShowAddFeedback(false);
   };
@@ -60,7 +74,7 @@ export default function PersonCard({ person, onUpdate, onDelete, onBack, events 
   const removeFeedback = (fbId) => {
     const updated = { ...formData, feedback: feedbackList.filter(f => f.id !== fbId) };
     setFormData(updated);
-    onUpdate?.(person.id, updated);
+    onUpdate?.(person.id, getDbData(updated));
   };
 
   // Star rating helper
