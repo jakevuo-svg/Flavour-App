@@ -137,27 +137,25 @@ const AppContent = () => {
     emitTaskAdded, emitTaskStatusChanged, emitWorkerAssigned,
   } = useNotifications();
 
-  // Check deadlines on mount and when events/tasks data changes
-  const deadlinesCheckedRef = useRef(new Set());
+  // Check deadlines on mount
   useEffect(() => {
     const now = new Date();
     events.forEach(event => {
       if (!event.date) return;
       const eventDate = new Date(event.date);
       const hoursLeft = (eventDate - now) / 3600000;
-      if (hoursLeft > 0 && hoursLeft <= 48 && !deadlinesCheckedRef.current.has(event.id)) {
-        deadlinesCheckedRef.current.add(event.id);
+      if (hoursLeft > 0 && hoursLeft <= 48) {
         emitDeadline(event, hoursLeft);
       }
     });
     tasks.forEach(task => {
-      if (task.status !== 'DONE' && task.due_date && new Date(task.due_date) < now && !deadlinesCheckedRef.current.has(task.id)) {
-        deadlinesCheckedRef.current.add(task.id);
+      if (task.status !== 'DONE' && task.due_date && new Date(task.due_date) < now) {
         const eventName = events.find(e => e.id === task.event_id)?.name || '';
         emitTaskOverdue(task, eventName);
       }
     });
-  }, [events, tasks]); // eslint-disable-line react-hooks/exhaustive-deps
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only on mount
 
   // Fetch admin/team users for dropdowns (inquiry assignment etc.)
   const [adminUsers, setAdminUsers] = useState([]);
