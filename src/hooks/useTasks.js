@@ -109,7 +109,7 @@ export function useTasks() {
     }
   }, []);
 
-  const deleteTask = async (taskId) => {
+  const deleteTask = useCallback(async (taskId) => {
     try {
       const { error: err } = await supabase
         .from('event_tasks')
@@ -124,7 +124,7 @@ export function useTasks() {
       setError(err.message);
       return false;
     }
-  };
+  }, []);
 
   const getTasksForEvent = (eventId) => {
     return tasks.filter(t => t.event_id === eventId);

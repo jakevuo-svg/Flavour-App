@@ -63,7 +63,7 @@ export function useNotes() {
       setError(err.message);
       throw err;
     }
-  }, [profile?.id]);
+  }, [profile?.id, profile?.first_name, profile?.last_name]);
 
   const updateNote = useCallback(async (id, data) => {
     try {
